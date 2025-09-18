@@ -3,6 +3,7 @@ name: Actualizar XML diario
 on:
   schedule:
     - cron: '0 0 * * *'  # Ejecuta a medianoche UTC todos los días
+  workflow_dispatch:      # Permite ejecución manual desde GitHub
 
 jobs:
   update-xml:
@@ -18,7 +19,6 @@ jobs:
 
     - name: Procesar XML
       run: |
-        # Aquí puedes ejecutar un script para procesar el XML
         python procesar_xml.py guia.xml salida.xml
 
     - name: Actualizar repo con XML procesado
@@ -30,5 +30,4 @@ jobs:
         git commit -m "Actualizar guía EPG procesada"
         git push
       env:
-        # Necesitas un token con permisos para hacer push
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
