@@ -19,15 +19,16 @@ jobs:
 
     - name: Procesar XML
       run: |
-        python procesar_xml.py guia.xml salida.xml
+        python procesar_xml.py guia.xml guia_filtrada.xml
 
-    - name: Actualizar repo con XML procesado
+    - name: Configurar git para push con token GITHUB_TOKEN
+      run: |
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Dingolobo/xmldata.git
+
+    - name: Commit y push cambios
       run: |
         git config user.name "github-actions"
         git config user.email "actions@github.com"
-        mv salida.xml guia.xml
-        git add guia.xml
-        git commit -m "Actualizar guía EPG procesada"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        git add guia.xml guia_filtrada.xml
+        git commit -m "Actualizar guía EPG procesada" || echo "No hay cambios para commitear"
+        git push origin main
