@@ -6,11 +6,11 @@
 		<display-name>16</display-name>
 		<icon src="https://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s83162_dark_360w_270h.png" width="360" height="270" />
 	</channel>
-	<channel id="I24.102458.schedulesdirect.org">
-		<display-name>ALJZHDI</display-name>
-		<display-name>24 ALJZHDI</display-name>
-		<display-name>24</display-name>
-		<display-name>Al Jazeera HD</display-name>
+	<channel id="I23.111165.schedulesdirect.org">
+		<display-name>ALJALA</display-name>
+		<display-name>23 ALJALA</display-name>
+		<display-name>23</display-name>
+		<display-name>Al Jazeera</display-name>
 		<icon src="https://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s49968_dark_360w_270h.png" width="360" height="270" />
 	</channel>
 	<channel id="I41.82808.schedulesdirect.org">
@@ -81,6 +81,13 @@
 		<display-name>205</display-name>
 		<display-name>CV SHOPPING</display-name>
 		<icon src="https://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s95679_dark_360w_270h.png" width="360" height="270" />
+	</channel>
+	<channel id="I207.19736.schedulesdirect.org">
+		<display-name>DEPE2</display-name>
+		<display-name>207 DEPE2</display-name>
+		<display-name>207</display-name>
+		<display-name>De Pelicula</display-name>
+		<icon src="https://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s16288_dark_360w_270h.png" width="360" height="270" />
 	</channel>
 	<channel id="I210.74016.schedulesdirect.org">
 		<display-name>DEPELPL</display-name>
@@ -479,6 +486,13 @@
 		<display-name>Universal Premiere</display-name>
 		<icon src="https://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s121866_dark_360w_270h.png" width="360" height="270" />
 	</channel>
+	<channel id="I772.59014.schedulesdirect.org">
+		<display-name>WOBI</display-name>
+		<display-name>772 WOBI</display-name>
+		<display-name>772</display-name>
+		<display-name>Wobi</display-name>
+		<icon src="https://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s59014_dark_360w_270h.png" width="360" height="270" />
+	</channel>
 	<channel id="I353.71799.schedulesdirect.org">
 		<display-name>Bloomberg TV</display-name>
 		<display-name>353 Bloomberg TV</display-name>
@@ -710,434 +724,649 @@
 			<value>TVPG</value>
 		</rating>
 	</programme>
-	<programme start="20250918120000 +0000" stop="20250918150000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Al Jazeera Midday</title>
-		<desc lang="en">Al Jazeera's global team provides today's news and interviews.</desc>
+	<programme start="20250918120000 +0000" stop="20250918130000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Israelism</title>
+		<date>20250425</date>
+		<category lang="en">News</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP05334947.0003</episode-num>
+		<episode-num system="xmltv_ns">2024.0.</episode-num>
+		<previously-shown start="20250425000000" />
+	</programme>
+	<programme start="20250918130000 +0000" stop="20250918140000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News Hour</title>
+		<desc lang="en">Una mirada a las noticias, eventos, actualidad e historias exclusivas de todo el mundo.</desc>
+		<date>20250918</date>
 		<category lang="en">News</category>
 		<category lang="en">Public affairs</category>
-		<category lang="en">Bus./financial</category>
-		<category lang="en">Weather</category>
-		<length units="seconds">5400</length>
-		<episode-num system="dd_progid">SH01826855.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20030319000000" />
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03228818.0517</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
 	</programme>
-	<programme start="20250918150000 +0000" stop="20250918150300 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
-	</programme>
-	<programme start="20250918150300 +0000" stop="20250918160000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">The Network</title>
-		<category lang="en">News</category>
-		<length units="seconds">3420</length>
-		<episode-num system="dd_progid">SH04844571.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20230820000000" />
-	</programme>
-	<programme start="20250918160000 +0000" stop="20250918160500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Summary</title>
-		<desc lang="en">World news and Arab world developments.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">300</length>
-		<episode-num system="dd_progid">SH00572740.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20030316000000" />
-	</programme>
-	<programme start="20250918160500 +0000" stop="20250918170000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">From Washington</title>
-		<desc lang="en">(Arabic) Journalists, analysts and decision-makers talk about the United States.</desc>
-		<category lang="en">Politics</category>
-		<length units="seconds">3000</length>
-		<episode-num system="dd_progid">SH00521909.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020705000000" />
-	</programme>
-	<programme start="20250918170000 +0000" stop="20250918173000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
-	</programme>
-	<programme start="20250918173000 +0000" stop="20250918180000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Behind the News</title>
-		<desc lang="en">A current affairs daily program looking at a major news story of the day.</desc>
+	<programme start="20250918140000 +0000" stop="20250918143000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
 		<category lang="en">News</category>
 		<category lang="en">Public affairs</category>
-		<category lang="en">Bus./financial</category>
-		<length units="seconds">1620</length>
-		<episode-num system="dd_progid">SH01826857.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20070815000000" />
-	</programme>
-	<programme start="20250918180000 +0000" stop="20250918190500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
-		<category lang="en">News</category>
 		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
+		<episode-num system="dd_progid">EP04129683.0688</episode-num>
+		<new />
 	</programme>
-	<programme start="20250918190500 +0000" stop="20250918200000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Scenarios</title>
+	<programme start="20250918143000 +0000" stop="20250918150000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">The Listening Post</title>
+		<desc lang="en">Se proporcionan noticias e información claves para comprender eventos globales cada vez más complejos, a través de un análisis en profundidad.</desc>
+		<credits>
+			<presenter>Richard Gizbert</presenter>
+		</credits>
+		<date>20250914</date>
 		<category lang="en">News</category>
-		<category lang="en">Politics</category>
-		<length units="seconds">3300</length>
-		<episode-num system="dd_progid">SH02930983.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20180323000000" />
-	</programme>
-	<programme start="20250918200000 +0000" stop="20250918210000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Today's Harvest</title>
-		<desc lang="en">(Arabic) Combines major headline news of the day with in-depth analysis.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">3900</length>
-		<episode-num system="dd_progid">SH00487832.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
-	</programme>
-	<programme start="20250918210000 +0000" stop="20250918225500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Mid Night</title>
-		<category lang="en">News</category>
-		<length units="seconds">6900</length>
-		<episode-num system="dd_progid">SH04079971.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20211102000000" />
-	</programme>
-	<programme start="20250918225500 +0000" stop="20250918230000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Weather Forecast</title>
-		<desc lang="en">Bringing the latest weather news and the forecast.</desc>
-		<category lang="en">News</category>
-		<category lang="en">Weather</category>
-		<length units="seconds">240</length>
-		<episode-num system="dd_progid">SH01826853.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20070815000000" />
-	</programme>
-	<programme start="20250918230000 +0000" stop="20250918233000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
-		<category lang="en">News</category>
+		<category lang="en">Reality</category>
 		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
+		<episode-num system="dd_progid">EP03228814.0289</episode-num>
+		<previously-shown start="20250914000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Film &amp; Publication Board">
+			<value>Family</value>
+		</rating>
 	</programme>
-	<programme start="20250918233000 +0000" stop="20250919000000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Behind the News</title>
-		<desc lang="en">A current affairs daily program looking at a major news story of the day.</desc>
+	<programme start="20250918150000 +0000" stop="20250918160000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News Hour</title>
+		<desc lang="en">Una mirada a las noticias, eventos, actualidad e historias exclusivas de todo el mundo.</desc>
+		<date>20250918</date>
 		<category lang="en">News</category>
 		<category lang="en">Public affairs</category>
-		<category lang="en">Bus./financial</category>
-		<length units="seconds">1620</length>
-		<episode-num system="dd_progid">SH01826857.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20070815000000" />
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03228818.0517</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
 	</programme>
-	<programme start="20250919000000 +0000" stop="20250919000500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Summary</title>
-		<desc lang="en">World news and Arab world developments.</desc>
+	<programme start="20250918160000 +0000" stop="20250918163000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
 		<category lang="en">News</category>
-		<length units="seconds">300</length>
-		<episode-num system="dd_progid">SH00572740.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20030316000000" />
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0688</episode-num>
+		<new />
 	</programme>
-	<programme start="20250919000500 +0000" stop="20250919005500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">On the Scale</title>
-		<category lang="en">News</category>
-		<length units="seconds">3300</length>
-		<episode-num system="dd_progid">SH04844570.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20230819000000" />
-	</programme>
-	<programme start="20250919005500 +0000" stop="20250919010000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Weather Forecast</title>
-		<desc lang="en">Bringing the latest weather news and the forecast.</desc>
-		<category lang="en">News</category>
-		<category lang="en">Weather</category>
-		<length units="seconds">240</length>
-		<episode-num system="dd_progid">SH01826853.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20070815000000" />
-	</programme>
-	<programme start="20250919010000 +0000" stop="20250919013000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
+	<programme start="20250918163000 +0000" stop="20250918170000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Witness</title>
+		<sub-title lang="en">Stand Up for Madinah</sub-title>
+		<desc lang="en">Aclamados documentales de todo el mundo que ponen de relieve los problemas mundiales a través de historias personales.</desc>
+		<credits>
+			<presenter>Ghida Fakhry</presenter>
+		</credits>
+		<date>20241104</date>
+		<category lang="en">Documentary</category>
+		<category lang="en">History</category>
 		<category lang="en">News</category>
 		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
+		<episode-num system="dd_progid">EP03228821.0319</episode-num>
+		<previously-shown start="20241104000000" />
+		<rating system="Australian Classification Board">
+			<value>PG</value>
+		</rating>
 	</programme>
-	<programme start="20250919013000 +0000" stop="20250919020000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Smart Life</title>
+	<programme start="20250918170000 +0000" stop="20250918173000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0688</episode-num>
+		<new />
+	</programme>
+	<programme start="20250918173000 +0000" stop="20250918180000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Inside Story</title>
+		<desc lang="en">Más allá de los titulares, directo al corazón de la noticia del día. Al Jazeera conversa con algunas de las personalidades más brillantes de Oriente Próximo acerca de asuntos de gran relevancia.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228820.1402</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>AA</value>
+		</rating>
+	</programme>
+	<programme start="20250918180000 +0000" stop="20250918190000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News Hour</title>
+		<desc lang="en">Una mirada a las noticias, eventos, actualidad e historias exclusivas de todo el mundo.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03228818.0517</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250918190000 +0000" stop="20250918193000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0688</episode-num>
+		<new />
+	</programme>
+	<programme start="20250918193000 +0000" stop="20250918200000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">The Stream</title>
+		<desc lang="en">Una comunidad en línea que utiliza las redes sociales para buscar voces que nunca fueron escuchadas y nuevas miradas sobre las historias más emocionantes de Internet.</desc>
+		<credits>
+			<producer>Barry Malone</producer>
+			<presenter>Femi Oke</presenter>
+		</credits>
+		<date>20250918</date>
 		<category lang="en">News</category>
 		<category lang="en">Documentary</category>
 		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH02428756.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20160603000000" />
-	</programme>
-	<programme start="20250919020000 +0000" stop="20250919020500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Summary</title>
-		<desc lang="en">World news and Arab world developments.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">300</length>
-		<episode-num system="dd_progid">SH00572740.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20030316000000" />
-	</programme>
-	<programme start="20250919020500 +0000" stop="20250919030000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Opposite Direction</title>
-		<category lang="en">Talk</category>
-		<length units="seconds">1500</length>
-		<episode-num system="dd_progid">SH00487831.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
-		<rating system="Canadian Parental Rating">
+		<episode-num system="dd_progid">EP03228815.1043</episode-num>
+		<episode-num system="xmltv_ns">24.74.</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
 			<value>G</value>
 		</rating>
-		<rating system="Régie du cinéma">
+	</programme>
+	<programme start="20250918200000 +0000" stop="20250918203000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0688</episode-num>
+		<new />
+	</programme>
+	<programme start="20250918203000 +0000" stop="20250918210000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Inside Story</title>
+		<desc lang="en">Más allá de los titulares, directo al corazón de la noticia del día. Al Jazeera conversa con algunas de las personalidades más brillantes de Oriente Próximo acerca de asuntos de gran relevancia.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228820.1402</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
 			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>AA</value>
+		</rating>
+	</programme>
+	<programme start="20250918210000 +0000" stop="20250918220000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News Hour</title>
+		<desc lang="en">Una mirada a las noticias, eventos, actualidad e historias exclusivas de todo el mundo.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03228818.0517</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250918220000 +0000" stop="20250918223000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0688</episode-num>
+		<new />
+	</programme>
+	<programme start="20250918223000 +0000" stop="20250918230000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">101 East</title>
+		<desc lang="en">101 East informa sobre personas y los acontecimientos que dan forma a la región de Asia-Pacífico.</desc>
+		<credits>
+			<actor>Steve Chao</actor>
+			<actor>Karishma Vyas</actor>
+		</credits>
+		<date>20250918</date>
+		<category lang="en">Public affairs</category>
+		<category lang="en">Documentary</category>
+		<category lang="en">News</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228827.0263</episode-num>
+		<episode-num system="xmltv_ns">2024.54.</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+	</programme>
+	<programme start="20250918230000 +0000" stop="20250918233000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0688</episode-num>
+		<new />
+	</programme>
+	<programme start="20250918233000 +0000" stop="20250919000000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Talk to Al Jazeera</title>
+		<sub-title lang="en">Mohammad Ishaq Dar</sub-title>
+		<desc lang="en">Una serie de conversaciones con importantes figuras de diversos ámbitos, cuya experiencia y puntos de vista ofrecen una perspectiva amplia y diversa.</desc>
+		<date>20250915</date>
+		<category lang="en">Talk</category>
+		<category lang="en">News</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228824.0317</episode-num>
+		<previously-shown start="20250915000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>B</value>
+		</rating>
+	</programme>
+	<programme start="20250919000000 +0000" stop="20250919003000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0689</episode-num>
+		<new />
+	</programme>
+	<programme start="20250919003000 +0000" stop="20250919010000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Inside Story</title>
+		<desc lang="en">Más allá de los titulares, directo al corazón de la noticia del día. Al Jazeera conversa con algunas de las personalidades más brillantes de Oriente Próximo acerca de asuntos de gran relevancia.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228820.1403</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>AA</value>
+		</rating>
+	</programme>
+	<programme start="20250919010000 +0000" stop="20250919020000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Witness</title>
+		<desc lang="en">Aclamados documentales de todo el mundo que ponen de relieve los problemas mundiales a través de historias personales.</desc>
+		<credits>
+			<director>Michael T Workman</director>
+			<director>Kei Pritsker</director>
+			<presenter>Ghida Fakhry</presenter>
+		</credits>
+		<date>20250917</date>
+		<category lang="en">Documentary</category>
+		<category lang="en">History</category>
+		<category lang="en">News</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03228821.0359</episode-num>
+		<previously-shown start="20250917000000" />
+		<rating system="Australian Classification Board">
+			<value>PG</value>
+		</rating>
+	</programme>
+	<programme start="20250919020000 +0000" stop="20250919023000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0689</episode-num>
+		<new />
+	</programme>
+	<programme start="20250919023000 +0000" stop="20250919030000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Boycott</title>
+		<sub-title lang="en">Part One - The Bill</sub-title>
+		<credits>
+			<director>Julia Bacha</director>
+			<actor>Amber Fares</actor>
+			<producer>Julia Bacha</producer>
+		</credits>
+		<date>20211114</date>
+		<category lang="en">Documentary</category>
+		<category lang="en">Law</category>
+		<category lang="en">Politics</category>
+		<category lang="en">Special</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04874738.0002.0/3</episode-num>
+		<previously-shown start="20211114000000" />
+	</programme>
+	<programme start="20250919030000 +0000" stop="20250919033000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0689</episode-num>
+		<new />
+	</programme>
+	<programme start="20250919033000 +0000" stop="20250919040000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">People and Power</title>
+		<desc lang="en">Una investigación sobre la verdadera naturaleza del poder. Qué es el poder, quién lo tiene y cómo se utiliza.</desc>
+		<credits>
+			<director>Emanuele Piano</director>
+			<director>David Gumpel</director>
+			<director>Orlando von Einsiedel</director>
+			<director>Clive Patterson</director>
+			<director>Rodrigo Vázquez</director>
+			<writer>Hugh Hartford</writer>
+			<writer>Stacy Herbert</writer>
+			<writer>Emanuele Piano</writer>
+			<producer>Ron McCullagh</producer>
+			<producer>Jonathan Ossoff</producer>
+			<producer>Stacy Herbert</producer>
+			<producer>Max Keiser</producer>
+			<producer>Emanuele Piano</producer>
+			<producer>Hugh Hartford</producer>
+			<presenter>Samah El Shahat</presenter>
+		</credits>
+		<date>20250731</date>
+		<category lang="en">Documentary</category>
+		<category lang="en">News</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228846.0185</episode-num>
+		<previously-shown start="20250731000000" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
 		</rating>
 		<rating system="USA Parental Rating">
-			<value>TVG</value>
+			<value>TVPG</value>
 		</rating>
 	</programme>
-	<programme start="20250919030000 +0000" stop="20250919030500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Summary</title>
-		<desc lang="en">World news and Arab world developments.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">300</length>
-		<episode-num system="dd_progid">SH00572740.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20030316000000" />
-	</programme>
-	<programme start="20250919030500 +0000" stop="20250919040000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">From Washington</title>
-		<desc lang="en">(Arabic) Journalists, analysts and decision-makers talk about the United States.</desc>
-		<category lang="en">Politics</category>
-		<length units="seconds">3000</length>
-		<episode-num system="dd_progid">SH00521909.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020705000000" />
-	</programme>
-	<programme start="20250919040000 +0000" stop="20250919043000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
-	</programme>
-	<programme start="20250919043000 +0000" stop="20250919050000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Behind the News</title>
-		<desc lang="en">A current affairs daily program looking at a major news story of the day.</desc>
+	<programme start="20250919040000 +0000" stop="20250919043000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
 		<category lang="en">News</category>
 		<category lang="en">Public affairs</category>
-		<category lang="en">Bus./financial</category>
-		<length units="seconds">1620</length>
-		<episode-num system="dd_progid">SH01826857.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20070815000000" />
-	</programme>
-	<programme start="20250919050000 +0000" stop="20250919060000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
-		<category lang="en">News</category>
 		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
+		<episode-num system="dd_progid">EP04129683.0689</episode-num>
+		<new />
 	</programme>
-	<programme start="20250919060000 +0000" stop="20250919060500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
+	<programme start="20250919043000 +0000" stop="20250919050000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">The Stream</title>
+		<desc lang="en">Una comunidad en línea que utiliza las redes sociales para buscar voces que nunca fueron escuchadas y nuevas miradas sobre las historias más emocionantes de Internet.</desc>
+		<credits>
+			<producer>Barry Malone</producer>
+			<presenter>Femi Oke</presenter>
+		</credits>
+		<date>20250918</date>
 		<category lang="en">News</category>
-		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
-	</programme>
-	<programme start="20250919060500 +0000" stop="20250919070000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Al Jazeera This Morning</title>
-		<desc lang="en">Starting the day with news brought to you with interviews from Al Jazeera's global teams.</desc>
-		<category lang="en">News</category>
-		<category lang="en">Public affairs</category>
-		<category lang="en">Bus./financial</category>
-		<category lang="en">Weather</category>
-		<length units="seconds">5400</length>
-		<episode-num system="dd_progid">SH01826860.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20030318000000" />
-	</programme>
-	<programme start="20250919070000 +0000" stop="20250919073000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
-	</programme>
-	<programme start="20250919073000 +0000" stop="20250919080000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Contemplation</title>
 		<category lang="en">Documentary</category>
 		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH03370324.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20191119000000" />
+		<episode-num system="dd_progid">EP03228815.1043</episode-num>
+		<episode-num system="xmltv_ns">24.74.</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
 	</programme>
-	<programme start="20250919080000 +0000" stop="20250919110000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">This Day</title>
-		<category lang="en">News</category>
-		<length units="seconds">10800</length>
-		<episode-num system="dd_progid">SH04079970.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20211102000000" />
-	</programme>
-	<programme start="20250919110000 +0000" stop="20250919115500 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">News Bulletin</title>
-		<desc lang="en">(Arabic) International news emphasizing Arabic world developments.</desc>
-		<category lang="en">News</category>
-		<length units="seconds">1800</length>
-		<episode-num system="dd_progid">SH00487846.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20020101000000" />
-	</programme>
-	<programme start="20250919115500 +0000" stop="20250919120000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Weather Forecast</title>
-		<desc lang="en">Bringing the latest weather news and the forecast.</desc>
-		<category lang="en">News</category>
-		<category lang="en">Weather</category>
-		<length units="seconds">240</length>
-		<episode-num system="dd_progid">SH01826853.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20070815000000" />
-	</programme>
-	<programme start="20250919120000 +0000" stop="20250919150000 +0000" channel="I24.102458.schedulesdirect.org">
-		<title lang="en">Al Jazeera Midday</title>
-		<desc lang="en">Al Jazeera's global team provides today's news and interviews.</desc>
+	<programme start="20250919050000 +0000" stop="20250919053000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250918</date>
 		<category lang="en">News</category>
 		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0689</episode-num>
+		<new />
+	</programme>
+	<programme start="20250919053000 +0000" stop="20250919060000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Inside Story</title>
+		<desc lang="en">Más allá de los titulares, directo al corazón de la noticia del día. Al Jazeera conversa con algunas de las personalidades más brillantes de Oriente Próximo acerca de asuntos de gran relevancia.</desc>
+		<date>20250918</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228820.1403</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>AA</value>
+		</rating>
+	</programme>
+	<programme start="20250919060000 +0000" stop="20250919063000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250919</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0690</episode-num>
+		<new />
+	</programme>
+	<programme start="20250919063000 +0000" stop="20250919070000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Studio B: Unscripted</title>
+		<sub-title lang="en">Brian Eno &amp; Ha-Joon Chang P1</sub-title>
+		<desc lang="en">El innovador músico Brian Eno y el economista Ha-Joon Chang hablan de los peligros de aceptar el status quo y de herramientas creativas para una sociedad más justa.</desc>
+		<date>20230416</date>
+		<category lang="en">Public affairs</category>
+		<category lang="en">Talk</category>
+		<category lang="en">News</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03348444.0028</episode-num>
+		<previously-shown start="20230416000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+	</programme>
+	<programme start="20250919070000 +0000" stop="20250919080000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News Hour</title>
+		<desc lang="en">Una mirada a las noticias, eventos, actualidad e historias exclusivas de todo el mundo.</desc>
+		<date>20250919</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03228818.0518</episode-num>
+		<previously-shown start="20250919000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250919080000 +0000" stop="20250919083000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250919</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0690</episode-num>
+		<new />
+	</programme>
+	<programme start="20250919083000 +0000" stop="20250919090000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">101 East</title>
+		<desc lang="en">101 East informa sobre personas y los acontecimientos que dan forma a la región de Asia-Pacífico.</desc>
+		<credits>
+			<actor>Steve Chao</actor>
+			<actor>Karishma Vyas</actor>
+		</credits>
+		<date>20250918</date>
+		<category lang="en">Public affairs</category>
+		<category lang="en">Documentary</category>
+		<category lang="en">News</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228827.0263</episode-num>
+		<episode-num system="xmltv_ns">2024.54.</episode-num>
+		<previously-shown start="20250918000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+	</programme>
+	<programme start="20250919090000 +0000" stop="20250919093000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250919</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0690</episode-num>
+		<new />
+	</programme>
+	<programme start="20250919093000 +0000" stop="20250919100000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Witness</title>
+		<sub-title lang="en">Stand Up for Madinah</sub-title>
+		<desc lang="en">Aclamados documentales de todo el mundo que ponen de relieve los problemas mundiales a través de historias personales.</desc>
+		<credits>
+			<presenter>Ghida Fakhry</presenter>
+		</credits>
+		<date>20241104</date>
+		<category lang="en">Documentary</category>
+		<category lang="en">History</category>
+		<category lang="en">News</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228821.0319</episode-num>
+		<previously-shown start="20241104000000" />
+		<rating system="Australian Classification Board">
+			<value>PG</value>
+		</rating>
+	</programme>
+	<programme start="20250919100000 +0000" stop="20250919110000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News Hour</title>
+		<desc lang="en">Una mirada a las noticias, eventos, actualidad e historias exclusivas de todo el mundo.</desc>
+		<date>20250919</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03228818.0518</episode-num>
+		<previously-shown start="20250919000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250919110000 +0000" stop="20250919113000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News [NEW]</title>
+		<desc lang="en">Un repaso a las noticias internacionales desde el centro periodístico de Al Jazeera en Kuala Lumpur.</desc>
+		<date>20250919</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP04129683.0690</episode-num>
+		<new />
+	</programme>
+	<programme start="20250919113000 +0000" stop="20250919120000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Inside Story</title>
+		<desc lang="en">Más allá de los titulares, directo al corazón de la noticia del día. Al Jazeera conversa con algunas de las personalidades más brillantes de Oriente Próximo acerca de asuntos de gran relevancia.</desc>
+		<date>20250919</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP03228820.1404</episode-num>
+		<previously-shown start="20250919000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>AA</value>
+		</rating>
+	</programme>
+	<programme start="20250919120000 +0000" stop="20250919123000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">The Bottom Line</title>
+		<desc lang="en">Se abordan los temas más debatidos en el mundo empresarial y político, además de los temas de mesa que más importan a los estadounidenses.</desc>
+		<credits>
+			<presenter>Dagen McDowell</presenter>
+		</credits>
+		<date>20250218</date>
 		<category lang="en">Bus./financial</category>
-		<category lang="en">Weather</category>
-		<length units="seconds">5400</length>
-		<episode-num system="dd_progid">SH01826855.0000</episode-num>
-		<video>
-			<aspect>16:9</aspect>
-			<quality>HDTV</quality>
-		</video>
-		<previously-shown start="20030319000000" />
+		<category lang="en">Politics</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP04658676.0511</episode-num>
+		<episode-num system="xmltv_ns">2024.37.</episode-num>
+		<previously-shown start="20250218000000" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>C</value>
+		</rating>
+	</programme>
+	<programme start="20250919123000 +0000" stop="20250919130000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">Fault Lines</title>
+		<sub-title lang="en">The Night Won't End - Biden's War on Gaza P2</sub-title>
+		<desc lang="en">De los ataques aéreos a las ejecuciones sobre el terreno, se investiga los presuntos crímenes de guerra cometidos por el ejército israelí en Gaza y el papel de Estados Unidos en la guerra.</desc>
+		<credits>
+			<presenter>Josh Rushing</presenter>
+			<presenter>Wab Kinew</presenter>
+			<presenter>Anjali Kamat</presenter>
+			<presenter>Seb Walker</presenter>
+		</credits>
+		<date>20240619</date>
+		<category lang="en">Documentary</category>
+		<category lang="en">News</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02233396.0190</episode-num>
+		<episode-num system="xmltv_ns">2023.6.</episode-num>
+		<previously-shown start="20240619000000" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>18+</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>C</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVMA</value>
+		</rating>
+	</programme>
+	<programme start="20250919130000 +0000" stop="20250919140000 +0000" channel="I23.111165.schedulesdirect.org">
+		<title lang="en">News Hour</title>
+		<desc lang="en">Una mirada a las noticias, eventos, actualidad e historias exclusivas de todo el mundo.</desc>
+		<date>20250919</date>
+		<category lang="en">News</category>
+		<category lang="en">Public affairs</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03228818.0518</episode-num>
+		<previously-shown start="20250919000000" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
 	</programme>
 	<programme start="20250918112500 +0000" stop="20250918130000 +0000" channel="I41.82808.schedulesdirect.org">
 		<title lang="en">Lázaro de Tormes</title>
@@ -11936,6 +12165,416 @@
 		</rating>
 		<rating system="USA Parental Rating">
 			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250918122800 +0000" stop="20250918140000 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">Un amante anda suelto</title>
+		<desc lang="en">En este musical filmado en Puerto Rico, un hombre sentado en un café, frente a un banco, es involucrado en un asalto.</desc>
+		<credits>
+			<director>Rubén Galindo</director>
+			<actor>Zulma Faiad</actor>
+			<actor>Fernando Luján</actor>
+			<actor>Alejandro Suárez</actor>
+			<actor>Héctor Lechuga</actor>
+			<writer>Rubén Galindo</writer>
+		</credits>
+		<date>1969</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Comedy</category>
+		<length units="seconds">5100</length>
+		<episode-num system="dd_progid">MV00048992.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250918140000 +0000" stop="20250918154300 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">Ojos tapatíos</title>
+		<desc lang="en">En una academia de música, tres de los estudiantes de ópera se conocen y acaban enamorándose.</desc>
+		<credits>
+			<director>Gilberto Martínez Solares</director>
+			<actor>Luz María Aguilar</actor>
+			<actor>Pedro Geraldo</actor>
+			<actor>Libertad Lamarque</actor>
+			<actor>Christiane Martel</actor>
+			<actor>Roberto Silva</actor>
+			<actor>Rodolfo Landa</actor>
+			<actor>María Eugenia San Martín</actor>
+			<actor>Óscar Ortíz de Pinedo</actor>
+			<actor>Julio Julián</actor>
+			<actor>Judith Sierra</actor>
+			<actor>Eduardo Alcaraz</actor>
+			<actor>Antonio Raxel</actor>
+			<actor>Hortensia Santoveña</actor>
+			<actor>Aurora Walker</actor>
+			<actor>Julio Porter</actor>
+			<actor>Jack Draper</actor>
+			<actor>Raúl Lavista</actor>
+		</credits>
+		<date>1960</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Drama</category>
+		<length units="seconds">4680</length>
+		<episode-num system="dd_progid">MV00027885.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250918154300 +0000" stop="20250918173900 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">Los problemas de mamá</title>
+		<desc lang="en">Una viuda padece los problemas de casar bien a sus cuatro hijas y los galanes se emborrachan y les llevan serenata.</desc>
+		<credits>
+			<director>Alfredo Crevenna</director>
+			<actor>Amparo Rivelles</actor>
+			<actor>Jacqueline Andere</actor>
+			<actor>Juan Ferrara</actor>
+			<actor>Alicia Bonet</actor>
+			<actor>Armando Acosta</actor>
+			<actor>Antonio Raxel</actor>
+			<actor>Joaquín Cordero</actor>
+			<actor>Andrea Cotto</actor>
+			<actor>Josefina Vicens</actor>
+			<actor>Raúl Domínguez</actor>
+			<actor>Antonio Díaz Conde</actor>
+		</credits>
+		<date>1970</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Drama</category>
+		<length units="seconds">5700</length>
+		<episode-num system="dd_progid">MV00123731.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250918173900 +0000" stop="20250918194500 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">El extra</title>
+		<desc lang="en">Decidido a triunfar en el mundo del cine, Rogaciano acepta un papel de extra en varias producciones, en las que tiene que interpretar personajes tan variados como el de amante de Margarita Gauthier y otros.</desc>
+		<credits>
+			<director>Miguel M. Delgado</director>
+			<actor>Cantinflas</actor>
+			<actor>Alma Delia Fuentes</actor>
+			<actor>Carmen Molina</actor>
+			<actor>Guillermina Téllez Giron</actor>
+			<actor>Magda Donato</actor>
+			<actor>Alejandro Ciangherotti</actor>
+			<actor>León Barroso</actor>
+			<actor>Luis Manuel Pelayo</actor>
+			<actor>Miguel M. Delgado</actor>
+			<actor>Jorge Busto</actor>
+			<actor>Rosalío Solano</actor>
+		</credits>
+		<date>1962</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Comedy</category>
+		<length units="seconds">6600</length>
+		<episode-num system="dd_progid">MV00036815.0000</episode-num>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>L</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250918194500 +0000" stop="20250918213700 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">La bien pagada</title>
+		<desc lang="en">La esposa de un hombre rico lo engaña con otros. Cuando él la descubre la obliga a que firme un documento de abandono.</desc>
+		<credits>
+			<director>Alberto Gout</director>
+			<actor>María Antonieta Pons</actor>
+			<actor>Víctor Junco</actor>
+			<actor>Blanca Estela Pavón</actor>
+			<actor>Esperanza Issa</actor>
+			<actor>Jorge Ancira</actor>
+			<actor>Carmen Molina</actor>
+			<actor>Carlos Martínez Baena</actor>
+			<actor>José Eduardo Pérez</actor>
+			<actor>José Elías Moreno</actor>
+			<actor>Jorge Mondragón</actor>
+			<actor>Alex Phillips</actor>
+			<actor>Rosalío Ramírez</actor>
+			<actor>Alfredo Rosas Priego</actor>
+			<producer>Alfonso Rosas Priego</producer>
+			<producer>Enrique Rosas Priego</producer>
+			<producer>Rodolfo Rosas Priego</producer>
+		</credits>
+		<date>1948</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Drama</category>
+		<length units="seconds">5580</length>
+		<episode-num system="dd_progid">MV00128332.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>B</value>
+		</rating>
+	</programme>
+	<programme start="20250918213700 +0000" stop="20250918232100 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">De sangre chicana</title>
+		<desc lang="en">Un padre y sus tres hijos viven en la frontera de los Estados Unidos, abren un pequeño negocio e intentan adaptarse a las costumbres locales.</desc>
+		<credits>
+			<director>Joselito Rodríguez</director>
+			<actor>José Romay</actor>
+			<actor>José Chávez</actor>
+			<actor>Elizabeth Dupeyrón</actor>
+			<actor>Aída Araceli</actor>
+			<actor>Marcelo Villamil</actor>
+		</credits>
+		<date>1974</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Action</category>
+		<length units="seconds">5520</length>
+		<episode-num system="dd_progid">MV00087372.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250918232100 +0000" stop="20250919011300 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">Un sábado más</title>
+		<desc lang="en">Un grupo de jóvenes motociclistas compiten en una carrera peligrosa e inician un apasionado triángulo amoroso.</desc>
+		<credits>
+			<director>Sergio Véjar</director>
+			<actor>Pedrito Fernández</actor>
+			<actor>Tatiana</actor>
+			<actor>José Elías Moreno</actor>
+			<actor>Adela Noriega</actor>
+			<actor>Gilberto Trujillo</actor>
+			<actor>Jaime Santos</actor>
+			<actor>Gabriela Hassel</actor>
+			<actor>Alfredo García Márquez</actor>
+			<actor>Chucho Zarzosa</actor>
+			<writer>Kiki Galindo</writer>
+		</credits>
+		<date>1986</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Action</category>
+		<length units="seconds">6000</length>
+		<episode-num system="dd_progid">MV00032254.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250919011300 +0000" stop="20250919025700 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">La pequeña enemiga</title>
+		<desc lang="en">Una niña trata de salvar su hogar y llena de ira se enfrenta a la amante del padre para que lo deje en paz.</desc>
+		<credits>
+			<director>Joselito Rodríguez</director>
+			<actor>Titina Romay</actor>
+			<actor>Pepito Romay</actor>
+			<actor>Carmen Montejo</actor>
+			<actor>Enrique Rambal</actor>
+			<actor>José Pulido</actor>
+			<actor>Eduardo Alcaraz</actor>
+		</credits>
+		<date>1956</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Drama</category>
+		<length units="seconds">5520</length>
+		<episode-num system="dd_progid">MV00130612.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250919025700 +0000" stop="20250919042800 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">La sombra de los hijos</title>
+		<desc lang="en">Una viuda sabe que pronto morirá y trata de dejar bien a sus hijos, a cada uno de ellos lo saca de serios problemas.</desc>
+		<credits>
+			<director>Rafael Baledón</director>
+			<actor>Marga López</actor>
+			<actor>Lalo</actor>
+			<actor>Angélica María</actor>
+			<actor>Olivia Michel</actor>
+			<actor>Oscar Madrigal</actor>
+			<actor>Columba Domínguez</actor>
+			<actor>Sergio Bustamante</actor>
+			<actor>Joaquín Cordero</actor>
+			<actor>José Baviera</actor>
+			<actor>Antonio Dávila</actor>
+			<actor>Antonio Raxel</actor>
+			<actor>José María Fernández Unsaín</actor>
+			<actor>Ignacio Torres</actor>
+			<actor>Sergio Guerrero</actor>
+		</credits>
+		<date>1964</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Drama</category>
+		<length units="seconds">5100</length>
+		<episode-num system="dd_progid">MV00023421.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250919042800 +0000" stop="20250919060200 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">El suavecito</title>
+		<desc lang="en">Un hombre es novio de su vecina y viaja con unas turistas para sacarles dinero, para que lo perdone la lleva a bailar.</desc>
+		<credits>
+			<director>Fernando Méndez</director>
+			<actor>Víctor Parra</actor>
+			<actor>Aurora Segura</actor>
+			<actor>Dagoberto Rodríguez</actor>
+			<actor>Jacqueline Evans</actor>
+			<actor>Enrique del Castillo</actor>
+			<actor>Gilberto González</actor>
+			<actor>Eduardo Arozamena</actor>
+			<actor>Federico Curiel</actor>
+			<actor>María Amelia De Torres</actor>
+			<actor>Manuel Dondé</actor>
+			<actor>Alicia Gamboa</actor>
+			<actor>Manuel Gómez Urquiza</actor>
+			<actor>Carlos Savage</actor>
+			<actor>Gustavo César Carrión</actor>
+			<producer>Raúl de Anda</producer>
+		</credits>
+		<date>1951</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Drama</category>
+		<length units="seconds">5340</length>
+		<episode-num system="dd_progid">MV00089813.0000</episode-num>
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>B</value>
+		</rating>
+		<rating system="Goed Gezien">
+			<value>AL</value>
+		</rating>
+	</programme>
+	<programme start="20250919060200 +0000" stop="20250919074600 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">El complot Mongol</title>
+		<desc lang="en">Un policía mexicano investiga un complot para asesinar al presidente de los Estados Unidos quien está de visita en México.</desc>
+		<credits>
+			<director>Antonio Eceiza</director>
+			<actor>Pedro Armendáriz Jr.</actor>
+			<actor>Ernesto Gómez Cruz</actor>
+			<actor>Fernando Balzaretti</actor>
+			<actor>Blanca Guerra</actor>
+			<actor>Tito Junco</actor>
+			<actor>Claudio Obregón</actor>
+			<actor>David Robichoux</actor>
+			<actor>Erika Carlsson</actor>
+			<actor>Malena Doria</actor>
+			<actor>Noé Murayama</actor>
+			<actor>Elsa Benn</actor>
+			<actor>Badir Yapur</actor>
+		</credits>
+		<date>1978</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Action</category>
+		<category lang="en">Drama</category>
+		<category lang="en">Mystery</category>
+		<category lang="en">Thriller</category>
+		<length units="seconds">6300</length>
+		<episode-num system="dd_progid">MV00023006.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>B</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>C</value>
+		</rating>
+	</programme>
+	<programme start="20250919074600 +0000" stop="20250919092900 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">El diablo no tiene sexo</title>
+		<desc lang="en">Un apuesto hombre divertido y seductor intenta conquistar a una bella joven, que resulta ser un travesti.</desc>
+		<credits>
+			<director>Victor Manuel Castro</director>
+			<actor>Rafael Inclán</actor>
+			<actor>César Bono</actor>
+			<actor>Polo Ortín</actor>
+			<actor>Karla Barahona</actor>
+			<actor>Fernanda Reto</actor>
+			<actor>Vanessa Yudic</actor>
+			<actor>Carla Zapien</actor>
+		</credits>
+		<date>1995</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Comedy</category>
+		<length units="seconds">5400</length>
+		<episode-num system="dd_progid">MV00134551.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>C</value>
+		</rating>
+		<rating system="advisory">
+			<value>Adult Language</value>
+		</rating>
+		<rating system="advisory">
+			<value>Nudity</value>
+		</rating>
+		<rating system="advisory">
+			<value>Strong Sexual Content</value>
+		</rating>
+	</programme>
+	<programme start="20250919092900 +0000" stop="20250919110000 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">Vuelta al Paraíso</title>
+		<desc lang="en">Todos los hombres que llegan una pequeña la isla se enamoran de las hijas de un viejo pescador que allí viven.</desc>
+		<credits>
+			<director>Gilberto Martínez Solares</director>
+			<actor>Lilia Prado</actor>
+			<actor>Sergio Bustamante</actor>
+			<actor>Ofelia Montesco</actor>
+			<actor>Andrés Soler</actor>
+			<actor>Rafael del Río</actor>
+			<actor>Juan García</actor>
+			<actor>Fernando Osés</actor>
+			<actor>Celia Viveros</actor>
+			<actor>Manuel Altolaguirre</actor>
+			<actor>Gilberto Martínez Solares</actor>
+			<actor>Ezequiel Carrasco</actor>
+			<actor>Luis Hernández Bretón</actor>
+			<producer>Francisco Gómez</producer>
+		</credits>
+		<date>1959</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Drama</category>
+		<length units="seconds">4800</length>
+		<episode-num system="dd_progid">MV00037369.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250919110000 +0000" stop="20250919123000 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">Yo Soy Chucho el Roto</title>
+		<desc lang="en">El carpintero Jesús Arriaga se enamora de Erica Matilde, pero los tíos de ella se oponen a la relación y lo arrestan por robo. Se fuga de la cárcel y se convierte en un bandido generoso.</desc>
+		<credits>
+			<director>Alfredo Zacarías</director>
+			<actor>Manuel López Ochoa</actor>
+			<actor>Blanca Sánchez</actor>
+			<actor>María Eugenia Ríos</actor>
+			<actor>Susana Alexander</actor>
+			<actor>Freddy Fernández</actor>
+			<actor>Luciano Hernández de la Vega</actor>
+			<actor>Arturo Benavides</actor>
+			<actor>Guillermo Hernández</actor>
+		</credits>
+		<date>1970</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Drama</category>
+		<length units="seconds">4800</length>
+		<episode-num system="dd_progid">MV00518175.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+	</programme>
+	<programme start="20250919123000 +0000" stop="20250919140000 +0000" channel="I207.19736.schedulesdirect.org">
+		<title lang="en">El bueno para nada</title>
+		<desc lang="en">Capulina se dedica a arreglar aparatos, repartir periódicos y leche, y se convierte en héroe cuando desactiva una bomba.</desc>
+		<credits>
+			<director>Gilberto Martínez Solares</director>
+			<actor>Gaspar Henaine</actor>
+			<actor>Lina Marín</actor>
+			<actor>Susana Alexander</actor>
+			<actor>Pancho Córdova</actor>
+			<actor>Juan Gallardo</actor>
+			<actor>Enrique Ponton</actor>
+			<actor>Ivonne Govea</actor>
+			<actor>Jorge Casanova</actor>
+			<actor>Marcelo Villamil</actor>
+			<actor>Ricardo Adalid</actor>
+			<writer>Alfredo Zacarías</writer>
+		</credits>
+		<date>1970</date>
+		<category lang="en">Movie</category>
+		<category lang="en">Comedy</category>
+		<length units="seconds">5100</length>
+		<episode-num system="dd_progid">MV00132322.0000</episode-num>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
 		</rating>
 	</programme>
 	<programme start="20250918120700 +0000" stop="20250918135300 +0000" channel="I210.74016.schedulesdirect.org">
@@ -60104,6 +60743,481 @@
 		<rating system="방송통신심의위원회">
 			<value>15</value>
 		</rating>
+	</programme>
+	<programme start="20250918123000 +0000" stop="20250918130000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">WOBInterviews</title>
+		<desc lang="en">En entrevista con los líderes y expertos más influyentes en la gestión empresarial, se exploran las ideas y estrategias más innovadoras para hacer negocios.</desc>
+		<credits>
+			<presenter>Chris Stanley</presenter>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05125137.0000</episode-num>
+		<previously-shown start="20240506000000" />
+	</programme>
+	<programme start="20250918130000 +0000" stop="20250918133000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Design X Ray</title>
+		<desc lang="en">Una mirada a los procesos de pensamiento de diseñadores distinguidos para descubrir cómo ven el mundo y encuentran propuestas inéditas.</desc>
+		<category lang="en">Technology</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01868167.0000</episode-num>
+		<previously-shown start="20140205000000" />
+	</programme>
+	<programme start="20250918133000 +0000" stop="20250918140000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Experts in 7 minutes</title>
+		<desc lang="en">Expertos del mundo de los negocios charlan sobre sus experiencias y las claves para el éxito.</desc>
+		<category lang="en">Miniseries</category>
+		<category lang="en">How-to</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03192652.0000</episode-num>
+		<previously-shown start="20190401000000" />
+	</programme>
+	<programme start="20250918140000 +0000" stop="20250918143000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ideas on Stage</title>
+		<desc lang="en">Lo mejor del contenido presentado en los eventos de WOBI.</desc>
+		<credits>
+			<actor>Chris Stanley</actor>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH02411195.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250918143000 +0000" stop="20250918150000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ideas on Stage</title>
+		<desc lang="en">Lo mejor del contenido presentado en los eventos de WOBI.</desc>
+		<credits>
+			<actor>Chris Stanley</actor>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH02411195.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250918150000 +0000" stop="20250918153000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Mark it</title>
+		<desc lang="en">Serie que revisa los temas más relevantes para el marketing de hoy. Cómo hacer marketing para chicos, cómo vender a las mujeres, el poder de las ideas, por qué venden las celebridades, en qué consiste el marketing del entretenimiento y mucho más.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01486305.0000</episode-num>
+		<previously-shown start="20111010000000" />
+	</programme>
+	<programme start="20250918153000 +0000" stop="20250918160000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Spotlight</title>
+		<sub-title lang="en">Gary Hamel</sub-title>
+		<desc lang="en">Los mejores intelectuales, académicos y empresarios presentan una idea para la competición en el futuro ante un exigente público compuesto por ejecutivos y estudiantes calificados.</desc>
+		<category lang="en">Debate</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP01528308.0087</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250918160000 +0000" stop="20250918163000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ad Factory</title>
+		<desc lang="en">Un programa que muestra cómo los creativos crean los avisos y cuáles son los retos que las marcas y las agencias deben afrontar. Además lo que se proyecta en el futuro de la publicidad.</desc>
+		<category lang="en">Educational</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01056581.0000</episode-num>
+		<previously-shown start="20080513000000" />
+	</programme>
+	<programme start="20250918163000 +0000" stop="20250918170000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Innovation Lab</title>
+		<sub-title lang="en">Intelligent Machines</sub-title>
+		<desc lang="en">Los laboratorios del Massachusetts Institute of Technology logran avances sin pausa. Affectiva presenta su tecnología para leer emociones. Dekko, su proyecto de realidad aumentada para revolucionar los videojuegos.</desc>
+		<date>20150108</date>
+		<category lang="en">Travel</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1440</length>
+		<episode-num system="dd_progid">EP02010254.0015</episode-num>
+		<previously-shown start="20150108000000" />
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>10</value>
+		</rating>
+	</programme>
+	<programme start="20250918170000 +0000" stop="20250918180000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Revolution</title>
+		<sub-title lang="en">Bikes</sub-title>
+		<desc lang="en">Serie que retrata los productos más cotidianos que existen para revelar sus últimas tendencias y los secretos más sorprendentes. Los costados más innovadores de productos tan cotidianos como apasionantes.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP02413747.0002</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250918180000 +0000" stop="20250918183000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">World Innovation Enterprises</title>
+		<desc lang="en">Exhibición de empresas innovadoras y que producen cambios en Estados Unidos.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03636733.0000</episode-num>
+		<previously-shown start="20200928000000" />
+	</programme>
+	<programme start="20250918183000 +0000" stop="20250918190000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">WOBInterviews</title>
+		<desc lang="en">En entrevista con los líderes y expertos más influyentes en la gestión empresarial, se exploran las ideas y estrategias más innovadoras para hacer negocios.</desc>
+		<credits>
+			<presenter>Chris Stanley</presenter>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05125137.0000</episode-num>
+		<previously-shown start="20240506000000" />
+	</programme>
+	<programme start="20250918190000 +0000" stop="20250918193000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Design X Ray</title>
+		<desc lang="en">Una mirada a los procesos de pensamiento de diseñadores distinguidos para descubrir cómo ven el mundo y encuentran propuestas inéditas.</desc>
+		<category lang="en">Technology</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01868167.0000</episode-num>
+		<previously-shown start="20140205000000" />
+	</programme>
+	<programme start="20250918193000 +0000" stop="20250918200000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Experts in 7 minutes</title>
+		<desc lang="en">Expertos del mundo de los negocios charlan sobre sus experiencias y las claves para el éxito.</desc>
+		<category lang="en">Miniseries</category>
+		<category lang="en">How-to</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03192652.0000</episode-num>
+		<previously-shown start="20190401000000" />
+	</programme>
+	<programme start="20250918200000 +0000" stop="20250918203000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ideas on Stage</title>
+		<desc lang="en">Lo mejor del contenido presentado en los eventos de WOBI.</desc>
+		<credits>
+			<actor>Chris Stanley</actor>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH02411195.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250918203000 +0000" stop="20250918210000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ideas on Stage</title>
+		<desc lang="en">Lo mejor del contenido presentado en los eventos de WOBI.</desc>
+		<credits>
+			<actor>Chris Stanley</actor>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH02411195.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250918210000 +0000" stop="20250918213000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Mark it</title>
+		<desc lang="en">Serie que revisa los temas más relevantes para el marketing de hoy. Cómo hacer marketing para chicos, cómo vender a las mujeres, el poder de las ideas, por qué venden las celebridades, en qué consiste el marketing del entretenimiento y mucho más.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01486305.0000</episode-num>
+		<previously-shown start="20111010000000" />
+	</programme>
+	<programme start="20250918213000 +0000" stop="20250918220000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Spotlight</title>
+		<sub-title lang="en">Gary Hamel</sub-title>
+		<desc lang="en">Los mejores intelectuales, académicos y empresarios presentan una idea para la competición en el futuro ante un exigente público compuesto por ejecutivos y estudiantes calificados.</desc>
+		<category lang="en">Debate</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP01528308.0087</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250918220000 +0000" stop="20250918223000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ad Factory</title>
+		<desc lang="en">Un programa que muestra cómo los creativos crean los avisos y cuáles son los retos que las marcas y las agencias deben afrontar. Además lo que se proyecta en el futuro de la publicidad.</desc>
+		<category lang="en">Educational</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01056581.0000</episode-num>
+		<previously-shown start="20080513000000" />
+	</programme>
+	<programme start="20250918223000 +0000" stop="20250918230000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Innovation Lab</title>
+		<desc lang="en">Lo que se oculta detrás de la creatividad, el diseño, la tecnología y los modelos empresariales aplicados con éxito.</desc>
+		<category lang="en">Travel</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02010254.0000</episode-num>
+		<previously-shown start="20140802000000" />
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>10</value>
+		</rating>
+	</programme>
+	<programme start="20250918230000 +0000" stop="20250919000000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Revolution</title>
+		<sub-title lang="en">Coffee</sub-title>
+		<desc lang="en">Serie que retrata los productos más cotidianos que existen para revelar sus últimas tendencias y los secretos más sorprendentes. Los costados más innovadores de productos tan cotidianos como apasionantes.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP02413747.0003</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919000000 +0000" stop="20250919003000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">World Innovation Enterprises</title>
+		<desc lang="en">Exhibición de empresas innovadoras y que producen cambios en Estados Unidos.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03636733.0000</episode-num>
+		<previously-shown start="20200928000000" />
+	</programme>
+	<programme start="20250919003000 +0000" stop="20250919010000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">WOBInterviews</title>
+		<desc lang="en">En entrevista con los líderes y expertos más influyentes en la gestión empresarial, se exploran las ideas y estrategias más innovadoras para hacer negocios.</desc>
+		<credits>
+			<presenter>Chris Stanley</presenter>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05125137.0000</episode-num>
+		<previously-shown start="20240506000000" />
+	</programme>
+	<programme start="20250919010000 +0000" stop="20250919013000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Design X Ray</title>
+		<desc lang="en">Una mirada a los procesos de pensamiento de diseñadores distinguidos para descubrir cómo ven el mundo y encuentran propuestas inéditas.</desc>
+		<category lang="en">Technology</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01868167.0000</episode-num>
+		<previously-shown start="20140205000000" />
+	</programme>
+	<programme start="20250919013000 +0000" stop="20250919020000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Experts in 7 minutes</title>
+		<desc lang="en">Expertos del mundo de los negocios charlan sobre sus experiencias y las claves para el éxito.</desc>
+		<category lang="en">Miniseries</category>
+		<category lang="en">How-to</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03192652.0000</episode-num>
+		<previously-shown start="20190401000000" />
+	</programme>
+	<programme start="20250919020000 +0000" stop="20250919023000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ideas on Stage</title>
+		<sub-title lang="en">3 WBF México 2019</sub-title>
+		<desc lang="en">Lo mejor del contenido presentado en los eventos de WOBI.</desc>
+		<credits>
+			<actor>Chris Stanley</actor>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02411195.0013</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919023000 +0000" stop="20250919030000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ideas on Stage</title>
+		<desc lang="en">Lo mejor del contenido presentado en los eventos de WOBI.</desc>
+		<credits>
+			<actor>Chris Stanley</actor>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH02411195.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919030000 +0000" stop="20250919033000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Mark it</title>
+		<desc lang="en">Serie que revisa los temas más relevantes para el marketing de hoy. Cómo hacer marketing para chicos, cómo vender a las mujeres, el poder de las ideas, por qué venden las celebridades, en qué consiste el marketing del entretenimiento y mucho más.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01486305.0000</episode-num>
+		<previously-shown start="20111010000000" />
+	</programme>
+	<programme start="20250919033000 +0000" stop="20250919040000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Spotlight</title>
+		<sub-title lang="en">Rachel Botsman</sub-title>
+		<desc lang="en">Los mejores intelectuales, académicos y empresarios presentan una idea para la competición en el futuro ante un exigente público compuesto por ejecutivos y estudiantes calificados.</desc>
+		<date>20160601</date>
+		<category lang="en">Debate</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP01528308.0070</episode-num>
+		<episode-num system="xmltv_ns">2015.2.</episode-num>
+		<previously-shown start="20160601000000" />
+	</programme>
+	<programme start="20250919040000 +0000" stop="20250919043000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ad Factory</title>
+		<desc lang="en">Un programa que muestra cómo los creativos crean los avisos y cuáles son los retos que las marcas y las agencias deben afrontar. Además lo que se proyecta en el futuro de la publicidad.</desc>
+		<category lang="en">Educational</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01056581.0000</episode-num>
+		<previously-shown start="20080513000000" />
+	</programme>
+	<programme start="20250919043000 +0000" stop="20250919050000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Innovation Lab</title>
+		<desc lang="en">Lo que se oculta detrás de la creatividad, el diseño, la tecnología y los modelos empresariales aplicados con éxito.</desc>
+		<category lang="en">Travel</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02010254.0000</episode-num>
+		<previously-shown start="20140802000000" />
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>10</value>
+		</rating>
+	</programme>
+	<programme start="20250919050000 +0000" stop="20250919060000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Revolution</title>
+		<sub-title lang="en">Coffee</sub-title>
+		<desc lang="en">Serie que retrata los productos más cotidianos que existen para revelar sus últimas tendencias y los secretos más sorprendentes. Los costados más innovadores de productos tan cotidianos como apasionantes.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP02413747.0003</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919060000 +0000" stop="20250919063000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">World Innovation Enterprises</title>
+		<desc lang="en">Exhibición de empresas innovadoras y que producen cambios en Estados Unidos.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03636733.0000</episode-num>
+		<previously-shown start="20200928000000" />
+	</programme>
+	<programme start="20250919063000 +0000" stop="20250919070000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">WOBInterviews</title>
+		<desc lang="en">En entrevista con los líderes y expertos más influyentes en la gestión empresarial, se exploran las ideas y estrategias más innovadoras para hacer negocios.</desc>
+		<credits>
+			<presenter>Chris Stanley</presenter>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05125137.0000</episode-num>
+		<previously-shown start="20240506000000" />
+	</programme>
+	<programme start="20250919070000 +0000" stop="20250919073000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Design X Ray</title>
+		<desc lang="en">Una mirada a los procesos de pensamiento de diseñadores distinguidos para descubrir cómo ven el mundo y encuentran propuestas inéditas.</desc>
+		<category lang="en">Technology</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01868167.0000</episode-num>
+		<previously-shown start="20140205000000" />
+	</programme>
+	<programme start="20250919073000 +0000" stop="20250919080000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Experts in 7 minutes</title>
+		<desc lang="en">Expertos del mundo de los negocios charlan sobre sus experiencias y las claves para el éxito.</desc>
+		<category lang="en">Miniseries</category>
+		<category lang="en">How-to</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03192652.0000</episode-num>
+		<previously-shown start="20190401000000" />
+	</programme>
+	<programme start="20250919080000 +0000" stop="20250919083000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ideas on Stage</title>
+		<sub-title lang="en">3 WBF México 2019</sub-title>
+		<desc lang="en">Lo mejor del contenido presentado en los eventos de WOBI.</desc>
+		<credits>
+			<actor>Chris Stanley</actor>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02411195.0013</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919083000 +0000" stop="20250919090000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ideas on Stage</title>
+		<desc lang="en">Lo mejor del contenido presentado en los eventos de WOBI.</desc>
+		<credits>
+			<actor>Chris Stanley</actor>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH02411195.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919090000 +0000" stop="20250919093000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Mark it</title>
+		<desc lang="en">Serie que revisa los temas más relevantes para el marketing de hoy. Cómo hacer marketing para chicos, cómo vender a las mujeres, el poder de las ideas, por qué venden las celebridades, en qué consiste el marketing del entretenimiento y mucho más.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01486305.0000</episode-num>
+		<previously-shown start="20111010000000" />
+	</programme>
+	<programme start="20250919093000 +0000" stop="20250919100000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Spotlight</title>
+		<sub-title lang="en">Rachel Botsman</sub-title>
+		<desc lang="en">Los mejores intelectuales, académicos y empresarios presentan una idea para la competición en el futuro ante un exigente público compuesto por ejecutivos y estudiantes calificados.</desc>
+		<date>20160601</date>
+		<category lang="en">Debate</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP01528308.0070</episode-num>
+		<episode-num system="xmltv_ns">2015.2.</episode-num>
+		<previously-shown start="20160601000000" />
+	</programme>
+	<programme start="20250919100000 +0000" stop="20250919103000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Ad Factory</title>
+		<desc lang="en">Un programa que muestra cómo los creativos crean los avisos y cuáles son los retos que las marcas y las agencias deben afrontar. Además lo que se proyecta en el futuro de la publicidad.</desc>
+		<category lang="en">Educational</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01056581.0000</episode-num>
+		<previously-shown start="20080513000000" />
+	</programme>
+	<programme start="20250919103000 +0000" stop="20250919110000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Innovation Lab</title>
+		<desc lang="en">Lo que se oculta detrás de la creatividad, el diseño, la tecnología y los modelos empresariales aplicados con éxito.</desc>
+		<category lang="en">Travel</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02010254.0000</episode-num>
+		<previously-shown start="20140802000000" />
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>10</value>
+		</rating>
+	</programme>
+	<programme start="20250919110000 +0000" stop="20250919120000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Revolution</title>
+		<sub-title lang="en">Coffee</sub-title>
+		<desc lang="en">Serie que retrata los productos más cotidianos que existen para revelar sus últimas tendencias y los secretos más sorprendentes. Los costados más innovadores de productos tan cotidianos como apasionantes.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP02413747.0003</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919120000 +0000" stop="20250919123000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">World Innovation Enterprises</title>
+		<desc lang="en">Exhibición de empresas innovadoras y que producen cambios en Estados Unidos.</desc>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03636733.0000</episode-num>
+		<previously-shown start="20200928000000" />
+	</programme>
+	<programme start="20250919123000 +0000" stop="20250919130000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">WOBInterviews</title>
+		<desc lang="en">En entrevista con los líderes y expertos más influyentes en la gestión empresarial, se exploran las ideas y estrategias más innovadoras para hacer negocios.</desc>
+		<credits>
+			<presenter>Chris Stanley</presenter>
+		</credits>
+		<category lang="en">Bus./financial</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05125137.0000</episode-num>
+		<previously-shown start="20240506000000" />
+	</programme>
+	<programme start="20250919130000 +0000" stop="20250919133000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Design X Ray</title>
+		<desc lang="en">Una mirada a los procesos de pensamiento de diseñadores distinguidos para descubrir cómo ven el mundo y encuentran propuestas inéditas.</desc>
+		<category lang="en">Technology</category>
+		<category lang="en">Bus./financial</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01868167.0000</episode-num>
+		<previously-shown start="20140205000000" />
+	</programme>
+	<programme start="20250919133000 +0000" stop="20250919140000 +0000" channel="I772.59014.schedulesdirect.org">
+		<title lang="en">Experts in 7 minutes</title>
+		<desc lang="en">Expertos del mundo de los negocios charlan sobre sus experiencias y las claves para el éxito.</desc>
+		<category lang="en">Miniseries</category>
+		<category lang="en">How-to</category>
+		<category lang="en">Interview</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03192652.0000</episode-num>
+		<previously-shown start="20190401000000" />
 	</programme>
 	<programme start="20250918100000 +0000" stop="20250918130000 +0000" channel="I353.71799.schedulesdirect.org">
 		<title lang="en">Bloomberg Surveillance [NEW]</title>
