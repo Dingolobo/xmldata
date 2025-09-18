@@ -1,0 +1,2579 @@
+<?xml version='1.0' encoding='utf-8'?>
+<tv source-info-name="Schedules Direct" generator-info-name="mc2xml" generator-info-url="mailto:mc2xml@gmail.com">
+	<channel id="I3.62161.schedulesdirect.org">
+		<display-name>HOLATV</display-name>
+		<display-name>3 HOLATV</display-name>
+		<display-name>3</display-name>
+		<display-name>¡HOLA! TV</display-name>
+		<icon src="https://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s82970_dark_360w_270h.png" width="360" height="270" />
+	</channel>
+	<channel id="I7.87004.schedulesdirect.org">
+		<display-name>AEMXHD</display-name>
+		<display-name>7 AEMXHD</display-name>
+		<display-name>7</display-name>
+		<display-name>A&amp;E</display-name>
+		<icon src="https://schedulesdirect-api20141201-logos.s3.dualstack.us-east-1.amazonaws.com/stationLogos/s10035_dark_360w_270h.png" width="360" height="270" />
+	</channel>
+	<programme start="20250918123000 +0000" stop="20250918130000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Videofashion! Models</title>
+		<desc lang="en">Las noticias mas actuales del mundo de la moda, presentando ediciones de Modelos, Diseñadores y Especiales.</desc>
+		<credits>
+			<producer>Marlene Cardin</producer>
+			<producer>Elizabeth Uss</producer>
+		</credits>
+		<category lang="en">Fashion</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01800305.0000</episode-num>
+		<previously-shown />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918130000 +0000" stop="20250918133000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Programa pagado</title>
+		<desc lang="en">Programa que muestra diversos productos para la venta.</desc>
+		<category lang="en">Shopping</category>
+		<category lang="en">Consumer</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH00019331.0000</episode-num>
+		<previously-shown />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>L</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250918133000 +0000" stop="20250918140000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Programa pagado</title>
+		<desc lang="en">Programa que muestra diversos productos para la venta.</desc>
+		<category lang="en">Shopping</category>
+		<category lang="en">Consumer</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH00019331.0000</episode-num>
+		<previously-shown />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>L</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250918140000 +0000" stop="20250918150000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Las reinas del shopping</title>
+		<desc lang="en">Un programa sobre compra de prendas de vestir, donde cinco mujeres deben competir con un tiempo y un presupuesto limitado para conseguir un atuendo completo.</desc>
+		<credits>
+			<presenter>Cristina Córdula</presenter>
+		</credits>
+		<category lang="en">Fashion</category>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH03035070.0000</episode-num>
+		<previously-shown start="20180903000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918150000 +0000" stop="20250918160000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">La hora Hola</title>
+		<desc lang="en">Entrevistas exclusivas con los artistas del momento, glamour, moda, lujo sobre la farándula internacional y la realeza.</desc>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02628500.0000</episode-num>
+		<previously-shown start="20170306000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918160000 +0000" stop="20250918170000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Íntimo y personal</title>
+		<desc lang="en">Un espacio dedicado a profundizar en la vida de personalidades destacadas e indagar en sus aspectos más íntimos.</desc>
+		<category lang="en">Entertainment</category>
+		<category lang="en">Biography</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH03192950.0000</episode-num>
+		<previously-shown start="20190405000000" />
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>TP</value>
+		</rating>
+	</programme>
+	<programme start="20250918170000 +0000" stop="20250918180000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Íntimo y personal</title>
+		<desc lang="en">Un espacio dedicado a profundizar en la vida de personalidades destacadas e indagar en sus aspectos más íntimos.</desc>
+		<category lang="en">Entertainment</category>
+		<category lang="en">Biography</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH03192950.0000</episode-num>
+		<previously-shown start="20190405000000" />
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>TP</value>
+		</rating>
+	</programme>
+	<programme start="20250918180000 +0000" stop="20250918183000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Videofashion Specials</title>
+		<desc lang="en">Las noticias más actuales del mundo de la moda.</desc>
+		<credits>
+			<actor>Amanda Pizziconi</actor>
+			<producer>Marlene Cardin</producer>
+		</credits>
+		<category lang="en">Fashion</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03755140.0000</episode-num>
+		<previously-shown />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918183000 +0000" stop="20250918193000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">¡Hola! TV Iconos</title>
+		<sub-title lang="en">Victoria Beckham</sub-title>
+		<desc lang="en">Mujer de negocios, diseñadora de modas, modelo y cantante; llegó a la fama con el grupo pop de solo mujeres Spice Girls y ahora como solista ha alcanzado el puesto número dos en el Reino Unido con su sencillo Out of Your Mind.</desc>
+		<date>20150305</date>
+		<category lang="en">Biography</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02335154.0099</episode-num>
+		<episode-num system="xmltv_ns">0.11.</episode-num>
+		<previously-shown start="20150305000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918193000 +0000" stop="20250918203000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">¡Hola! TV Iconos</title>
+		<sub-title lang="en">Rocío Jurado</sub-title>
+		<desc lang="en">La historia y trayectoria de la reconocida cantante Rocío Jurado.</desc>
+		<category lang="en">Biography</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02335154.0073</episode-num>
+		<episode-num system="xmltv_ns">0.16.</episode-num>
+		<previously-shown />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918203000 +0000" stop="20250918210000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Coronas y palacios</title>
+		<desc lang="en">Un recorrido por el mundo de la realeza. Una mirada a la vida de los representantes más importantes de las monarquías.</desc>
+		<credits>
+			<director>Adolfo Alvarez</director>
+			<presenter>Adolfo Alvarez</presenter>
+		</credits>
+		<category lang="en">Documentary</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03207770.0000</episode-num>
+		<previously-shown start="20190504000000" />
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>TP</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250918210000 +0000" stop="20250918213000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Gotha</title>
+		<desc lang="en">Un recorrido por las monarquías europeas y mundiales, a través de un dossier, un punto de vista, un encuentro, una tendencia y una cuestión real, planteada por Ange-Victoria.</desc>
+		<credits>
+			<presenter>Patrick Weber</presenter>
+		</credits>
+		<category lang="en">Entertainment</category>
+		<category lang="en">Newsmagazine</category>
+		<length units="seconds">1860</length>
+		<episode-num system="dd_progid">SH04910402.0000</episode-num>
+		<previously-shown start="20221021000000" />
+	</programme>
+	<programme start="20250918213000 +0000" stop="20250918220000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Top de estilo</title>
+		<desc lang="en">Un análisis detallado del estilo de las grandes estrellas del espectáculo en un recorrido por las alfombras rojas, las premieres y los eventos más exclusivos.</desc>
+		<category lang="en">Fashion</category>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03486004.0000</episode-num>
+		<previously-shown start="20200413000000" />
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250918220000 +0000" stop="20250918223000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">La lista VIP</title>
+		<desc lang="en">Una mirada íntima a los hobbies, rutinas de belleza, vacaciones y todo lo que los ricos y famosos disfrutan en su vida cotidiana.</desc>
+		<category lang="en">Variety</category>
+		<category lang="en">Entertainment</category>
+		<category lang="en">Biography</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05776155.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250918223000 +0000" stop="20250918230000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Tendencias SXXI</title>
+		<desc lang="en">La creatividad francesa siempre ha sido fértil en los terrenos de la moda, la artesanía, el diseño, la belleza y la gastronomía.</desc>
+		<credits>
+			<director>Viviane Blassel</director>
+		</credits>
+		<category lang="en">Fashion</category>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02390910.0000</episode-num>
+		<previously-shown start="20160321000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918230000 +0000" stop="20250919000000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Las reinas del shopping</title>
+		<desc lang="en">Un programa sobre compra de prendas de vestir, donde cinco mujeres deben competir con un tiempo y un presupuesto limitado para conseguir un atuendo completo.</desc>
+		<credits>
+			<presenter>Cristina Córdula</presenter>
+		</credits>
+		<category lang="en">Fashion</category>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH03035070.0000</episode-num>
+		<previously-shown start="20180903000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919000000 +0000" stop="20250919010000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">La hora Hola</title>
+		<desc lang="en">Entrevistas exclusivas con los artistas del momento, glamour, moda, lujo sobre la farándula internacional y la realeza.</desc>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02628500.0000</episode-num>
+		<previously-shown start="20170306000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919010000 +0000" stop="20250919013000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Sí, quiero</title>
+		<desc lang="en">Un programa sobre el amor y el compromiso desde la perspectiva de las novias, los novios y las familias.</desc>
+		<category lang="en">Reality</category>
+		<category lang="en">Interview</category>
+		<category lang="en">Self improvement</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05860435.0000</episode-num>
+		<previously-shown start="20250501000000" />
+	</programme>
+	<programme start="20250919013000 +0000" stop="20250919020000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Sí quiero, otra vez</title>
+		<desc lang="en">Parejas felices tienen una segunda oportunidad para disfrutar de la boda ideal ya que la primera vez ese sueño no se materializó.</desc>
+		<credits>
+			<presenter>Jessica Mulroney</presenter>
+		</credits>
+		<category lang="en">Reality</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05407771.0000</episode-num>
+		<previously-shown start="20200322000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919020000 +0000" stop="20250919030000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Las reinas del shopping</title>
+		<desc lang="en">Un programa sobre compra de prendas de vestir, donde cinco mujeres deben competir con un tiempo y un presupuesto limitado para conseguir un atuendo completo.</desc>
+		<credits>
+			<presenter>Cristina Córdula</presenter>
+		</credits>
+		<category lang="en">Fashion</category>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH03035070.0000</episode-num>
+		<previously-shown start="20180903000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919030000 +0000" stop="20250919040000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">La hora Hola</title>
+		<desc lang="en">Entrevistas exclusivas con los artistas del momento, glamour, moda, lujo sobre la farándula internacional y la realeza.</desc>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02628500.0000</episode-num>
+		<previously-shown start="20170306000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919040000 +0000" stop="20250919043000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Sí, quiero</title>
+		<desc lang="en">Un programa sobre el amor y el compromiso desde la perspectiva de las novias, los novios y las familias.</desc>
+		<category lang="en">Reality</category>
+		<category lang="en">Interview</category>
+		<category lang="en">Self improvement</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05860435.0000</episode-num>
+		<previously-shown start="20250501000000" />
+	</programme>
+	<programme start="20250919043000 +0000" stop="20250919050000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Sí quiero, otra vez</title>
+		<desc lang="en">Parejas felices tienen una segunda oportunidad para disfrutar de la boda ideal ya que la primera vez ese sueño no se materializó.</desc>
+		<credits>
+			<presenter>Jessica Mulroney</presenter>
+		</credits>
+		<category lang="en">Reality</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05407771.0000</episode-num>
+		<previously-shown start="20200322000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919050000 +0000" stop="20250919053000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Cóctel de noticias</title>
+		<desc lang="en">Un toque de celebridades, un poco de realeza, destellos de moda. Los ingredientes imprescindibles para un cóctel de noticias.</desc>
+		<category lang="en">Newsmagazine</category>
+		<category lang="en">Entertainment</category>
+		<category lang="en">Fashion</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05963973.0000</episode-num>
+		<previously-shown start="20250803000000" />
+	</programme>
+	<programme start="20250919053000 +0000" stop="20250919060000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">La lista VIP</title>
+		<desc lang="en">Una mirada íntima a los hobbies, rutinas de belleza, vacaciones y todo lo que los ricos y famosos disfrutan en su vida cotidiana.</desc>
+		<category lang="en">Variety</category>
+		<category lang="en">Entertainment</category>
+		<category lang="en">Biography</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05776155.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919060000 +0000" stop="20250919063000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Sí, quiero</title>
+		<desc lang="en">Un programa sobre el amor y el compromiso desde la perspectiva de las novias, los novios y las familias.</desc>
+		<category lang="en">Reality</category>
+		<category lang="en">Interview</category>
+		<category lang="en">Self improvement</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05860435.0000</episode-num>
+		<previously-shown start="20250501000000" />
+	</programme>
+	<programme start="20250919063000 +0000" stop="20250919070000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Tendencias SXXI</title>
+		<desc lang="en">La creatividad francesa siempre ha sido fértil en los terrenos de la moda, la artesanía, el diseño, la belleza y la gastronomía.</desc>
+		<credits>
+			<director>Viviane Blassel</director>
+		</credits>
+		<category lang="en">Fashion</category>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02390910.0000</episode-num>
+		<previously-shown start="20160321000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919070000 +0000" stop="20250919080000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Las reinas del shopping</title>
+		<desc lang="en">Un programa sobre compra de prendas de vestir, donde cinco mujeres deben competir con un tiempo y un presupuesto limitado para conseguir un atuendo completo.</desc>
+		<credits>
+			<presenter>Cristina Córdula</presenter>
+		</credits>
+		<category lang="en">Fashion</category>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">SH03035070.0000</episode-num>
+		<previously-shown start="20180903000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919080000 +0000" stop="20250919090000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">La hora Hola</title>
+		<desc lang="en">Entrevistas exclusivas con los artistas del momento, glamour, moda, lujo sobre la farándula internacional y la realeza.</desc>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02628500.0000</episode-num>
+		<previously-shown start="20170306000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919090000 +0000" stop="20250919093000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">La lista VIP</title>
+		<desc lang="en">Una mirada íntima a los hobbies, rutinas de belleza, vacaciones y todo lo que los ricos y famosos disfrutan en su vida cotidiana.</desc>
+		<category lang="en">Variety</category>
+		<category lang="en">Entertainment</category>
+		<category lang="en">Biography</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05776155.0000</episode-num>
+		<previously-shown />
+	</programme>
+	<programme start="20250919093000 +0000" stop="20250919100000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Sí, quiero</title>
+		<desc lang="en">Un programa sobre el amor y el compromiso desde la perspectiva de las novias, los novios y las familias.</desc>
+		<category lang="en">Reality</category>
+		<category lang="en">Interview</category>
+		<category lang="en">Self improvement</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH05860435.0000</episode-num>
+		<previously-shown start="20250501000000" />
+	</programme>
+	<programme start="20250919100000 +0000" stop="20250919110000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">La hora Hola</title>
+		<desc lang="en">Entrevistas exclusivas con los artistas del momento, glamour, moda, lujo sobre la farándula internacional y la realeza.</desc>
+		<category lang="en">Entertainment</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH02628500.0000</episode-num>
+		<previously-shown start="20170306000000" />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919110000 +0000" stop="20250919113000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Coronas y palacios</title>
+		<desc lang="en">Un recorrido por el mundo de la realeza. Una mirada a la vida de los representantes más importantes de las monarquías.</desc>
+		<credits>
+			<director>Adolfo Alvarez</director>
+			<presenter>Adolfo Alvarez</presenter>
+		</credits>
+		<category lang="en">Documentary</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH03207770.0000</episode-num>
+		<previously-shown start="20190504000000" />
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>TP</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250919113000 +0000" stop="20250919120000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Programa pagado</title>
+		<desc lang="en">Programa que muestra diversos productos para la venta.</desc>
+		<category lang="en">Shopping</category>
+		<category lang="en">Consumer</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH00019331.0000</episode-num>
+		<previously-shown />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>L</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250919120000 +0000" stop="20250919123000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Programa pagado</title>
+		<desc lang="en">Programa que muestra diversos productos para la venta.</desc>
+		<category lang="en">Shopping</category>
+		<category lang="en">Consumer</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH00019331.0000</episode-num>
+		<previously-shown />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>L</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250919123000 +0000" stop="20250919130000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Videofashion! Models</title>
+		<desc lang="en">Las noticias mas actuales del mundo de la moda, presentando ediciones de Modelos, Diseñadores y Especiales.</desc>
+		<credits>
+			<producer>Marlene Cardin</producer>
+			<producer>Elizabeth Uss</producer>
+		</credits>
+		<category lang="en">Fashion</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH01800305.0000</episode-num>
+		<previously-shown />
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919130000 +0000" stop="20250919133000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Programa pagado</title>
+		<desc lang="en">Programa que muestra diversos productos para la venta.</desc>
+		<category lang="en">Shopping</category>
+		<category lang="en">Consumer</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH00019331.0000</episode-num>
+		<previously-shown />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>L</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250919133000 +0000" stop="20250919140000 +0000" channel="I3.62161.schedulesdirect.org">
+		<title lang="en">Programa pagado</title>
+		<desc lang="en">Programa que muestra diversos productos para la venta.</desc>
+		<category lang="en">Shopping</category>
+		<category lang="en">Consumer</category>
+		<category lang="en">Variety</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">SH00019331.0000</episode-num>
+		<previously-shown />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>G</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>G</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>L</value>
+		</rating>
+		<rating system="Dirección General de Radio, Televisión y Cinematografía">
+			<value>A</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVG</value>
+		</rating>
+	</programme>
+	<programme start="20250918125000 +0000" stop="20250918133500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Acumuladores compulsivos</title>
+		<sub-title lang="en">Carl</sub-title>
+		<desc lang="en">Cuando era niño, Carl y su madre buscaban en los botes de basura para ver qué cosas útiles podían encontrar. Ahora que vive solo, Carl pasa tiempo buscando en los botes de basura y ha convertido su casa y su jardín en un vertedero.</desc>
+		<credits>
+			<writer>Marcus Goodwin</writer>
+			<producer>George Butts</producer>
+		</credits>
+		<date>20211108</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Health</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">7200</length>
+		<episode-num system="dd_progid">EP02432239.0215</episode-num>
+		<episode-num system="xmltv_ns">12.3.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20211108000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Medietilsynet">
+			<value>12 år</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918133500 +0000" stop="20250918140000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">Un buen momento para iluminarse</sub-title>
+		<desc lang="en">Lisa va a Huntington Beach, Darrell se toma su tiempo, Kenny tiene una buena racha y René apuesta a las cajas fuertes.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Jarrod Schulz</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dave Hester</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Brandon Sheets</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Casey Nezhoda</actor>
+			<actor>Emily Wears</actor>
+			<actor>Mary Padian</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Justin Bryant</actor>
+			<actor>Edwina Registre</actor>
+			<actor>Shana Dahan</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20220419</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1860</length>
+		<episode-num system="dd_progid">EP02370825.0589</episode-num>
+		<episode-num system="xmltv_ns">13.13.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20220419000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Goed Gezien">
+			<value>AL</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="Medietilsynet">
+			<value>A</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918140000 +0000" stop="20250918142500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">Amo a Lupe!</sub-title>
+		<desc lang="en">Las mujeres sobrepasan en número a los hombres en Rosamond, donde Dusty y su novia descubren un arsenal de recuerdos clásicos de la televisión.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Barry Weiss</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Ivy Calvin Jr.</actor>
+			<actor>Isaiah Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Lisa DeLarios</actor>
+			<actor>Dusty Riach</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Paul Buccieri</producer>
+			<producer>Jeff Hasler</producer>
+			<producer>Sean Gottlieb</producer>
+			<producer>Franklin Cumberbatch Jr.</producer>
+			<producer>Jeff Bumgarner</producer>
+			<producer>Ernest Avila</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20230620</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02370825.0600</episode-num>
+		<episode-num system="xmltv_ns">14.4.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20230620000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>T</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>7</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918142500 +0000" stop="20250918145000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">A la manera de Gam Gam</sub-title>
+		<desc lang="en">Lisa canaliza su abuela tratando de obtener un beneficio. Brandi está tratando con el día más frustrante nunca. Darrell intenta hacer una comida de un armario pequeño.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Barry Weiss</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Ivy Calvin Jr.</actor>
+			<actor>Isaiah Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Lisa DeLarios</actor>
+			<actor>Dusty Riach</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Paul Buccieri</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20230711</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1860</length>
+		<episode-num system="dd_progid">EP02370825.0606</episode-num>
+		<episode-num system="xmltv_ns">14.8.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20230711000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>T</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>7</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918145000 +0000" stop="20250918151500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">Ese verde no es dólar</sub-title>
+		<desc lang="en">En Stanton, René no logra buenos resultados, Dusty halla un tesoro y Brandi descubre que el pasto no siempre es más verde del otro lado.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Barry Weiss</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Ivy Calvin Jr.</actor>
+			<actor>Isaiah Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Lisa DeLarios</actor>
+			<actor>Dusty Riach</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Paul Buccieri</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20230613</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02370825.0602</episode-num>
+		<episode-num system="xmltv_ns">14.2.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20230613000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>T</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>7</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918151500 +0000" stop="20250918154500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¡Alto! Frontera</title>
+		<desc lang="en">Un acercamiento exclusivo al trabajo que se realiza en distintos puestos limítrofes de América Latina para poder detener a peligrosas organizaciones criminales que diariamente intentan cruzar las fronteras.</desc>
+		<credits>
+			<presenter>Julio Bracho</presenter>
+		</credits>
+		<date>20250328</date>
+		<category lang="en">Travel</category>
+		<category lang="en">Documentary</category>
+		<category lang="en">Nature</category>
+		<length units="seconds">1500</length>
+		<episode-num system="dd_progid">EP03594802.0053</episode-num>
+		<episode-num system="xmltv_ns">2.19.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20250328000000" />
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+	</programme>
+	<programme start="20250918154500 +0000" stop="20250918161000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Cam Alert: Captura exitosa</title>
+		<desc lang="en">Dos sujetos roban camioneta, intentan escapar y terminan atascados en un toldo. Un hombre es descubierto por olvidar cerrar la cajuela. Por último, las cámaras detectan a un joven que camina en medio de la avenida desorientado.</desc>
+		<credits>
+			<presenter>Francisco Zea</presenter>
+		</credits>
+		<date>20210310</date>
+		<category lang="en">Reality</category>
+		<length units="seconds">1500</length>
+		<episode-num system="dd_progid">EP03792199.0001</episode-num>
+		<episode-num system="xmltv_ns">0.11.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20210310000000" />
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+	</programme>
+	<programme start="20250918161000 +0000" stop="20250918163500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Patrulla policial</title>
+		<desc lang="en">Una persecución de alta velocidad y un choque en Washington; conducir bajo los efectos del alcohol en Carolina del Sur; un bebé que no responde en Indiana.</desc>
+		<date>20180517</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Law</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP05991996.0033</episode-num>
+		<episode-num system="xmltv_ns">1.4.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20180517000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250918163500 +0000" stop="20250918170000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Patrulla policial</title>
+		<desc lang="en">Un arresto por posesión de drogas y armas en Oklahoma; una sobredosis en Indiana; niños atrapados en un auto en Texas.</desc>
+		<date>20180517</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Law</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP05991996.0034</episode-num>
+		<episode-num system="xmltv_ns">1.5.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20180517000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250918170000 +0000" stop="20250918175000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">Novatos</sub-title>
+		<desc lang="en">En Nueva Orleans, un novato tarda meses en desentrañar un robo. En Phoenix, un detective primerizo con solo una pista rastrea un accidente. En Atlanta, el chico nuevo rastrea a los sospechosos en un negocio de drogas.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20201210</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03904129.0014</episode-num>
+		<episode-num system="xmltv_ns">0.4.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20201210000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250918175000 +0000" stop="20250918184000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">Lugar equivocado, momento equivocado</sub-title>
+		<desc lang="en">En Tulsa, un aparente caso de ira en la carretera sorprende a todos y la historia de un testigo de apuñalamiento suena demasiado inverosímil para ser cierta. En Texas, alguien muere durante un tiroteo en un establecimiento de lavado de autos.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20230504</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP03904129.0036</episode-num>
+		<episode-num system="xmltv_ns">1.8.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230504000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250918184000 +0000" stop="20250918193000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">Motivos impactantes</sub-title>
+		<desc lang="en">En Tulsa, una mujer es brutalmente atacada para vengarse de otra persona. En Dallas, un barbero es asesinado a tiros por alguien que lo saluda como si fueran amigos. Y en Atlanta, un hombre defiende a un amigo y se convierte en un blanco.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20230824</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP03904129.0037</episode-num>
+		<episode-num system="xmltv_ns">1.11.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230824000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Goed Gezien">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250918193000 +0000" stop="20250918202000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">Los profesionales</sub-title>
+		<desc lang="en">En Dallas, una mujer es brutalmente asesinada en su casa. En Memphis, un investigador experimentado busca convencer a un testigo crucial. En Dallas, un detective utiliza sus habilidades como interrogador para resolver un caso.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20230831</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP03904129.0034</episode-num>
+		<episode-num system="xmltv_ns">1.12.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230831000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Goed Gezien">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250918202000 +0000" stop="20250918211000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">En el nombre del amor</sub-title>
+		<desc lang="en">En Dallas, una pareja es asesinada en la puerta de su casa. En Louisville, un hombre con discapacidad auditiva es apuñalado. Y en Tulsa, el cuerpo de una mujer es encontrado en un bote de basura.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20230907</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03904129.0035</episode-num>
+		<episode-num system="xmltv_ns">1.13.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230907000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Goed Gezien">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250918211000 +0000" stop="20250918220000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48 horas</title>
+		<sub-title lang="en">Disparado</sub-title>
+		<desc lang="en">Un adolescente es encontrado muerto a tiros en la calle. Ahora, los detectives deberán averiguar quién es la víctima, quién tenía motivos para querer deshacerse de él, dónde lo mataron realmente y si tenía conexión con el narcotráfico.</desc>
+		<credits>
+			<producer>David Eilenberg</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Peter Tarshis</producer>
+			<producer>Laura Fleury</producer>
+			<producer>Maija Norris</producer>
+			<producer>John X. Kim</producer>
+			<producer>Alexis Robie</producer>
+			<producer>Rob Sharenow</producer>
+			<producer>David McKillop</producer>
+			<producer>Charles Tremayne</producer>
+			<producer>Nancy Dubuc</producer>
+			<producer>Andy Berg</producer>
+			<producer>David Mettler</producer>
+			<producer>Dierdre O'Hearn</producer>
+			<presenter>Dion Graham</presenter>
+		</credits>
+		<date>20221201</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<category lang="en">Law</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP02371977.0721</episode-num>
+		<episode-num system="xmltv_ns">22.3.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20221201000000" />
+		<subtitles type="teletext" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>MA 15+</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>16</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>12</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918220000 +0000" stop="20250918225000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48 horas</title>
+		<sub-title lang="en">Asesinato a medianoche</sub-title>
+		<desc lang="en">Unos detectives de Tulsa se dirigen a Texas para perseguir a dos sospechosos del asesinato de un joven padre de dos hijos.</desc>
+		<credits>
+			<producer>David Eilenberg</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Peter Tarshis</producer>
+			<producer>Laura Fleury</producer>
+			<producer>Maija Norris</producer>
+			<producer>John X. Kim</producer>
+			<producer>Alexis Robie</producer>
+			<producer>Rob Sharenow</producer>
+			<producer>David McKillop</producer>
+			<producer>Charles Tremayne</producer>
+			<producer>Nancy Dubuc</producer>
+			<producer>Andy Berg</producer>
+			<producer>David Mettler</producer>
+			<producer>Dierdre O'Hearn</producer>
+			<presenter>Dion Graham</presenter>
+		</credits>
+		<date>20230309</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<category lang="en">Law</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP02371977.0738</episode-num>
+		<episode-num system="xmltv_ns">22.7.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230309000000" />
+		<subtitles type="teletext" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>MA 15+</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>16</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>12</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918225000 +0000" stop="20250918234000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48 horas</title>
+		<sub-title lang="en">Fiesta en casa</sub-title>
+		<desc lang="en">Durante las celebraciones de su cumpleaños número veintiuno, un joven queda en medio de una balacera y pierde la vida en el condado de Gwinnett. Ahora, los detectives tendrán que poner todo de sí para encontrar a los responsables.</desc>
+		<credits>
+			<producer>David Eilenberg</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Peter Tarshis</producer>
+			<producer>Laura Fleury</producer>
+			<producer>Maija Norris</producer>
+			<producer>John X. Kim</producer>
+			<producer>Alexis Robie</producer>
+			<producer>Rob Sharenow</producer>
+			<producer>David McKillop</producer>
+			<producer>Charles Tremayne</producer>
+			<producer>Nancy Dubuc</producer>
+			<producer>Andy Berg</producer>
+			<producer>David Mettler</producer>
+			<producer>Dierdre O'Hearn</producer>
+			<presenter>Dion Graham</presenter>
+		</credits>
+		<date>20221208</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<category lang="en">Law</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP02371977.0722</episode-num>
+		<episode-num system="xmltv_ns">22.4.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20221208000000" />
+		<subtitles type="teletext" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>MA 15+</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>16</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>12</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250918234000 +0000" stop="20250919012000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48 horas</title>
+		<sub-title lang="en">Inocentes perdidos</sub-title>
+		<desc lang="en">Un incendio devastador, que en principio parecía accidental, se revela como un macabro triple asesinato, que incluye la muerte de una niña de apenas 7 años. La Unidad de Homicidios de Tulsa toma este caso de manera personal.</desc>
+		<credits>
+			<producer>David Eilenberg</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Peter Tarshis</producer>
+			<producer>Laura Fleury</producer>
+			<producer>Maija Norris</producer>
+			<producer>John X. Kim</producer>
+			<producer>Alexis Robie</producer>
+			<producer>Rob Sharenow</producer>
+			<producer>David McKillop</producer>
+			<producer>Charles Tremayne</producer>
+			<producer>Nancy Dubuc</producer>
+			<producer>Andy Berg</producer>
+			<producer>David Mettler</producer>
+			<producer>Dierdre O'Hearn</producer>
+			<presenter>Dion Graham</presenter>
+		</credits>
+		<date>20231228</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<category lang="en">Law</category>
+		<length units="seconds">7200</length>
+		<episode-num system="dd_progid">EP02371977.0744</episode-num>
+		<episode-num system="xmltv_ns">23.7.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20231228000000" />
+		<subtitles type="teletext" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>MA 15+</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>16</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>12</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919012000 +0000" stop="20250919015000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">La pista de Barry</sub-title>
+		<desc lang="en">Barry comparte sus secretos con Dusty, René encuentra artículos delicados y Darrell se emociona con un contenedor revelador.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Barry Weiss</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Ivy Calvin Jr.</actor>
+			<actor>Isaiah Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Lisa DeLarios</actor>
+			<actor>Dusty Riach</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Paul Buccieri</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20230613</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02370825.0605</episode-num>
+		<episode-num system="xmltv_ns">14.3.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20230613000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>T</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>7</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919015000 +0000" stop="20250919021500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">Brandi: La reina de la subasta</sub-title>
+		<desc lang="en">En West Covina, Brandi se hace con un terreno y le sale muy rentable. René no puede resistirse al misterio de una buena caja fuerte. Kenny no consigue saciar su hambre. Barry aprovecha una oportunidad para robar a la competencia.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Barry Weiss</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Ivy Calvin Jr.</actor>
+			<actor>Isaiah Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Lisa DeLarios</actor>
+			<actor>Dusty Riach</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20230606</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02370825.0601</episode-num>
+		<episode-num system="xmltv_ns">14.0.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20230606000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>T</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>7</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919021500 +0000" stop="20250919024500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">¡Qué loco! ¡Corbata bolo!</sub-title>
+		<desc lang="en">En Riverside, René se arriesga, Ivy encuentra tesoros raros y Darrell aprende que lo pequeño también puede ser valioso.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Barry Weiss</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Ivy Calvin Jr.</actor>
+			<actor>Isaiah Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Lisa DeLarios</actor>
+			<actor>Dusty Riach</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20230606</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02370825.0599</episode-num>
+		<episode-num system="xmltv_ns">14.1.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20230606000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>T</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>7</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919024500 +0000" stop="20250919031000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">Valiosas dispensadoras</sub-title>
+		<desc lang="en">Los compradores se dirigen a Palm Springs, en California en busca de mejores bienes. Kenny trata de aumentar la ganancia en una unidad poco impresionante. Rene busca rápido potencial donde otros no.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Barry Weiss</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Ivy Calvin Jr.</actor>
+			<actor>Isaiah Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Lisa DeLarios</actor>
+			<actor>Dusty Riach</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Paul Buccieri</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20230627</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1860</length>
+		<episode-num system="dd_progid">EP02370825.0598</episode-num>
+		<episode-num system="xmltv_ns">14.6.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20230627000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>T</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>7</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919031000 +0000" stop="20250919033500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Patrulla policial</title>
+		<desc lang="en">Una persecución de alta velocidad y un choque en Washington; conducir bajo los efectos del alcohol en Carolina del Sur; un bebé que no responde en Indiana.</desc>
+		<date>20180517</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Law</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP05991996.0033</episode-num>
+		<episode-num system="xmltv_ns">1.4.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20180517000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919033500 +0000" stop="20250919040000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Patrulla policial</title>
+		<desc lang="en">Un arresto por posesión de drogas y armas en Oklahoma; una sobredosis en Indiana; niños atrapados en un auto en Texas.</desc>
+		<date>20180517</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Law</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP05991996.0034</episode-num>
+		<episode-num system="xmltv_ns">1.5.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20180517000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919040000 +0000" stop="20250919042500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Patrulla policial</title>
+		<desc lang="en">Un choque de auto y una persecución a pie en Indiana; un tiroteo en Carolina del Sur.</desc>
+		<date>20180517</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Law</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP05991996.0035</episode-num>
+		<episode-num system="xmltv_ns">1.6.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20180517000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919042500 +0000" stop="20250919045000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Patrulla policial</title>
+		<desc lang="en">Persecución a pie en Carolina del Sur; un choque mortal de moto en Arizona.</desc>
+		<date>20180517</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Law</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP05991996.0036</episode-num>
+		<episode-num system="xmltv_ns">1.7.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20180517000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919045000 +0000" stop="20250919054000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Secretos de Bunny Ranch</title>
+		<desc lang="en">Dennis Hof y su burdel, el Moonlite Bunny Ranch, saltaron a la fama con la serie de HBO "Cathouse". Aunque la vida en el programa es retratada como una gran fiesta, la vida en el burdel es todo menos glamorosa.</desc>
+		<date>20250612</date>
+		<category lang="en">Documentary</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP05992017.0001</episode-num>
+		<episode-num system="xmltv_ns">0.0.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20250612000000" />
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+	</programme>
+	<programme start="20250919054000 +0000" stop="20250919063000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">GBL: Party Is Over</title>
+		<desc lang="en">El "sexo químico", en el que se utilizan drogas para intensificar las experiencias sexuales. Se centra en un caso en Italia, donde una droga mortal se ha propagado en la red oscura, involucrando a profesionales, celebridades y miembros del clero.</desc>
+		<category lang="en">Documentary</category>
+		<length units="seconds">3000</length>
+		<episode-num system="dd_progid">SH05991995.0000</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20250330000000" />
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+	</programme>
+	<programme start="20250919063000 +0000" stop="20250919072000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">Lugar equivocado, momento equivocado</sub-title>
+		<desc lang="en">En Tulsa, un aparente caso de ira en la carretera sorprende a todos y la historia de un testigo de apuñalamiento suena demasiado inverosímil para ser cierta. En Texas, alguien muere durante un tiroteo en un establecimiento de lavado de autos.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20230504</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP03904129.0036</episode-num>
+		<episode-num system="xmltv_ns">1.8.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230504000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919072000 +0000" stop="20250919081000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">Motivos impactantes</sub-title>
+		<desc lang="en">En Tulsa, una mujer es brutalmente atacada para vengarse de otra persona. En Dallas, un barbero es asesinado a tiros por alguien que lo saluda como si fueran amigos. Y en Atlanta, un hombre defiende a un amigo y se convierte en un blanco.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20230824</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP03904129.0037</episode-num>
+		<episode-num system="xmltv_ns">1.11.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230824000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Goed Gezien">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919081000 +0000" stop="20250919090000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">Los profesionales</sub-title>
+		<desc lang="en">En Dallas, una mujer es brutalmente asesinada en su casa. En Memphis, un investigador experimentado busca convencer a un testigo crucial. En Dallas, un detective utiliza sus habilidades como interrogador para resolver un caso.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20230831</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP03904129.0034</episode-num>
+		<episode-num system="xmltv_ns">1.12.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230831000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Goed Gezien">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919090000 +0000" stop="20250919094500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48: Minutos críticos</title>
+		<sub-title lang="en">En el nombre del amor</sub-title>
+		<desc lang="en">En Dallas, una pareja es asesinada en la puerta de su casa. En Louisville, un hombre con discapacidad auditiva es apuñalado. Y en Tulsa, el cuerpo de una mujer es encontrado en un bote de basura.</desc>
+		<credits>
+			<actor>Matt Frazier</actor>
+		</credits>
+		<date>20230907</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<length units="seconds">3600</length>
+		<episode-num system="dd_progid">EP03904129.0035</episode-num>
+		<episode-num system="xmltv_ns">1.13.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20230907000000" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>14+</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Goed Gezien">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919094500 +0000" stop="20250919103000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48 horas</title>
+		<sub-title lang="en">Fiesta en casa</sub-title>
+		<desc lang="en">Durante las celebraciones de su cumpleaños número veintiuno, un joven queda en medio de una balacera y pierde la vida en el condado de Gwinnett. Ahora, los detectives tendrán que poner todo de sí para encontrar a los responsables.</desc>
+		<credits>
+			<producer>David Eilenberg</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Peter Tarshis</producer>
+			<producer>Laura Fleury</producer>
+			<producer>Maija Norris</producer>
+			<producer>John X. Kim</producer>
+			<producer>Alexis Robie</producer>
+			<producer>Rob Sharenow</producer>
+			<producer>David McKillop</producer>
+			<producer>Charles Tremayne</producer>
+			<producer>Nancy Dubuc</producer>
+			<producer>Andy Berg</producer>
+			<producer>David Mettler</producer>
+			<producer>Dierdre O'Hearn</producer>
+			<presenter>Dion Graham</presenter>
+		</credits>
+		<date>20221208</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<category lang="en">Law</category>
+		<length units="seconds">3660</length>
+		<episode-num system="dd_progid">EP02371977.0722</episode-num>
+		<episode-num system="xmltv_ns">22.4.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20221208000000" />
+		<subtitles type="teletext" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>MA 15+</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>16</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>12</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919103000 +0000" stop="20250919120000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Las primeras 48 horas</title>
+		<sub-title lang="en">Inocentes perdidos</sub-title>
+		<desc lang="en">Un incendio devastador, que en principio parecía accidental, se revela como un macabro triple asesinato, que incluye la muerte de una niña de apenas 7 años. La Unidad de Homicidios de Tulsa toma este caso de manera personal.</desc>
+		<credits>
+			<producer>David Eilenberg</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Peter Tarshis</producer>
+			<producer>Laura Fleury</producer>
+			<producer>Maija Norris</producer>
+			<producer>John X. Kim</producer>
+			<producer>Alexis Robie</producer>
+			<producer>Rob Sharenow</producer>
+			<producer>David McKillop</producer>
+			<producer>Charles Tremayne</producer>
+			<producer>Nancy Dubuc</producer>
+			<producer>Andy Berg</producer>
+			<producer>David Mettler</producer>
+			<producer>Dierdre O'Hearn</producer>
+			<presenter>Dion Graham</presenter>
+		</credits>
+		<date>20231228</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Crime</category>
+		<category lang="en">Law</category>
+		<length units="seconds">7200</length>
+		<episode-num system="dd_progid">EP02371977.0744</episode-num>
+		<episode-num system="xmltv_ns">23.7.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20231228000000" />
+		<subtitles type="teletext" />
+		<rating system="Arcom">
+			<value>-10</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>MA 15+</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A14</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>16</value>
+		</rating>
+		<rating system="Instituto de Cinematografía y de las Artes Visuales">
+			<value>16</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>12</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>12</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>13+</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	<programme start="20250919120000 +0000" stop="20250919125000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Acumuladores compulsivos</title>
+		<sub-title lang="en">Carmen</sub-title>
+		<desc lang="en">Carmen sufre la pérdida de su marido y su trabajo. Estar solo en casa y no tener trabajo le provoca una ansiedad que desencadena un trastorno de acaparamiento y una adicción a las compras en línea.</desc>
+		<credits>
+			<writer>Marcus Goodwin</writer>
+			<producer>George Butts</producer>
+		</credits>
+		<date>20211115</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Health</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">7200</length>
+		<episode-num system="dd_progid">EP02432239.0216</episode-num>
+		<episode-num system="xmltv_ns">12.4.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20211115000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Medietilsynet">
+			<value>12 år</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919125000 +0000" stop="20250919133500 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">Acumuladores compulsivos</title>
+		<sub-title lang="en">Carmen</sub-title>
+		<desc lang="en">Carmen sufre la pérdida de su marido y su trabajo. Estar solo en casa y no tener trabajo le provoca una ansiedad que desencadena un trastorno de acaparamiento y una adicción a las compras en línea.</desc>
+		<credits>
+			<writer>Marcus Goodwin</writer>
+			<producer>George Butts</producer>
+		</credits>
+		<date>20211115</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Health</category>
+		<category lang="en">Documentary</category>
+		<length units="seconds">7200</length>
+		<episode-num system="dd_progid">EP02432239.0216</episode-num>
+		<episode-num system="xmltv_ns">12.4.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<previously-shown start="20211115000000" />
+		<subtitles type="teletext" />
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Mediakasvatus- ja kuvaohjelmayksikkö">
+			<value>K12</value>
+		</rating>
+		<rating system="Medietilsynet">
+			<value>12 år</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TV14</value>
+		</rating>
+	</programme>
+	<programme start="20250919133500 +0000" stop="20250919140000 +0000" channel="I7.87004.schedulesdirect.org">
+		<title lang="en">¿Quién da má$?</title>
+		<sub-title lang="en">La pista de Barry</sub-title>
+		<desc lang="en">Barry comparte sus secretos con Dusty, René encuentra artículos delicados y Darrell se emociona con un contenedor revelador.</desc>
+		<credits>
+			<actor>Darrell Sheets</actor>
+			<actor>Brandi Passante</actor>
+			<actor>Dan Dotson</actor>
+			<actor>Laura Dotson</actor>
+			<actor>Barry Weiss</actor>
+			<actor>Ivy Calvin</actor>
+			<actor>Ivy Calvin Jr.</actor>
+			<actor>Isaiah Calvin</actor>
+			<actor>Rene Nezhoda</actor>
+			<actor>Kenny Crossley</actor>
+			<actor>Lisa DeLarios</actor>
+			<actor>Dusty Riach</actor>
+			<producer>Thom Beers</producer>
+			<producer>Philip D. Segal</producer>
+			<producer>Robert Sharenow</producer>
+			<producer>Elaine Frontain Bryant</producer>
+			<producer>Paul Buccieri</producer>
+			<presenter>Thom Beers</presenter>
+		</credits>
+		<date>20230613</date>
+		<category lang="en">Reality</category>
+		<category lang="en">Auction</category>
+		<category lang="en">Collectibles</category>
+		<length units="seconds">1800</length>
+		<episode-num system="dd_progid">EP02370825.0605</episode-num>
+		<episode-num system="xmltv_ns">14.3.</episode-num>
+		<video>
+			<aspect>16:9</aspect>
+			<quality>HDTV</quality>
+		</video>
+		<audio>
+			<stereo>stereo</stereo>
+		</audio>
+		<previously-shown start="20230613000000" />
+		<rating system="Arcom">
+			<value>Tous publics</value>
+		</rating>
+		<rating system="Australian Classification Board">
+			<value>M</value>
+		</rating>
+		<rating system="Canadian Parental Rating">
+			<value>PG</value>
+		</rating>
+		<rating system="Departamento de Justiça, Classificação, Títulos e Qualificação">
+			<value>A12</value>
+		</rating>
+		<rating system="Freiwillige Selbstkontrolle der Filmwirtschaft">
+			<value>12</value>
+		</rating>
+		<rating system="Italy Content Provider Ratings">
+			<value>T</value>
+		</rating>
+		<rating system="Kijkwijzer">
+			<value>AL</value>
+		</rating>
+		<rating system="Krajowa Rada Radiofonii i Telewizji">
+			<value>7</value>
+		</rating>
+		<rating system="Régie du cinéma">
+			<value>G</value>
+		</rating>
+		<rating system="UK Content Provider">
+			<value>PG</value>
+		</rating>
+		<rating system="USA Parental Rating">
+			<value>TVPG</value>
+		</rating>
+	</programme>
+	</tv>
