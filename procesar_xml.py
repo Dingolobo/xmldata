@@ -1,8 +1,10 @@
 import xml.etree.ElementTree as ET
+import sys
 
-# Lista de IDs de canales que quieres conservar
+# Lista de IDs de canales que quieres conservar (modifica con tus IDs reales)
 canales_mexico = [
-    "I12.75278.schedulesdirect.org", "I7.87004.schedulesdirect.org"
+    "I7.87004.schedulesdirect.org",
+    "I3.62161.schedulesdirect.org"
 ]
 
 def filtrar_epg(input_xml, output_xml, canales_filtrar):
@@ -25,7 +27,6 @@ def filtrar_epg(input_xml, output_xml, canales_filtrar):
     tree.write(output_xml, encoding='utf-8', xml_declaration=True)
 
 if __name__ == "__main__":
-    import sys
     if len(sys.argv) != 3:
         print("Uso: python procesar_xml.py archivo_entrada.xml archivo_salida.xml")
         sys.exit(1)
