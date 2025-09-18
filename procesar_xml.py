@@ -69,7 +69,7 @@ canales_mexico = [
     "I718.65129.schedulesdirect.org",
     "I361.17672.schedulesdirect.org",
     "I561.50798.schedulesdirect.org",
-    "I727.16422.schedulesdirect.org";
+    "I727.16422.schedulesdirect.org",
     "I733.16217.schedulesdirect.org",
     "I739.84425.schedulesdirect.org",
 "I742.122767.schedulesdirect.org",
