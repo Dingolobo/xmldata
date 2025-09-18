@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 
 # Lista de IDs de canales que quieres conservar
 canales_mexico = [
-    "I7.87004.schedulesdirect.org", "I12.75278.schedulesdirect.org"
+    "I12.75278.schedulesdirect.org", "I7.87004.schedulesdirect.org"
 ]
 
 def filtrar_epg(input_xml, output_xml, canales_filtrar):
