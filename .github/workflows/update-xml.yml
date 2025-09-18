@@ -21,9 +21,9 @@ jobs:
       run: |
         python procesar_xml.py guia.xml guia_filtrada.xml
 
-    - name: Configurar git para push con token GITHUB_TOKEN
+    - name: Configurar git para push con token personal
       run: |
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Dingolobo/xmldata.git
+        git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/Dingolobo/xmldata.git
 
     - name: Commit y push cambios
       run: |
