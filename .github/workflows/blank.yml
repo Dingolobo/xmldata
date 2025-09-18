@@ -1,0 +1,34 @@
+name: Actualizar XML diario
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Ejecuta a medianoche UTC todos los días
+
+jobs:
+  update-xml:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Descargar XML
+      run: |
+        curl -o guia.xml https://raw.githubusercontent.com/acidjesuz/EPGTalk/master/guide.xml
+
+    - name: Procesar XML
+      run: |
+        # Aquí puedes ejecutar un script para procesar el XML
+        python procesar_xml.py guia.xml salida.xml
+
+    - name: Actualizar repo con XML procesado
+      run: |
+        git config user.name "github-actions"
+        git config user.email "actions@github.com"
+        mv salida.xml ruta/destino/guia.xml
+        git add ruta/destino/guia.xml
+        git commit -m "Actualizar guía EPG procesada"
+        git push
+      env:
+        # Necesitas un token con permisos para hacer push
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
