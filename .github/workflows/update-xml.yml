@@ -16,6 +16,7 @@ jobs:
     - name: Descargar XML
       run: |
         curl -o guia.xml https://raw.githubusercontent.com/acidjesuz/EPGTalk/master/guide.xml
+        curl -o guiamix.xml https://www.open-epg.com/generate/CDgwm3SqTb.xml
 
     - name: Procesar XML
       run: |
@@ -29,6 +30,6 @@ jobs:
       run: |
         git config user.name "github-actions"
         git config user.email "actions@github.com"
-        git add guia.xml guia_filtrada.xml
+        git add guia.xml guia_filtrada.xml guiamix
         git commit -m "Actualizar guía EPG procesada" || echo "No hay cambios para commitear"
         git push origin main
