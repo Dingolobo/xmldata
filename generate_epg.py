@@ -38,7 +38,7 @@ end_iso = f"{tomorrow}T04:59:00.000Z"  # Segunda fecha: Mañana 04:59Z
 
 # URL dinámica
 channels_str = ','.join(map(str, channel_ids))
-url = f'https://www.tvtv.us/api/v1/lineup/{lineup_id}/grid/{start_iso}/{end_iso}/{channels_str}'
+url = f'https://api.codetabs.com/v1/proxy?quest=https://www.tvtv.us/api/v1/lineup/{lineup_id}/grid/{start_iso}/{end_iso}/{channels_str}'
 
 print(f"Generando EPG para rango: {start_iso} a {end_iso}")
 print(f"URL generada: {url}")
