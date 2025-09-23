@@ -38,14 +38,22 @@ end_iso = f"{tomorrow}T04:59:00.000Z"  # Segunda fecha: Mañana 04:59Z
 
 # URL dinámica
 channels_str = ','.join(map(str, channel_ids))
-url = f'https://api.codetabs.com/v1/proxy?quest=https://www.tvtv.us/api/v1/lineup/{lineup_id}/grid/{start_iso}/{end_iso}/{channels_str}'
+url = f'https://www.tvtv.us/api/v1/lineup/{lineup_id}/grid/{start_iso}/{end_iso}/{channels_str}'
 
 print(f"Generando EPG para rango: {start_iso} a {end_iso}")
 print(f"URL generada: {url}")
 print(f"Canales: {len(channel_ids)} (IDs: {channels_str})")
 
-# Fetch JSON
-response = requests.get(url)
+# Headers para evitar bloqueos (simula un navegador; resuelve issues "CORS-like" o anti-bot)
+headers = {
+    'User -Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Referer': 'https://www.tvtv.us/'  # Opcional: Hace que parezca un request desde su sitio
+}
+
+# Fetch JSON con headers
+response = requests.get(url, headers=headers)
 if response.status_code != 200:
     print(f"Error fetching data: {response.status_code} - {response.text}")
     exit(1)
@@ -87,25 +95,21 @@ for idx, programs in enumerate(data):
         title = ET.SubElement(programme, 'title', lang='en')
         title.text = prog['title']
         
+        # Subtítulo (si existe)
         if 'subtitle' in prog:
             subtitle = ET.SubElement(programme, 'sub-title', lang='en')
             subtitle.text = prog['subtitle']
         
+        # Categoría (basada en type)
         category = ET.SubElement(programme, 'category', lang='en')
         category.text = 'Sports Filler' if prog['type'] == 'O' else 'Sports'
         
-        # Descripción
-        desc_parts = [f"Type: {prog['type']}."]
-        desc_parts.append(f"runTime: {runtime} min.")
-        if runtime != duration:
-            desc_parts.append(f"Duration: {duration} min (differs from runTime).")
-        if prog['flags']:
-            desc_parts.append(f"Flags: {', '.join(prog['flags'])}.")
-        if 'Subject to blackout' in prog.get('flags', []):
-            desc_parts.append("Subject to blackout.")
-        desc = ET.SubElement(programme, 'desc', lang='en')
-        desc.text = ' '.join(desc_parts)
+        # Descripción: Solo usar subtitle si existe; de lo contrario, omitir <desc>
+        if 'subtitle' in prog:
+            desc = ET.SubElement(programme, 'desc', lang='en')
+            desc.text = prog['subtitle']
         
+        # Flags: Mantener premiere y subtitles si aplican (no afectan desc)
         if 'Live' in prog.get('flags', []):
             ET.SubElement(programme, 'premiere')
         
@@ -124,3 +128,4 @@ with open(output_file, 'w', encoding='utf-8') as f:
     f.write(pretty_xml)
 
 print(f"XMLTV generado exitosamente en '{output_file}' para {len(channel_ids)} canales y {total_programs} programas totales.")
+
