@@ -24,7 +24,7 @@ jobs:
         env:
           CHANNEL_IDS: "807,808,809"  # Or use repo secrets/env for dynamic list
         run: |
-          python convert_to_xmltv.py "$CHANNEL_IDS"
+          python mvshub-epg-generator.py "$CHANNEL_IDS"
 
       - name: Commit and push XML
         run: |
