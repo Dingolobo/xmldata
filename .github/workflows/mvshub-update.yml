@@ -1,4 +1,4 @@
-name: Update EPG XMLTV
+name: Update MVS EPG XMLTV
 
 on:
   schedule:
