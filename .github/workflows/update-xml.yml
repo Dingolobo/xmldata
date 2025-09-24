@@ -2,7 +2,7 @@ name: Actualizar XML diario
 
 on:
   schedule:
-    - cron: '10 0 * * *'  # Ejecuta a medianoche UTC todos los días
+    - cron: '0 11 * * *'  # Ejecuta a medianoche UTC todos los días
   workflow_dispatch:      # Permite ejecución manual desde GitHub
 
 jobs:
