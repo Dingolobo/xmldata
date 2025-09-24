@@ -70,7 +70,7 @@ def fetch_channel_contents(channel_id, date_from, date_to, session):
         return []
 
 def build_xmltv(channels_data):
-    """Build XMLTV mergeado para todos los canales."""
+    """Build XMLTV mergeado para todos los canales (con indentación)."""
     tv = ET.Element("tv", attrib={
         "generator-info-name": "Minerva Multi-Channel Dynamic 24h",
         "generator-info-url": "https://example.com"
@@ -135,12 +135,16 @@ def build_xmltv(channels_data):
                 if genre.text:
                     ET.SubElement(programme, "category", lang="es").text = genre.text
     
-    # Guarda XMLTV mergeado
-    tree = ET.ElementTree(tv)
+    # Indentación: Reparsea y aplica formato (para Python 3.9+)
+    rough_string = ET.tostring(tv, encoding='unicode', method='xml')
+    reparsed = ET.fromstring(rough_string)
+    ET.indent(reparsed, space="  ", level=0)  # Indenta con 2 espacios
+    tree = ET.ElementTree(reparsed)
     tree.write(OUTPUT_FILE, encoding="utf-8", xml_declaration=True)
+    
     num_channels = len(channels)
     total_programmes = sum(len(contents) for _, contents in channels_data)
-    logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes)")
+    logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes) - Formateado con indentación")
     return True
 
 def main():
