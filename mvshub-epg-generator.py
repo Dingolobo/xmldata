@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 import requests
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta  # Agregado timedelta para +24h
+from datetime import datetime, timedelta
+import sys
+import os
 import logging
 
 # Setup logging simple
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# URL BASE (fija para channel 222, page=0, size=100) - timestamps dinámicos
-URL_BASE = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/a8e7b76a-818e-4830-a518-a83debab41ce/222/220?page=0&size=100&dateFrom={}&dateTo={}"
+# Configuration
+CHANNEL_IDS = [222, 807]  # Array de canales por defecto (agrega más, e.g., 766)
+UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"
+URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"  # Dinámico: channel_id en {}
+LINEUP_ID = "220"  # Fijo
+OUTPUT_FILE = "epgmvs.xml"
 
 # Headers mínimos (basados en tu Request Headers - simplificados)
 HEADERS = {
@@ -33,78 +39,86 @@ COOKIES = {
     'AWSALBCORS': 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y'  # Tu valor real
 }
 
-def fetch_and_convert():
-    # Timestamps dinámicos: Ahora (UTC) a +24h
-    now = datetime.utcnow()
-    date_from = int(now.timestamp() * 1000)
-    date_to = int((now + timedelta(hours=24)).timestamp() * 1000)
-    url = URL_BASE.format(date_from, date_to)
+def fetch_channel_contents(channel_id, date_from, date_to, session):
+    """Fetch contents para un canal específico (page=0)."""
+    url = URL_BASE.format(channel_id, date_from, date_to)
+    logger.info(f"Fetching channel {channel_id}: {url}")
     
-    logger.info(f"Dynamic URL: {url}")
-    logger.info(f"Date range: {now} to {now + timedelta(hours=24)} (24h UTC)")
-
-    session = requests.Session()
-    session.headers.update(HEADERS)
-    
-    # Set cookies
-    for name, value in COOKIES.items():
-        session.cookies.set(name, value)
-    logger.info(f"Cookies set: {list(COOKIES.keys())}")
-
+    request_headers = HEADERS.copy()
     try:
-        response = session.get(url, timeout=15, verify=False)  # verify=False para port 9443
-        logger.info(f"Status: {response.status_code}")
-        logger.info(f"Response headers: {dict(response.headers)}")
+        response = session.get(url, headers=request_headers, timeout=15, verify=False)
+        logger.info(f"Status for {channel_id}: {response.status_code}")
         
         if response.status_code != 200:
-            logger.error(f"Error: {response.status_code} - {response.text[:300]}")
-            with open('debug.log', 'w') as f:
-                f.write(f"Full response: {response.text}\n")
-            return False
+            logger.error(f"Error for {channel_id}: {response.status_code} - {response.text[:200]}")
+            return []
         
-        # Guarda XML crudo
-        with open('raw_response.xml', 'w', encoding='utf-8') as f:
+        # Guarda raw por canal
+        raw_file = f"raw_response_{channel_id}.xml"
+        with open(raw_file, 'w', encoding='utf-8') as f:
             f.write(response.text)
-        logger.info("Raw XML saved to raw_response.xml")
+        logger.info(f"Raw XML saved to {raw_file}")
         
-        # Parsea y cuenta contents
+        # Parsea
         root = ET.fromstring(response.content)
         contents = root.findall(".//{http://ws.minervanetworks.com/}content")
-        logger.info(f"Found {len(contents)} programmes in response")
+        logger.info(f"Found {len(contents)} programmes for channel {channel_id}")
+        return contents
         
+    except Exception as e:
+        logger.error(f"Exception for {channel_id}: {e}")
+        return []
+
+def build_xmltv(channels_data):
+    """Build XMLTV mergeado para todos los canales."""
+    tv = ET.Element("tv", attrib={
+        "generator-info-name": "Minerva Multi-Channel Dynamic 24h",
+        "generator-info-url": "https://example.com"
+    })
+    
+    ns = "{http://ws.minervanetworks.com/}"
+    channels = {}  # Cache para evitar duplicados
+    
+    for channel_id, contents in channels_data:
         if not contents:
-            logger.warning("No <content> elements found - check raw_response.xml")
-            return False
+            continue
         
-        # Convierte a XMLTV simple (solo para este channel 222)
-        tv = ET.Element("tv", attrib={
-            "generator-info-name": "Minerva Test Fetch Dynamic 24h",
-            "generator-info-url": "https://example.com"
-        })
-        
-        # Channel (de first content)
+        # Channel info (de first content)
         first_content = contents[0]
-        ns = "{http://ws.minervanetworks.com/}"
         tv_channel = first_content.find(f".//{ns}TV_CHANNEL")
+        call_sign = str(channel_id)  # Default
         if tv_channel is not None:
-            call_sign = tv_channel.find(f"{ns}callSign").text or "222"
-            channel = ET.SubElement(tv, "channel", id="222")
-            ET.SubElement(channel, "display-name").text = call_sign
-            # Logo si existe
+            call_sign_elem = tv_channel.find(f"{ns}callSign")
+            call_sign = call_sign_elem.text if call_sign_elem is not None else str(channel_id)
+            number_elem = tv_channel.find(f"{ns}number")
+            number = number_elem.text if number_elem is not None else ""
             image = tv_channel.find(f".//{ns}image")
+            logo_src = ""
             if image is not None:
                 url_elem = image.find(f"{ns}url")
-                if url_elem is not None and url_elem.text:
-                    ET.SubElement(channel, "icon", src=url_elem.text)
+                logo_src = url_elem.text if url_elem is not None else ""
+        else:
+            number = ""
+            logo_src = ""
         
-        # Programmes
+        # Agrega channel si no existe
+        if channel_id not in channels:
+            channel = ET.SubElement(tv, "channel", id=str(channel_id))
+            ET.SubElement(channel, "display-name").text = call_sign
+            if number:
+                ET.SubElement(channel, "display-name").text = number
+            if logo_src:
+                ET.SubElement(channel, "icon", src=logo_src)
+            channels[channel_id] = True
+        
+        # Programmes para este canal
         for content in contents:
             start_ms = int(content.find(f"{ns}startDateTime").text)
             end_ms = int(content.find(f"{ns}endDateTime").text)
             programme = ET.SubElement(tv, "programme", attrib={
                 "start": datetime.utcfromtimestamp(start_ms / 1000).strftime("%Y%m%d%H%M%S") + " +0000",
                 "stop": datetime.utcfromtimestamp(end_ms / 1000).strftime("%Y%m%d%H%M%S") + " +0000",
-                "channel": "222"
+                "channel": str(channel_id)
             })
             
             title = content.find(f"{ns}title").text
@@ -120,22 +134,63 @@ def fetch_and_convert():
             for genre in genres:
                 if genre.text:
                     ET.SubElement(programme, "category", lang="es").text = genre.text
-        
-        # Guarda XMLTV (cambiado a epgmvs.xml)
-        tree = ET.ElementTree(tv)
-        tree.write("epgmvs.xml", encoding="utf-8", xml_declaration=True)
-        logger.info(f"XMLTV generated: epgmvs.xml ({len(contents)} programmes for channel 222)")
-        return True
-        
-    except Exception as e:
-        logger.error(f"Exception: {e}")
-        with open('debug.log', 'a') as f:
-            f.write(f"Error: {e}\nResponse: {response.text if 'response' in locals() else 'N/A'}\n")
+    
+    # Guarda XMLTV mergeado
+    tree = ET.ElementTree(tv)
+    tree.write(OUTPUT_FILE, encoding="utf-8", xml_declaration=True)
+    num_channels = len(channels)
+    total_programmes = sum(len(contents) for _, contents in channels_data)
+    logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes)")
+    return True
+
+def main():
+    global CHANNEL_IDS
+    
+    # Timestamps dinámicos: Ahora (UTC) a +24h
+    now = datetime.utcnow()
+    date_from = int(now.timestamp() * 1000)
+    date_to = int((now + timedelta(hours=24)).timestamp() * 1000)
+    logger.info(f"Date range: {now} to {now + timedelta(hours=24)} (24h UTC)")
+    
+    # Overrides (CLI/env)
+    if len(sys.argv) > 1:
+        CHANNEL_IDS = [int(id.strip()) for id in sys.argv[1].split(',')]
+    if 'CHANNEL_IDS' in os.environ:
+        CHANNEL_IDS = [int(id.strip()) for id in os.environ['CHANNEL_IDS'].split(',')]
+
+    if not CHANNEL_IDS:
+        logger.error("No channels provided.")
         return False
 
-if __name__ == "__main__":
-    success = fetch_and_convert()
+    logger.info(f"Channels: {CHANNEL_IDS}")
+
+    # Session global (cookies compartidas)
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    for name, value in COOKIES.items():
+        session.cookies.set(name, value)
+    logger.info(f"Cookies set: {list(COOKIES.keys())}")
+
+    # Fetch por canal
+    channels_data = []
+    for channel_id in CHANNEL_IDS:
+        contents = fetch_channel_contents(channel_id, date_from, date_to, session)
+        if contents:
+            channels_data.append((channel_id, contents))
+        else:
+            logger.warning(f"No data for channel {channel_id}")
+
+    if not channels_data:
+        logger.error("No data for any channel. Check cookies/debug.log.")
+        return False
+
+    # Build y guarda
+    success = build_xmltv(channels_data)
     if success:
-        logger.info("¡Prueba exitosa! Revisa epgmvs.xml y raw_response.xml")
-    else:
-        logger.error("Prueba fallida. Revisa debug.log y actualiza cookies.")
+        logger.info("¡Prueba exitosa! Revisa epgmvs.xml y raw_response_*.xml")
+    return success
+
+if __name__ == "__main__":
+    success = main()
+    if not success:
+        logger.error("Prueba fallida. Revisa logs y actualiza cookies.")
