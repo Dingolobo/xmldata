@@ -114,7 +114,7 @@ def fetch_and_convert():
         
         # Guarda XMLTV
         tree = ET.ElementTree(tv)
-        tree.write("epg.xml", encoding="utf-8", xml_declaration=True)
+        tree.write("epgmvs.xml", encoding="utf-8", xml_declaration=True)
         logger.info(f"XMLTV generated: epg.xml ({len(contents)} programmes for channel 222)")
         return True
         
