@@ -13,18 +13,14 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Configuration
-CHANNEL_IDS = [807, 766]
+CHANNEL_IDS = [807, 766]  # Tus canales por defecto
 UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"
 BASE_URL = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/"
 PAGE_SIZE = 100
 OUTPUT_FILE = "epg.xml"
 DEBUG_LOG = "debug.log"
 
-# Fechas del ejemplo original (puedes override)
-date_from = 1758672000000
-date_to = 1758844740000
-
-# Headers EXACTOS de tu Request Headers (copiados tal cual, sin pseudo-headers)
+# Headers EXACTOS de tu Request Headers
 HEADERS = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     'accept-encoding': 'gzip, deflate, br, zstd',
@@ -44,17 +40,19 @@ HEADERS = {
 }
 
 def ms_to_xmltv_timestamp(ms):
+    """Convert Unix ms to XMLTV format: YYYYMMDDHHMMSS +0000"""
     dt = datetime.utcfromtimestamp(ms / 1000)
     return dt.strftime("%Y%m%d%H%M%S") + " +0000"
 
 def fetch_channel_data(channel_id, date_from, date_to, session):
+    """Fetch all pages for a channel."""
     all_contents = []
     page = 0
     max_retries = 3
     while True:
         url = f"{BASE_URL}{channel_id}/220?page={page}&size={PAGE_SIZE}&dateFrom={date_from}&dateTo={date_to}"
         request_headers = HEADERS.copy()
-        request_headers['X-Request-Id'] = str(uuid.uuid4())  # Opcional, para tracing
+        request_headers['X-Request-Id'] = str(uuid.uuid4())  # Opcional
 
         logger.info(f"Fetching: {url}")
         logger.debug(f"Headers sent: {request_headers}")  # Parcial si es largo
@@ -111,8 +109,9 @@ def fetch_channel_data(channel_id, date_from, date_to, session):
     return all_contents
 
 def build_xmltv(channels_data):
+    """Build XMLTV from contents."""
     tv = ET.Element("tv", attrib={
-        "generator-info-name": "Minerva-to-XMLTV Exact Headers",
+        "generator-info-name": "Minerva-to-XMLTV 24h EPG",
         "generator-info-url": "https://github.com/your-repo/epg-converter"
     })
 
@@ -188,7 +187,13 @@ def build_xmltv(channels_data):
 
 def main():
     global date_from, date_to, CHANNEL_IDS
-    # Overrides
+    
+    # Default: 24 horas desde ahora (UTC)
+    now = datetime.utcnow()
+    date_from = int(now.timestamp() * 1000)
+    date_to = int((now + timedelta(hours=24)).timestamp() * 1000)
+    
+    # Overrides (CLI/env)
     if len(sys.argv) > 1:
         CHANNEL_IDS = [int(id.strip()) for id in sys.argv[1].split(',')]
     if len(sys.argv) > 2:
@@ -208,18 +213,18 @@ def main():
         sys.exit(1)
 
     logger.info(f"Channels: {CHANNEL_IDS}")
-    logger.info(f"Date range: {datetime.utcfromtimestamp(date_from/1000)} to {datetime.utcfromtimestamp(date_to/1000)}")
+    logger.info(f"Date range: {datetime.utcfromtimestamp(date_from/1000)} to {datetime.utcfromtimestamp(date_to/1000)} (24h)")
 
     open(DEBUG_LOG, 'w').close()
 
-    # Crea session y agrega COOKIES EXACTAS de tu navegador (¡actualízalas después de login!)
+    # Session con cookies (¡ACTUALIZA LOS VALORES DESPUÉS DE LOGIN!)
     session = requests.Session()
     session.headers.update(HEADERS)
 
-    # COOKIES - COPIA LOS VALORES EXACTOS DE DEVTOOLS (actualízalos cada vez que expiren)
-    session.cookies.set('JSESSIONID', 'JGh9Rz4gjwtUyT6A0g_Tqv9gkYPc4cL_hzOElL1T913AbT0Qd3X1!-880225720')  # Tu valor real
-    session.cookies.set('AWSALB', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y')  # Tu valor real
-    session.cookies.set('AWSALBCORS', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y')  # Tu valor real
+    # Cookies - COPIA VALORES EXACTOS DE DEVTOOLS
+    session.cookies.set('JSESSIONID', 'JGh9Rz4gjwtUyT6A0g_Tqv9gkYPc4cL_hzOElL1T913AbT0Qd3X1!-880225720')  # Actualiza
+    session.cookies.set('AWSALB', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y')  # Actualiza
+    session.cookies.set('AWSALBCORS', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y')  # Actualiza
 
     logger.info(f"Cookies set: {len(session.cookies)} (JSESSIONID y AWSALB/AWSALBCORS)")
 
@@ -249,7 +254,7 @@ def main():
 
     num_channels = len(tv_root.findall('channel'))
     num_programmes = len(tv_root.findall('programme'))
-    logger.info(f"Generated {OUTPUT_FILE}: {num_channels} channels, {num_programmes} programmes")
+    logger.info(f"Generated {OUTPUT_FILE}: {num_channels} channels, {num_programmes} programmes (24h EPG)")
 
 if __name__ == "__main__":
     main()
