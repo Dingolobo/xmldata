@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 import requests
 import xml.etree.ElementTree as ET
-from datetime import datetime
+from datetime import datetime, timedelta  # Agregado timedelta para +24h
 import logging
 
 # Setup logging simple
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# URL FIJA para prueba (tu ejemplo exacto)
-URL = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/a8e7b76a-818e-4830-a518-a83debab41ce/222/220?page=0&size=100&dateFrom=1758736800000&dateTo=1758758400000"
+# URL BASE (fija para channel 222, page=0, size=100) - timestamps dinámicos
+URL_BASE = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/a8e7b76a-818e-4830-a518-a83debab41ce/222/220?page=0&size=100&dateFrom={}&dateTo={}"
 
 # Headers mínimos (basados en tu Request Headers - simplificados)
 HEADERS = {
@@ -34,6 +34,15 @@ COOKIES = {
 }
 
 def fetch_and_convert():
+    # Timestamps dinámicos: Ahora (UTC) a +24h
+    now = datetime.utcnow()
+    date_from = int(now.timestamp() * 1000)
+    date_to = int((now + timedelta(hours=24)).timestamp() * 1000)
+    url = URL_BASE.format(date_from, date_to)
+    
+    logger.info(f"Dynamic URL: {url}")
+    logger.info(f"Date range: {now} to {now + timedelta(hours=24)} (24h UTC)")
+
     session = requests.Session()
     session.headers.update(HEADERS)
     
@@ -43,7 +52,7 @@ def fetch_and_convert():
     logger.info(f"Cookies set: {list(COOKIES.keys())}")
 
     try:
-        response = session.get(URL, timeout=15, verify=False)  # verify=False para port 9443
+        response = session.get(url, timeout=15, verify=False)  # verify=False para port 9443
         logger.info(f"Status: {response.status_code}")
         logger.info(f"Response headers: {dict(response.headers)}")
         
@@ -69,7 +78,7 @@ def fetch_and_convert():
         
         # Convierte a XMLTV simple (solo para este channel 222)
         tv = ET.Element("tv", attrib={
-            "generator-info-name": "Minerva Test Fetch",
+            "generator-info-name": "Minerva Test Fetch Dynamic 24h",
             "generator-info-url": "https://example.com"
         })
         
@@ -112,10 +121,10 @@ def fetch_and_convert():
                 if genre.text:
                     ET.SubElement(programme, "category", lang="es").text = genre.text
         
-        # Guarda XMLTV
+        # Guarda XMLTV (cambiado a epgmvs.xml)
         tree = ET.ElementTree(tv)
         tree.write("epgmvs.xml", encoding="utf-8", xml_declaration=True)
-        logger.info(f"XMLTV generated: epg.xml ({len(contents)} programmes for channel 222)")
+        logger.info(f"XMLTV generated: epgmvs.xml ({len(contents)} programmes for channel 222)")
         return True
         
     except Exception as e:
@@ -127,6 +136,6 @@ def fetch_and_convert():
 if __name__ == "__main__":
     success = fetch_and_convert()
     if success:
-        logger.info("¡Prueba exitosa! Revisa epg.xml y raw_response.xml")
+        logger.info("¡Prueba exitosa! Revisa epgmvs.xml y raw_response.xml")
     else:
         logger.error("Prueba fallida. Revisa debug.log y actualiza cookies.")
