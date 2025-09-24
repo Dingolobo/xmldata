@@ -2,7 +2,7 @@ name: Update MLB EPG XML
 
 on:
   schedule:
-    - cron: '10 0 * * *'  # Todos los días a las 23:50 UTC (11:50 PM)
+    - cron: '5 5 * * *'  # Todos los días a las 23:50 UTC (11:50 PM)
   workflow_dispatch:  # Permite ejecución manual desde GitHub UI
 
 jobs:
