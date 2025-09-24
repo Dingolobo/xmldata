@@ -78,7 +78,8 @@ canales_mexico = [
     "I207.19736.schedulesdirect.org",
     "I772.59014.schedulesdirect.org",
     "I488.99621.schedulesdirect.org",
-    "I402.68049.schedulesdirect.org"
+    "I402.68049.schedulesdirect.org",
+    "I208.16288.schedulesdirect.org"
 ]
 
 def filtrar_epg(input_xml, output_xml, canales_filtrar):
