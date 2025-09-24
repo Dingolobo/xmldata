@@ -22,7 +22,7 @@ jobs:
 
       - name: Run EPG Converter
         env:
-          CHANNEL_IDS: "807,808,809"  # Or use repo secrets/env for dynamic list
+          CHANNEL_IDS: "222,807"  # Or use repo secrets/env for dynamic list
         run: |
           python mvshub-epg-generator.py "$CHANNEL_IDS"
 
