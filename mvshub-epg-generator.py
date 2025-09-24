@@ -6,111 +6,127 @@ import sys
 import os
 import time
 import logging
+import uuid
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Configuration
-CHANNEL_IDS = [807, 766]  # Tus canales de prueba
-UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"  # Fijo del ejemplo; si expira, obtén uno nuevo
-BASE_URL = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/"  # Solo cambia channel_id/220
+CHANNEL_IDS = [807, 766]
+UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"
+BASE_URL = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/"
 PAGE_SIZE = 100
 OUTPUT_FILE = "epg.xml"
 DEBUG_LOG = "debug.log"
 
-# Default dates: next 7 days from now (UTC, in ms) - usa fechas cercanas para testing
-now = datetime.utcnow()
-date_from = int(now.timestamp() * 1000)
-date_to = int((now + timedelta(days=1)).timestamp() * 1000)
+# Fechas del ejemplo original (puedes override)
+date_from = 1758672000000
+date_to = 1758844740000
 
-# Headers para simular browser y forzar XML
+# Headers EXACTOS de tu Request Headers (copiados tal cual, sin pseudo-headers)
 HEADERS = {
-    'User -Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'Accept': 'application/xml, text/xml',
-    'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8'
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    'accept-language': 'es-419,es;q=0.9',
+    'cache-control': 'no-cache',
+    'pragma': 'no-cache',
+    'priority': 'u=0, i',
+    'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'none',
+    'sec-fetch-user': '?1',
+    'upgrade-insecure-requests': '1',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
 }
 
 def ms_to_xmltv_timestamp(ms):
-    """Convert Unix ms to XMLTV format: YYYYMMDDHHMMSS +0000"""
     dt = datetime.utcfromtimestamp(ms / 1000)
     return dt.strftime("%Y%m%d%H%M%S") + " +0000"
 
-def fetch_channel_data(channel_id, date_from, date_to):
-    """Fetch all pages for a channel and return list of ET elements."""
+def fetch_channel_data(channel_id, date_from, date_to, session):
     all_contents = []
     page = 0
+    max_retries = 3
     while True:
         url = f"{BASE_URL}{channel_id}/220?page={page}&size={PAGE_SIZE}&dateFrom={date_from}&dateTo={date_to}"
+        request_headers = HEADERS.copy()
+        request_headers['X-Request-Id'] = str(uuid.uuid4())  # Opcional, para tracing
+
         logger.info(f"Fetching: {url}")
+        logger.debug(f"Headers sent: {request_headers}")  # Parcial si es largo
         
-        try:
-            response = requests.get(url, headers=HEADERS, timeout=10)
-            logger.info(f"Status: {response.status_code} for channel {channel_id}, page {page}")
-            
-            if response.status_code != 200:
-                logger.error(f"HTTP Error {response.status_code}: {response.text[:200]}")
-                # Log full response to file
+        for attempt in range(max_retries):
+            try:
+                response = session.get(url, headers=request_headers, timeout=15, verify=False)
+                logger.info(f"Status: {response.status_code} | Cookies sent: {len(session.cookies)} | Resp headers: {dict(response.headers)}")
+                
+                if response.status_code != 200:
+                    logger.error(f"HTTP {response.status_code} (attempt {attempt+1}): {response.text[:200]}")
+                    with open(DEBUG_LOG, 'a') as f:
+                        f.write(f"\n--- Channel {channel_id}, Page {page}, Attempt {attempt+1} ---\nURL: {url}\nHeaders: {request_headers}\nCookies: {session.cookies}\nStatus: {response.status_code}\nResp: {response.text}\n")
+                    if attempt < max_retries - 1:
+                        time.sleep(2 ** attempt)
+                        continue
+                    break
+
+                preview = response.text[:500]
+                logger.debug(f"Preview: {preview}")
                 with open(DEBUG_LOG, 'a') as f:
-                    f.write(f"\n--- Channel {channel_id}, Page {page} ---\nStatus: {response.status_code}\nResponse: {response.text}\n")
+                    f.write(f"\n--- Preview {channel_id}, Page {page} ---\n{preview}\n")
+
+                if not response.text.strip().startswith(('<', '<?xml')):
+                    logger.error(f"Non-XML: {preview[:100]}")
+                    break
+
+                root = ET.fromstring(response.content)
+                contents = root.findall(".//{http://ws.minervanetworks.com/}content")
+                if not contents:
+                    logger.info(f"No contents on page {page}")
+                    break
+                all_contents.extend(contents)
+                logger.info(f"Added {len(contents)} items (total: {len(all_contents)})")
+                page += 1
+                if len(contents) < PAGE_SIZE:
+                    break
+                time.sleep(1)
                 break
-            
-            # Debug: Log first 500 chars
-            preview = response.text[:500]
-            logger.debug(f"Response preview: {preview}")
-            with open(DEBUG_LOG, 'a') as f:
-                f.write(f"\n--- Channel {channel_id}, Page {page} Preview ---\n{preview}\n")
-            
-            # Check if XML (starts with < or <?xml)
-            if not response.text.strip().startswith(('<', '<?xml')):
-                logger.error(f"Non-XML response for channel {channel_id}: {preview[:100]}...")
-                with open(DEBUG_LOG, 'a') as f:
-                    f.write(f"Full non-XML: {response.text}\n")
+
+            except ET.ParseError as e:
+                logger.error(f"Parse error: {e}")
                 break
-            
-            root = ET.fromstring(response.content)
-            contents = root.findall(".//{http://ws.minervanetworks.com/}content")
-            if not contents:
-                logger.info(f"No contents in response for channel {channel_id}, page {page}")
+            except requests.RequestException as e:
+                logger.error(f"Request error: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)
+                    continue
                 break
-            all_contents.extend(contents)
-            logger.info(f"Added {len(contents)} items for channel {channel_id}, page {page}")
-            page += 1
-            if len(contents) < PAGE_SIZE:
-                break  # Last page
-            time.sleep(1)  # Delay to avoid rate limiting
-        except ET.ParseError as e:
-            logger.error(f"Parse error for channel {channel_id}, page {page}: {e}")
-            with open(DEBUG_LOG, 'a') as f:
-                f.write(f"Parse error: {e}\nFull response: {response.text}\n")
+
+        if 'response' in locals() and response.status_code != 200:
             break
-        except requests.RequestException as e:
-            logger.error(f"Request error for channel {channel_id}: {e}")
-            break
-    
-    logger.info(f"Total contents for channel {channel_id}: {len(all_contents)}")
+
     return all_contents
 
 def build_xmltv(channels_data):
-    """Build XMLTV ET from list of (channel_id, contents_list) tuples."""
     tv = ET.Element("tv", attrib={
-        "generator-info-name": "Minerva-to-XMLTV with Debug",
+        "generator-info-name": "Minerva-to-XMLTV Exact Headers",
         "generator-info-url": "https://github.com/your-repo/epg-converter"
     })
 
-    channels = {}  # Cache channel info
+    ns = "{http://ws.minervanetworks.com/}"
+    channels = {}
 
     for channel_id, contents in channels_data:
         if not contents:
             continue
-        # Extract channel info from first content
         first_content = contents[0]
-        ns = "{http://ws.minervanetworks.com/}"
         tv_channel = first_content.find(f".//{ns}TV_CHANNEL")
         if tv_channel is not None:
             call_sign = tv_channel.find(f"{ns}callSign").text or str(channel_id)
             number = tv_channel.find(f"{ns}number").text or ""
-            # Logo
             image = tv_channel.find(f".//{ns}image")
             logo_src = ""
             if image is not None:
@@ -124,14 +140,13 @@ def build_xmltv(channels_data):
                     ET.SubElement(channel, "display-name").text = number
                 if logo_src:
                     ET.SubElement(channel, "icon", src=logo_src)
-                channels[channel_id] = {"call_sign": call_sign, "number": number, "logo": logo_src}
+                channels[channel_id] = {"call_sign": call_sign}
 
-        # Add programmes
         for content in contents:
             start_elem = content.find(f"{ns}startDateTime")
             end_elem = content.find(f"{ns}endDateTime")
             if start_elem is None or end_elem is None:
-                continue  # Skip invalid entries
+                continue
             programme = ET.SubElement(tv, "programme", attrib={
                 "start": ms_to_xmltv_timestamp(int(start_elem.text)),
                 "stop": ms_to_xmltv_timestamp(int(end_elem.text)),
@@ -146,30 +161,25 @@ def build_xmltv(channels_data):
             if desc_elem is not None and desc_elem.text:
                 ET.SubElement(programme, "desc", lang="es").text = desc_elem.text
 
-            # Genres
             genres = content.findall(f".//{ns}genres/{ns}genre/{ns}name")
             for genre in genres:
                 if genre.text:
                     ET.SubElement(programme, "category", lang="es").text = genre.text
 
-            # Repeat
             repeat_elem = content.find(f"{ns}repeat")
             if repeat_elem is not None and repeat_elem.text == "true":
                 ET.SubElement(programme, "repeat").text = "true"
 
-            # Episode (simple)
             season_elem = content.find(f"{ns}seasonNumber")
             season_num = season_elem.text if season_elem is not None else "0"
             ET.SubElement(programme, "episode-num", system="xmltv_ns").text = season_num
 
-            # Rating
             rating_elem = content.find(".//{http://ws.minervanetworks.com/}rating")
             if rating_elem is not None:
                 rating_val = rating_elem.text or "NR"
                 rating_node = ET.SubElement(programme, "rating", system="MPAA")
                 ET.SubElement(rating_node, "value").text = rating_val
 
-            # Orig air date
             org_air_elem = content.find(f"{ns}orgAirDate")
             if org_air_elem is not None and org_air_elem.text:
                 ET.SubElement(programme, "previously-shown", system="original-air-date").text = org_air_elem.text
@@ -177,8 +187,8 @@ def build_xmltv(channels_data):
     return tv
 
 def main():
-    # Allow CLI/env override for dates (e.g., python script.py "807,766" 1726790400000 1727395200000)
     global date_from, date_to, CHANNEL_IDS
+    # Overrides
     if len(sys.argv) > 1:
         CHANNEL_IDS = [int(id.strip()) for id in sys.argv[1].split(',')]
     if len(sys.argv) > 2:
@@ -186,7 +196,6 @@ def main():
     if len(sys.argv) > 3:
         date_to = int(sys.argv[3])
 
-    # Env override (for GitHub Actions)
     if 'CHANNEL_IDS' in os.environ:
         CHANNEL_IDS = [int(id.strip()) for id in os.environ['CHANNEL_IDS'].split(',')]
     if 'DATE_FROM' in os.environ:
@@ -195,32 +204,41 @@ def main():
         date_to = int(os.environ['DATE_TO'])
 
     if not CHANNEL_IDS:
-        logger.error("No channel IDs provided.")
+        logger.error("No channels.")
         sys.exit(1)
 
     logger.info(f"Channels: {CHANNEL_IDS}")
     logger.info(f"Date range: {datetime.utcfromtimestamp(date_from/1000)} to {datetime.utcfromtimestamp(date_to/1000)}")
 
-    # Clear debug log
     open(DEBUG_LOG, 'w').close()
+
+    # Crea session y agrega COOKIES EXACTAS de tu navegador (¡actualízalas después de login!)
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
+    # COOKIES - COPIA LOS VALORES EXACTOS DE DEVTOOLS (actualízalos cada vez que expiren)
+    session.cookies.set('JSESSIONID', 'JGh9Rz4gjwtUyT6A0g_Tqv9gkYPc4cL_hzOElL1T913AbT0Qd3X1!-880225720')  # Tu valor real
+    session.cookies.set('AWSALB', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y')  # Tu valor real
+    session.cookies.set('AWSALBCORS', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y')  # Tu valor real
+
+    logger.info(f"Cookies set: {len(session.cookies)} (JSESSIONID y AWSALB/AWSALBCORS)")
 
     channels_data = []
     for channel_id in CHANNEL_IDS:
-        logger.info(f"Starting fetch for channel {channel_id}...")
-        contents = fetch_channel_data(channel_id, date_from, date_to)
+        logger.info(f"Fetching channel {channel_id}...")
+        contents = fetch_channel_data(channel_id, date_from, date_to, session)
         if contents:
             channels_data.append((channel_id, contents))
         else:
-            logger.warning(f"No data for channel {channel_id}")
+            logger.warning(f"No data for {channel_id}")
 
     if not channels_data:
-        logger.error("No data fetched. Check debug.log for details.")
+        logger.error("No data. Verifica cookies en debug.log - podrían haber expirado.")
         sys.exit(1)
 
     tv_root = build_xmltv(channels_data)
 
-    # Write XML (with indent if Python 3.9+)
-    rough_string = ET.tostring(tv_root, 'unicode', encoding='unicode')
+    rough_string = ET.tostring(tv_root, 'unicode')
     try:
         reparsed = ET.fromstring(rough_string)
         ET.indent(reparsed, space="  ")
@@ -232,7 +250,6 @@ def main():
     num_channels = len(tv_root.findall('channel'))
     num_programmes = len(tv_root.findall('programme'))
     logger.info(f"Generated {OUTPUT_FILE}: {num_channels} channels, {num_programmes} programmes")
-    logger.info(f"Debug log: {DEBUG_LOG}")
 
 if __name__ == "__main__":
     main()
