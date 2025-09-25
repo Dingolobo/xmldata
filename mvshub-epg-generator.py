@@ -225,7 +225,7 @@ def fetch_channel_contents(channel_id, date_from, date_to, session):
         return []
 
 def build_xmltv(channels_data):
-    """Build XMLTV mergeado para todos los canales (con indentación)."""
+    """Build XMLTV mergeado para todos los canales (con indentación y null checks)."""
     if not channels_data:
         logger.warning("No data to build XMLTV - skipping")
         return False
@@ -242,23 +242,23 @@ def build_xmltv(channels_data):
         if not contents:
             continue
         
-        # Channel info (de first content)
+        # Channel info (de first content, con checks)
         first_content = contents[0]
         tv_channel = first_content.find(f".//{ns}TV_CHANNEL")
         call_sign = str(channel_id)  # Default
+        number = ""
+        logo_src = ""
         if tv_channel is not None:
             call_sign_elem = tv_channel.find(f"{ns}callSign")
             call_sign = call_sign_elem.text if call_sign_elem is not None else str(channel_id)
             number_elem = tv_channel.find(f"{ns}number")
             number = number_elem.text if number_elem is not None else ""
             image = tv_channel.find(f".//{ns}image")
-            logo_src = ""
             if image is not None:
                 url_elem = image.find(f"{ns}url")
                 logo_src = url_elem.text if url_elem is not None else ""
         else:
-            number = ""
-            logo_src = ""
+            logger.warning(f"No TV_CHANNEL in first content for {channel_id} - using defaults")
         
         # Agrega channel si no existe
         if channel_id not in channels:
@@ -269,32 +269,50 @@ def build_xmltv(channels_data):
             if logo_src:
                 ET.SubElement(channel, "icon", src=logo_src)
             channels[channel_id] = True
+            logger.info(f"Added channel {channel_id}: {call_sign} (number: {number}, logo: {logo_src})")
         
-        # Programmes para este canal
+        # Programmes para este canal (con null checks)
         for content in contents:
-            start_ms = int(content.find(f"{ns}startDateTime").text)
-            end_ms = int(content.find(f"{ns}endDateTime").text)
+            # Start/End times (requeridos - chequea)
+            start_elem = content.find(f"{ns}startDateTime")
+            end_elem = content.find(f"{ns}endDateTime")
+            if start_elem is None or end_elem is None:
+                logger.warning(f"Missing start/end for programme in {channel_id} - skipping")
+                continue
+            try:
+                start_ms = int(start_elem.text)
+                end_ms = int(end_elem.text)
+            except (ValueError, TypeError):
+                logger.warning(f"Invalid start/end timestamp in {channel_id} - skipping programme")
+                continue
+            
             programme = ET.SubElement(tv, "programme", attrib={
                 "start": datetime.utcfromtimestamp(start_ms / 1000).strftime("%Y%m%d%H%M%S") + " +0000",
                 "stop": datetime.utcfromtimestamp(end_ms / 1000).strftime("%Y%m%d%H%M%S") + " +0000",
                 "channel": str(channel_id)
             })
             
-            title = content.find(f"{ns}title").text
-            if title:
-                ET.SubElement(programme, "title", lang="es").text = title
+            # Title (requerido, pero chequea)
+            title_elem = content.find(f"{ns}title")
+            if title_elem is not None and title_elem.text:
+                ET.SubElement(programme, "title", lang="es").text = title_elem.text
+            else:
+                logger.debug(f"No title for programme in {channel_id}")
+                ET.SubElement(programme, "title", lang="es").text = "Sin título"  # Fallback
             
-            desc = content.find(f"{ns}description").text
-            if desc:
-                ET.SubElement(programme, "desc", lang="es").text = desc
+            # Desc (opcional)
+            desc_elem = content.find(f"{ns}description")
+            if desc_elem is not None and desc_elem.text:
+                ET.SubElement(programme, "desc", lang="es").text = desc_elem.text
+            # No else - omite si None/vacío
             
-            # Genres
+            # Genres (opcional, múltiples)
             genres = content.findall(f".//{ns}genres/{ns}genre/{ns}name")
             for genre in genres:
-                if genre.text:
+                if genre is not None and genre.text:
                     ET.SubElement(programme, "category", lang="es").text = genre.text
     
-    # Indentación
+    # Indentación y write
     rough_string = ET.tostring(tv, encoding='unicode', method='xml')
     reparsed = ET.fromstring(rough_string)
     ET.indent(reparsed, space="  ", level=0)
@@ -304,6 +322,7 @@ def build_xmltv(channels_data):
     num_channels = len(channels)
     total_programmes = sum(len(contents) for _, contents in channels_data if contents)
     logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes) - Formateado con indentación")
+    logger.info(f"Processed {len([p for _, cs in channels_data for p in cs if p])} valid programmes (skipped invalid/missing fields)")
     return True
 
 def main():
