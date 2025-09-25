@@ -5,16 +5,6 @@
     <display-name>15</display-name>
     <icon src="http://dshm.tmsimg.com/assets/s15213_h3_ba.png" />
   </channel>
-  <programme start="20250924220000 +0000" stop="20250925000000 +0000" channel="222">
-    <title lang="es">Todo por mi hijo</title>
-    <desc lang="es">Un hombre y su esposa son presionados al límite cuando los padres biológicos de su hijo adoptivo intentan recuperar su custodia.</desc>
-    <category lang="es">Drama</category>
-  </programme>
-  <programme start="20250925000000 +0000" stop="20250925003000 +0000" channel="222">
-    <title lang="es">A través de mi vida</title>
-    <desc lang="es">Una emotiva narración del personaje entrevistado, quien se vuelve el protagonista de su propia historia y abre su alma y corazón para hablar de los momentos más significativos de su existencia y su trabajo profesional.</desc>
-    <category lang="es">Interview</category>
-  </programme>
   <programme start="20250925003000 +0000" stop="20250925013000 +0000" channel="222">
     <title lang="es">¿Dónde es? Con Brenda Catalán</title>
     <desc lang="es">Brenda Catalán recorre los lugares más maravillosos de México, Latinoamérica y el mundo mientras comparte su pasión por la aventura y la naturaleza.</desc>
@@ -126,29 +116,21 @@
     <desc lang="es">Un renombrado neurocientífico intenta encontrar al hijo perdido desde hace mucho tiempo atrás de un talentoso cantante quien tiene la enfermedad de Alzheimer.</desc>
     <category lang="es">Drama</category>
   </programme>
+  <programme start="20250926000000 +0000" stop="20250926003000 +0000" channel="222">
+    <title lang="es">A través de mi vida</title>
+    <desc lang="es">Una emotiva narración del personaje entrevistado, quien se vuelve el protagonista de su propia historia y abre su alma y corazón para hablar de los momentos más significativos de su existencia y su trabajo profesional.</desc>
+    <category lang="es">Interview</category>
+  </programme>
+  <programme start="20250926003000 +0000" stop="20250926013000 +0000" channel="222">
+    <title lang="es">La garnacha que apapacha</title>
+    <desc lang="es">Andrés Peluche Torres muestra la amplia oferta gastronómica urbana que hay en México. Restaurantes, cantinas, puestos, mercados y tianguis son los escenarios para ilustrar la riqueza alimenticia que se puede encontrar en cada rincón del país.</desc>
+    <category lang="es">Cooking</category>
+  </programme>
   <channel id="807">
     <display-name>SHWBUSI</display-name>
     <display-name>270</display-name>
     <icon src="http://dshm.tmsimg.com/assets/s79893_h3_ba.png" />
   </channel>
-  <programme start="20250924223000 +0000" stop="20250924230000 +0000" channel="807">
-    <title lang="es">Show Business TV</title>
-    <desc lang="es">Un magazín con lo mejor del entretenimiento hispano y mundial de la mano de presentadores y reporteros a nivel global.</desc>
-    <category lang="es">Special</category>
-    <category lang="es">Newsmagazine</category>
-  </programme>
-  <programme start="20250924230000 +0000" stop="20250925000000 +0000" channel="807">
-    <title lang="es">El concurso by Osmel</title>
-    <desc lang="es">Un grupo de mujeres jóvenes compite por vencer en una competencia de belleza, durante la cual desarrollan confianza, orgullo y conciencia sobre sí mismas, mientras hacen nuevas amistades y disfrutan de una experiencia gratificante.</desc>
-    <category lang="es">Reality</category>
-    <category lang="es">Fashion</category>
-  </programme>
-  <programme start="20250925000000 +0000" stop="20250925003000 +0000" channel="807">
-    <title lang="es">Starlite</title>
-    <desc lang="es">Los mejores momentos del festival número uno en Europa, desde la ciudad del sol Marbella, con los artistas favoritos del público.</desc>
-    <category lang="es">Entertainment</category>
-    <category lang="es">Music</category>
-  </programme>
   <programme start="20250925003000 +0000" stop="20250925010000 +0000" channel="807">
     <title lang="es">Mix variado</title>
     <desc lang="es">El mejor contenido sobre vida saludable, viajes, entrevistas y momentos divertidos de los artistas favoritos del público.</desc>
@@ -325,44 +307,27 @@
     <category lang="es">Reality</category>
     <category lang="es">Entertainment</category>
   </programme>
+  <programme start="20250925230000 +0000" stop="20250926000000 +0000" channel="807">
+    <title lang="es">Cara Cala</title>
+    <desc lang="es">Un programa de entrevistas personales y cercanas que promueven el desarrollo personal, el bienestar y la excelencia con pensadores, celebridades, líderes y gente común que han vivido experiencias asombrosas.</desc>
+    <category lang="es">Interview</category>
+  </programme>
+  <programme start="20250926000000 +0000" stop="20250926003000 +0000" channel="807">
+    <title lang="es">Starlite</title>
+    <desc lang="es">Los mejores momentos del festival número uno en Europa, desde la ciudad del sol Marbella, con los artistas favoritos del público.</desc>
+    <category lang="es">Entertainment</category>
+    <category lang="es">Music</category>
+  </programme>
+  <programme start="20250926003000 +0000" stop="20250926010000 +0000" channel="807">
+    <title lang="es">Mix variado</title>
+    <desc lang="es">El mejor contenido sobre vida saludable, viajes, entrevistas y momentos divertidos de los artistas favoritos del público.</desc>
+    <category lang="es">Newsmagazine</category>
+  </programme>
   <channel id="809">
     <display-name>FIXFXS</display-name>
     <display-name>365</display-name>
     <icon src="http://dshm.tmsimg.com/assets/s119825_ld_h8_aa.png" />
   </channel>
-  <programme start="20250924224400 +0000" stop="20250924230000 +0000" channel="809">
-    <title lang="es">DIY</title>
-    <desc lang="es">Se aprende a hacer divertidos proyectos de bricolaje en casa.</desc>
-    <category lang="es">Arts/crafts</category>
-  </programme>
-  <programme start="20250924230000 +0000" stop="20250924233000 +0000" channel="809">
-    <title lang="es">Shadow of the Elves</title>
-    <desc lang="es">Salmacis invoca a las hadas para revelar una profecía que habla de una catástrofe terrible que azotará las Meadowlands, a no ser que Thalia, la última esperanza, pueda impedirlo.</desc>
-    <category lang="es">Children</category>
-    <category lang="es">Fantasy</category>
-    <category lang="es">Action</category>
-  </programme>
-  <programme start="20250924233000 +0000" stop="20250924234200 +0000" channel="809">
-    <title lang="es">Bob's Beach</title>
-    <desc lang="es">La pandilla emprende la búsqueda de Hoggle, un cangrejo ermitaño que podría conocer cuál es la cura para la enfermedad de Zaza.</desc>
-    <category lang="es">Children</category>
-    <category lang="es">Adventure</category>
-    <category lang="es">Comedy</category>
-  </programme>
-  <programme start="20250924234200 +0000" stop="20250925000000 +0000" channel="809">
-    <title lang="es">Bob's Beach</title>
-    <desc lang="es">Hurakan descubre el amor de Mara-Mai por la poesía, por lo que decide secuestrar a Nel para que escriba poemas románticos.</desc>
-    <category lang="es">Children</category>
-    <category lang="es">Adventure</category>
-    <category lang="es">Comedy</category>
-  </programme>
-  <programme start="20250925000000 +0000" stop="20250925003000 +0000" channel="809">
-    <title lang="es">Da Boom Crew</title>
-    <desc lang="es">El Boom Crew se encuentra con un guerrero legendario y debe completar una serie de tareas para conseguir un Boom Cart. Las habilidades de los niños se ponen a prueba cuando Hedlok y Etra llegan con una nueva arma malvada.</desc>
-    <category lang="es">Children</category>
-    <category lang="es">Science fiction</category>
-    <category lang="es">Animated</category>
-  </programme>
   <programme start="20250925003000 +0000" stop="20250925010000 +0000" channel="809">
     <title lang="es">Adventurers: Masters of Time</title>
     <desc lang="es">El grupo descubre que debe viajar a la Era de Hielo y no les causa gracia, ya que el frío es imponente.</desc>
@@ -757,5 +722,41 @@
     <title lang="es">DIY</title>
     <desc lang="es">Se aprende a hacer divertidos proyectos de bricolaje en casa.</desc>
     <category lang="es">Arts/crafts</category>
+  </programme>
+  <programme start="20250925230000 +0000" stop="20250925233000 +0000" channel="809">
+    <title lang="es">Shadow of the Elves</title>
+    <desc lang="es">Thalia usa el "corazón de piedra" mágico para abrir una puerta de entrada a la tormentosa y árida tierra natal de los elfos, donde se encuentra con Sevendrin, el fantasma de un antiguo mago, y recibe una poderosa herramienta para destruir la nube.</desc>
+    <category lang="es">Children</category>
+    <category lang="es">Fantasy</category>
+    <category lang="es">Action</category>
+    <category lang="es">Animated</category>
+  </programme>
+  <programme start="20250925233000 +0000" stop="20250925234200 +0000" channel="809">
+    <title lang="es">Bob's Beach</title>
+    <desc lang="es">Mientras se ejercita en el nuevo gimnasio, Bob conoce a Honcho, un cangrejo que le cuenta la historia de su hermano desaparecido.</desc>
+    <category lang="es">Children</category>
+    <category lang="es">Adventure</category>
+    <category lang="es">Comedy</category>
+  </programme>
+  <programme start="20250925234200 +0000" stop="20250926000000 +0000" channel="809">
+    <title lang="es">Bob's Beach</title>
+    <desc lang="es">El capitán de un yate intenta regresar a su tierra natal. Bob y sus amigos lo convencen para ofrecerle ayuda.</desc>
+    <category lang="es">Children</category>
+    <category lang="es">Adventure</category>
+    <category lang="es">Comedy</category>
+  </programme>
+  <programme start="20250926000000 +0000" stop="20250926003000 +0000" channel="809">
+    <title lang="es">Da Boom Crew</title>
+    <desc lang="es">El planeta Yodiggity se prepara para celebrar el Día de la Libertad. El Boom Crew se embarca en una misión.</desc>
+    <category lang="es">Children</category>
+    <category lang="es">Science fiction</category>
+    <category lang="es">Animated</category>
+  </programme>
+  <programme start="20250926003000 +0000" stop="20250926010000 +0000" channel="809">
+    <title lang="es">Adventurers: Masters of Time</title>
+    <desc lang="es">El grupo viaja a la Inglaterra de 1835, donde conocen a Florence Nightingale de 15 años. Su madre se preocupa por su gusto por la enfermería y prefiere que se case pronto.</desc>
+    <category lang="es">Children</category>
+    <category lang="es">Adventure</category>
+    <category lang="es">Entertainment</category>
   </programme>
 </tv>
