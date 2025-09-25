@@ -9,6 +9,8 @@ jobs:
   update-epg:
     runs-on: ubuntu-latest
     steps:
+      - name: Install dependencies
+ 
       - name: Checkout repo
         uses: actions/checkout@v4
 
