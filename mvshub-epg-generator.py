@@ -289,7 +289,7 @@ def build_xmltv(channels_data):
         "generator-info-url": "https://www.mvshub.com.mx/"
     })
     
-        ns = "{http://ws.minervanetworks.com/}"
+    ns = "{http://ws.minervanetworks.com/}"
     channels = {}  # Cache para evitar duplicados
     
     for channel_id, contents in channels_data:
