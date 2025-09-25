@@ -318,4 +318,52 @@ def main():
     logger.info(f"Channels: {CHANNEL_IDS}")
     logger.info(f"Visiting site: {SITE_URL}")
 
-    # Imprime primeros 1000 chars
+    # Session
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
+    # Get cookies and UUID via Selenium
+    result = get_cookies_via_selenium()
+    cookies = result['cookies']
+    for name, value in cookies.items():
+        session.cookies.set(name, value)
+    logger.info(f"Cookies set in session: {list(cookies.keys())}")
+    logger.info(f"Current UUID for API: {UUID}")
+
+    # Chequeo estricto: Si UUID es el fallback viejo, error (no fetch sin válido)
+    if not UUID or UUID == "a8e7b76a-818e-4830-a518-a83debab41ce":
+        logger.error("No valid dynamic UUID obtained - cannot fetch EPG data. Check Selenium load or regex pattern for MVS Hub.")
+        logger.info("Tip: Run locally with non-headless Selenium to inspect page_source.")
+        return False
+
+    # Test fetch para canal 222 (debug: confirma si API funciona con UUID/cookies)
+    logger.info("=== TEST FETCH FOR CHANNEL 222 (debug) ===")
+    test_contents = fetch_channel_contents(222, date_from, date_to, session)
+    if not test_contents:
+        logger.error("Test fetch for 222 failed (0 programmes) - Check logs above for status/response. No full run.")
+        # Opcional: Continúa pero loggea
+        # return False
+    else:
+        logger.info(f"Test success: {len(test_contents)} programmes for 222 - Proceeding to all channels.")
+
+    # Fetch all channels
+    channels_data = []
+    logger.info("=== FETCHING ALL CHANNELS ===")
+    for channel_id in CHANNEL_IDS:
+        logger.info(f"--- Fetching {channel_id} ---")
+        contents = fetch_channel_contents(channel_id, date_from, date_to, session)
+        channels_data.append((channel_id, contents))
+        time.sleep(1)  # Rate limit suave (1s entre requests)
+
+    # Build XMLTV
+    logger.info("=== BUILDING XMLTV ===")
+    success = build_xmltv(channels_data)
+    if success:
+        logger.info("¡Éxito! EPG XMLTV generado con datos dinámicos. Revisa epgmvs.xml y raw_response_*.xml.")
+    else:
+        logger.warning("Build failed or no data - XML may be empty/minimal.")
+
+    return success
+
+if __name__ == "__main__":
+    main()
