@@ -7,6 +7,7 @@ import os
 import logging
 import time  # Para sleep
 import re  # Para extraer UUID
+from bs4 import BeautifulSoup  # Para parsing HTML
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration
 CHANNEL_IDS = [222, 807]  # Array de canales por defecto
-UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"  # Fijo; se actualiza si cambia via Selenium
+UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"  # Fallback temporal; se actualiza dinámicamente
 URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
 LINEUP_ID = "220"
 OUTPUT_FILE = "epgmvs.xml"
@@ -50,15 +51,53 @@ FALLBACK_COOKIES = {
     'AWSALBCORS': 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y'
 }
 
+def extract_uuid_from_page(page_source):
+    """Extrae UUID dinámico del HTML source usando BeautifulSoup + regex."""
+    try:
+        soup = BeautifulSoup(page_source, "html.parser")
+        scripts = soup.find_all("script")
+        for script in scripts:
+            script_text = script.string or script.text if script.text else ""
+            if "uuid" in script_text.lower():
+                # Patrón común: document.cplogin.uuid.value="xxx" o similar (ajusta para MVS)
+                patt = re.compile(r'document\.[a-zA-Z0-9_]+\.uuid\.value\s*=\s*["\']([^"\']+)["\']')
+                match = patt.search(script_text)
+                if match:
+                    uuid_val = match.group(1)
+                    logger.info(f"UUID extraído de script tag: {uuid_val}")
+                    return uuid_val
+                # Patrón alternativo: window.mvs.uuid = "xxx" o uuid: "xxx" en JSON
+                patt_alt = re.compile(r'uuid["\']?\s*[:=]\s*["\']?([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})["\']?')
+                match = patt_alt.search(script_text)
+                if match:
+                    uuid_val = match.group(1)
+                    logger.info(f"UUID extraído via alt regex en script: {uuid_val}")
+                    return uuid_val
+        
+        # Fallback global: Busca en todo el source (e.g., hidden input o JSON)
+        patt_fallback = re.compile(r'uuid["\']?\s*[:=]\s*["\']?([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})["\']?')
+        match = patt_fallback.search(page_source)
+        if match:
+            uuid_val = match.group(1)
+            logger.info(f"UUID extraído via fallback regex en source: {uuid_val}")
+            return uuid_val
+        
+        logger.warning("No se encontró UUID en page source - ajusta regex para MVS Hub")
+        return None
+    except Exception as e:
+        logger.error(f"Error parsing page for UUID: {e}")
+        return None
+
 def get_cookies_via_selenium():
-    """Visita la página MVS Hub EPG para generar y extraer cookies frescas (SPA sin login)."""
-    global UUID, URL_BASE  # <-- MOVIDO AL TOP: Declara globals antes de usar UUID/URL_BASE
+    """Visita la página MVS Hub EPG para generar cookies frescas y extraer UUID dinámico."""
+    global UUID, URL_BASE  # Declara globals al inicio
     
-    if not os.environ.get('USE_SELENIUM', 'true').lower() == 'true':
-        logger.info("Selenium disabled via env - using fallback")
-        return {}
+    use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
+    if not use_selenium:
+        logger.info("Selenium disabled via env - skipping UUID/cookies auto")
+        return {'cookies': {}, 'uuid': None}
     
-    logger.info(f"Using Selenium to visit {SITE_URL} for fresh cookies...")
+    logger.info(f"Using Selenium to visit {SITE_URL} for fresh cookies and UUID...")
     options = Options()
     options.add_argument("--headless")  # Sin GUI (cambia a False para debug visual)
     options.add_argument("--no-sandbox")
@@ -77,63 +116,62 @@ def get_cookies_via_selenium():
         wait = WebDriverWait(driver, 20)  # Timeout más largo para SPA
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         
-        # Paso 2: Espera load completo del SPA (JS carga parrilla y cookies)
+        # Paso 2: Espera load completo del SPA (JS carga parrilla, cookies y UUID)
         logger.info("Waiting for SPA to load...")
         time.sleep(10)  # Ajusta si es lento (SPA puede tardar en fetch API interna)
         
-        # Paso 3: Opcional - Espera elemento específico de la parrilla (ajusta selector si inspeccionas)
-        # Ejemplo: Si hay un div con ID "epg-grid" o clase "channel-list"
-        # try:
-        #     wait.until(EC.presence_of_element_located((By.ID, "epg-container")))  # Ajusta basado en inspección
-        #     logger.info("EPG grid loaded")
-        # except TimeoutException:
-        #     logger.warning("EPG element not found - continuing anyway")
+        # Paso 3: Extrae UUID del source o via JS execution
+        page_source = driver.page_source
+        uuid_val = extract_uuid_from_page(page_source)
+        if not uuid_val:
+            # Fallback: Ejecuta JS para extraer de variable global (ajusta selector si es diferente)
+            try:
+                uuid_js = driver.execute_script("""
+                    return (typeof document !== 'undefined' && 
+                            (document.cplogin ? document.cplogin.uuid ? document.cplogin.uuid.value : null :
+                             window.mvs ? window.mvs.uuid : null) || null);
+                """)
+                if uuid_js:
+                    uuid_val = str(uuid_js)
+                    logger.info(f"UUID extraído via JS execution: {uuid_val}")
+            except Exception as js_e:
+                logger.warning(f"JS execution for UUID failed: {js_e}")
         
-        # Paso 4: Extrae UUID si cambia (busca en page_source o URL)
-        page_source = driver.page_source.lower()
-        current_url = driver.current_url
-        new_uuid = UUID  # Usa el global aquí (después de declaración)
-        # Regex para UUID en HTML/JS (e.g., en scripts o URLs internas)
-        uuid_match = re.search(r'/list/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/', page_source + current_url)
-        if uuid_match:
-            new_uuid = uuid_match.group(1)
-            if new_uuid != UUID:
-                UUID = new_uuid
-                URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
-                logger.info(f"UUID updated to: {UUID}")
-        else:
-            logger.info("UUID not found in page - using fixed value")
+        # Paso 4: Actualiza global UUID y URL_BASE si encontrado
+        if uuid_val and uuid_val != UUID:
+            UUID = uuid_val
+            URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
+            logger.info(f"UUID dinámico actualizado: {UUID}")
         
         # Paso 5: Extrae cookies
         selenium_cookies = driver.get_cookies()
         cookies_dict = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
         logger.info(f"Selenium extracted {len(cookies_dict)} cookies: {list(cookies_dict.keys())}")
         
-        # Filtra relevantes (basado en DevTools: JSESSIONID, AWSALB, AWSALBCORS - agrega si ves más)
+        # Filtra relevantes (agrega más si ves en DevTools)
         relevant_cookies = {k: v for k, v in cookies_dict.items() if k in ['JSESSIONID', 'AWSALB', 'AWSALBCORS']}
         if not relevant_cookies:
-            logger.warning("No relevant cookies found - check if site sets them on load. Try non-headless for debug.")
-            # Opcional: Guarda screenshot para debug
-            # driver.save_screenshot('debug_screenshot.png')
-            return {}
+            logger.warning("No relevant cookies found - check site load. Try non-headless.")
+            return {'cookies': {}, 'uuid': uuid_val}
         
         driver.quit()
         logger.info(f"Extracted relevant cookies: {list(relevant_cookies.keys())}")
-        return relevant_cookies
+        return {'cookies': relevant_cookies, 'uuid': uuid_val}
         
     except TimeoutException:
         logger.error("Timeout loading MVS Hub page - check internet/VPN or increase wait time")
         driver.quit()
-        return {}
+        return {'cookies': {}, 'uuid': None}
     except Exception as e:
         logger.error(f"Selenium error: {e}")
         driver.quit()
-        return {}
+        return {'cookies': {}, 'uuid': None}
 
 def fetch_channel_contents(channel_id, date_from, date_to, session):
-    """Fetch contents para un canal específico (page=0)."""
+    """Fetch contents para un canal específico usando UUID dinámico (page=0)."""
+    global URL_BASE  # Usa la URL actualizada
     url = URL_BASE.format(channel_id, date_from, date_to)
-    logger.info(f"Fetching channel {channel_id}: {url}")
+    logger.info(f"Fetching channel {channel_id} with UUID {UUID}: {url}")
     
     request_headers = HEADERS.copy()
     try:
@@ -262,46 +300,4 @@ def main():
     logger.info(f"Channels: {CHANNEL_IDS}")
     logger.info(f"Visiting site: {SITE_URL}")
 
-    # Session
-    session = requests.Session()
-    session.headers.update(HEADERS)
-
-    # Obtén cookies: Selenium auto si enabled, sino fallback
-    cookies = {}
-    selenium_cookies = get_cookies_via_selenium()
-    if selenium_cookies:
-        cookies = selenium_cookies
-        # Actualiza URL_BASE si UUID cambió (ya hecho en get_cookies)
-        logger.info("Using Selenium-fetched cookies from MVS Hub")
-    else:
-        cookies = FALLBACK_COOKIES
-        logger.info("Using hardcoded cookies (set USE_SELENIUM=true for auto from MVS Hub)")
-
-    # Setea cookies en session
-    for name, value in cookies.items():
-        session.cookies.set(name, value)
-    logger.info(f"Cookies set: {list(cookies.keys())}")
-
-    # Fetch por canal
-    channels_data = []
-    for channel_id in CHANNEL_IDS:
-        contents = fetch_channel_contents(channel_id, date_from, date_to, session)
-        if contents:
-            channels_data.append((channel_id, contents))
-        else:
-            logger.warning(f"No data for channel {channel_id}")
-
-    if not channels_data:
-        logger.error("No data for any channel. Check cookies/debug.log.")
-        return False
-
-    # Build y guarda
-    success = build_xmltv(channels_data)
-    if success:
-        logger.info("¡Prueba exitosa! Revisa epgmvs.xml y raw_response_*.xml")
-    return success
-
-if __name__ == "__main__":
-    success = main()
-    if not success:
-        logger.error("Prueba fallida. Revisa logs y actualiza cookies.")
+    # Session inicial
