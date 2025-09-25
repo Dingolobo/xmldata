@@ -24,19 +24,25 @@ jobs:
 
       - name: Run EPG Converter
         env:
-          USE_SELENIUM: true  # Habilita Selenium para cookies y UUID auto (default sí)
+          USE_SELENIUM: true  # Habilita Selenium para cookies y UUID auto
           CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"  # Tus canales
-          # Fallback cookies via secrets (configura en repo Settings > Secrets si quieres)
+          TIMEZONE_OFFSET: 0  # 0=UTC (default); -6=México si datos son local
+          # Fallback cookies via secrets (opcional)
           # JSESSIONID: ${{ secrets.JSESSIONID }}
           # AWSALB: ${{ secrets.AWSALB }}
           # AWSALBCORS: ${{ secrets.AWSALBCORS }}
-          # Opcional: SITE_URL si quieres override
-          # SITE_URL: "https://www.mvshub.com.mx/#spa/epg"
         run: |
-          # Debug: Muestra env (comenta para producción)
+          # Debug: Muestra env
           echo "CHANNEL_IDS: $CHANNEL_IDS"
           echo "USE_SELENIUM: $USE_SELENIUM"
+          echo "TIMEZONE_OFFSET: $TIMEZONE_OFFSET"
           python mvshub-epg-generator.py "$CHANNEL_IDS"
+          # Debug: Muestra XML generado y raw files
+          echo "--- EPGMVS.XML HEAD (primeros 20 lines) ---"
+          cat epgmvs.xml | head -20 || echo "epgmvs.xml not generated"
+          echo "--- RAW FILES ---"
+          ls -la raw_response_*.xml || echo "No raw files (no data fetched)"
+          echo "--- END DEBUG ---"
 
       - name: Commit and push XML
         run: |
