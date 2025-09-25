@@ -154,7 +154,7 @@ def intercept_uuid_via_selenium():
                 parsed = json.loads(system_login)
                 device_uuid = parsed.get('data', {}).get('deviceUuid')
                 logger.info(f"deviceUuid fallback: {device_uuid}")
-                except:
+            except:
                 pass
         
         if uuid_candidates:
