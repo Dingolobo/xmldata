@@ -1,0 +1,57 @@
+name: Update MVS EPG XMLTV
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC (ajusta para hora local, e.g., '0 6 * * *' para 6AM UTC)
+  workflow_dispatch:  # Permite trigger manual
+
+jobs:
+  update-epg:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install requests selenium webdriver-manager lxml beautifulsoup4
+
+      - name: Run EPG Converter
+        env:
+          USE_SELENIUM: true  # Habilita extracción auto de deviceToken via Selenium
+          CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"  # Tu lista completa de canales
+          TIMEZONE_OFFSET: -6  # Para México (CDT; usa 0 para UTC)
+          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}  # Fallback manual (opcional, auto debería bastar)
+        run: |
+          # Debug: Confirma env sin mostrar valores sensibles
+          echo "CHANNEL_IDS: $CHANNEL_IDS"
+          echo "USE_SELENIUM: $USE_SELENIUM"
+          echo "TIMEZONE_OFFSET: $TIMEZONE_OFFSET"
+          echo "BEARER_TOKEN set: $([ -n '$BEARER_TOKEN' ] && echo 'yes (fallback)' || echo 'no (usa auto)')"
+          python mvshub-epg-generator.py "$CHANNEL_IDS"
+          # Debug output: Head de XML y raw files
+          echo "--- EPGMVS.XML HEAD (primeras 20 líneas) ---"
+          head -20 epgmvs.xml || echo "epgmvs.xml not generated or empty"
+          echo "--- RAW FILES LIST ---"
+          ls -la raw_response_*.xml || echo "No raw files generated"
+          echo "--- END DEBUG ---"
+
+      - name: Commit and push XML if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add epgmvs.xml
+          if git diff --staged --quiet; then
+            echo "No changes to XML - skipping commit"
+          else
+            git commit -m "Update EPG XMLTV $(date +'%Y-%m-%d %H:%M UTC')"
+            git push
+            echo "Committed and pushed updated XML"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
