@@ -20,16 +20,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests selenium webdriver-manager lxml
+          pip install requests selenium webdriver-manager lxml beautifulsoup4
 
       - name: Run EPG Converter
         env:
-          USE_SELENIUM: true  # Habilita Selenium para cookies auto (default sí)
+          USE_SELENIUM: true  # Habilita Selenium para cookies y UUID auto (default sí)
           CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"  # Tus canales
-          # Fallback cookies via secrets (configura en repo Settings > Secrets)
-          JSESSIONID: ${{ secrets.JSESSIONID }}
-          AWSALB: ${{ secrets.AWSALB }}
-          AWSALBCORS: ${{ secrets.AWSALBCORS }}
+          # Fallback cookies via secrets (configura en repo Settings > Secrets si quieres)
+          # JSESSIONID: ${{ secrets.JSESSIONID }}
+          # AWSALB: ${{ secrets.AWSALB }}
+          # AWSALBCORS: ${{ secrets.AWSALBCORS }}
           # Opcional: SITE_URL si quieres override
           # SITE_URL: "https://www.mvshub.com.mx/#spa/epg"
         run: |
