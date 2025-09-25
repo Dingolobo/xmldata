@@ -83,7 +83,7 @@ FALLBACK_COOKIES = {
 
 def get_dynamic_uuid_via_token(session, bearer, device_uuid=None):
     """Obtiene UUID via /token con Bearer. Si 403, fallback a device_uuid (genérico)."""
-    global UUID, URL_BASE
+    global UUID, URL_BASE  # ¡FIX: Movido al TOP de la función (antes de cualquier uso/assign)
     token_url = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/login/cache/token"
     
     if not bearer:
@@ -113,8 +113,7 @@ def get_dynamic_uuid_via_token(session, bearer, device_uuid=None):
         elif resp.status_code == 403:
             logger.warning(f"/token 403 (genérico no autorizado) - Fallback a deviceUuid si disponible")
             if device_uuid:
-                global UUID, URL_BASE
-                UUID = device_uuid
+                UUID = device_uuid  # ¡FIX: Asigna directo (global ya declarado arriba)
                 URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
                 logger.info(f"Using deviceUuid as fallback UUID: {UUID}")
                 return UUID
@@ -238,7 +237,6 @@ def fetch_channel_contents(channel_id, date_from, date_to, session, bearer):
     """Fetch contents para un canal (con Bearer en headers)."""
     global URL_BASE
     url = URL_BASE.format(channel_id, date_from, date_to)
-
     logger.info(f"Fetching channel {channel_id} with UUID {UUID}: {url}")
     
     request_headers = get_headers_with_bearer(HEADERS_EPG, bearer)
@@ -291,7 +289,7 @@ def build_xmltv(channels_data):
         "generator-info-url": "https://www.mvshub.com.mx/"
     })
     
-    ns = "{http://ws.minervanetworks.com/}"
+        ns = "{http://ws.minervanetworks.com/}"
     channels = {}  # Cache para evitar duplicados
     
     for channel_id, contents in channels_data:
