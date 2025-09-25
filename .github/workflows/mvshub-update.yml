@@ -2,8 +2,8 @@ name: Update MVS EPG XMLTV
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily at midnight UTC (ajusta para hora local, e.g., '0 6 * * *' para 6AM UTC)
-  workflow_dispatch:  # Permite trigger manual
+    - cron: '0 0 * * *'  # Daily midnight UTC (ajusta si needed)
+  workflow_dispatch:
 
 jobs:
   update-epg:
@@ -23,22 +23,20 @@ jobs:
 
       - name: Run EPG Converter
         env:
-          USE_SELENIUM: true  # Habilita extracción auto de deviceToken via Selenium
-          CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"  # Tu lista completa de canales
-          TIMEZONE_OFFSET: -6  # Para México (CDT; usa 0 para UTC)
-          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}  # Fallback manual (opcional, auto debería bastar)
+          USE_SELENIUM: false  # Desactiva Selenium (usa Bearer manual para /token; cookies fallback)
+          CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"
+          TIMEZONE_OFFSET: -6  # México CDT
+          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}  # Requerido: JWT logueado para /token 200
         run: |
-          # Debug: Confirma env sin mostrar valores sensibles
           echo "CHANNEL_IDS: $CHANNEL_IDS"
           echo "USE_SELENIUM: $USE_SELENIUM"
           echo "TIMEZONE_OFFSET: $TIMEZONE_OFFSET"
-          echo "BEARER_TOKEN set: $([ -n '$BEARER_TOKEN' ] && echo 'yes (fallback)' || echo 'no (usa auto)')"
+          echo "BEARER_TOKEN set: $([ -n '$BEARER_TOKEN' ] && echo 'yes (logueado)' || echo 'no - configura secret')"
           python mvshub-epg-generator.py "$CHANNEL_IDS"
-          # Debug output: Head de XML y raw files
-          echo "--- EPGMVS.XML HEAD (primeras 20 líneas) ---"
-          head -20 epgmvs.xml || echo "epgmvs.xml not generated or empty"
-          echo "--- RAW FILES LIST ---"
-          ls -la raw_response_*.xml || echo "No raw files generated"
+          echo "--- EPGMVS.XML HEAD (20 lines) ---"
+          head -20 epgmvs.xml || echo "XML empty"
+          echo "--- RAW FILES ---"
+          ls -la raw_response_*.xml || echo "No raw generated"
           echo "--- END DEBUG ---"
 
       - name: Commit and push XML if changed
@@ -47,11 +45,11 @@ jobs:
           git config --local user.name "GitHub Action"
           git add epgmvs.xml
           if git diff --staged --quiet; then
-            echo "No changes to XML - skipping commit"
+            echo "No changes - skip commit"
           else
             git commit -m "Update EPG XMLTV $(date +'%Y-%m-%d %H:%M UTC')"
             git push
-            echo "Committed and pushed updated XML"
+            echo "Pushed updated XML"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
