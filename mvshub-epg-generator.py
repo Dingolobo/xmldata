@@ -17,6 +17,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import warnings
+warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -24,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration
 CHANNEL_IDS = [222, 807]
-UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"  # Fallback
+UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"  # Fallback viejo (solo si todo falla)
 URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
 LINEUP_ID = "220"
 OUTPUT_FILE = "epgmvs.xml"
@@ -79,8 +81,8 @@ FALLBACK_COOKIES = {
     'AWSALBCORS': os.environ.get('AWSALBCORS', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y')
 }
 
-def get_dynamic_uuid_via_token(session, bearer):
-    """Obtiene UUID via /token con Bearer (deviceToken)."""
+def get_dynamic_uuid_via_token(session, bearer, device_uuid=None):
+    """Obtiene UUID via /token con Bearer. Si 403, fallback a device_uuid (genérico)."""
     global UUID, URL_BASE
     token_url = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/login/cache/token"
     
@@ -93,23 +95,34 @@ def get_dynamic_uuid_via_token(session, bearer):
         resp = session.get(token_url, headers=get_token_headers(bearer), timeout=15, verify=False)
         logger.info(f"Token API status: {resp.status_code}")
         
-        if resp.status_code != 200:
-            logger.error(f"Token fetch failed: {resp.status_code} - {resp.text[:200]}")
-            return None
-        
-        token_data = resp.json()
-        uuid_val = token_data.get('token', {}).get('uuid')
-        expiration = token_data.get('token', {}).get('expiration')
-        cache_url = token_data.get('token', {}).get('cacheUrl', 'https://edge.prod.ovp.ses.com:9443/xtv-ws-client')
-        
-        if uuid_val:
-            UUID = uuid_val
-            base_host = cache_url.replace('https://', '').replace('/xtv-ws-client', '')
-            URL_BASE = f"https://{base_host}/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
-            logger.info(f"UUID obtenido: {UUID} (exp: {expiration})")
-            return UUID
+        if resp.status_code == 200:
+            token_data = resp.json()
+            uuid_val = token_data.get('token', {}).get('uuid')
+            expiration = token_data.get('token', {}).get('expiration')
+            cache_url = token_data.get('token', {}).get('cacheUrl', 'https://edge.prod.ovp.ses.com:9443/xtv-ws-client')
+            
+            if uuid_val:
+                UUID = uuid_val
+                base_host = cache_url.replace('https://', '').replace('/xtv-ws-client', '')
+                URL_BASE = f"https://{base_host}/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
+                logger.info(f"UUID obtenido via /token: {UUID} (exp: {expiration})")
+                return UUID
+            else:
+                logger.error("No 'uuid' en JSON: " + json.dumps(token_data, indent=2)[:200])
+                return None
+        elif resp.status_code == 403:
+            logger.warning(f"/token 403 (genérico no autorizado) - Fallback a deviceUuid si disponible")
+            if device_uuid:
+                global UUID, URL_BASE
+                UUID = device_uuid
+                URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
+                logger.info(f"Using deviceUuid as fallback UUID: {UUID}")
+                return UUID
+            else:
+                logger.error("No device_uuid para fallback - usa manual Bearer")
+                return None
         else:
-            logger.error("No 'uuid' en JSON: " + json.dumps(token_data, indent=2)[:200])
+            logger.error(f"Token fetch failed: {resp.status_code} - {resp.text[:200]}")
             return None
             
     except json.JSONDecodeError as je:
@@ -120,7 +133,7 @@ def get_dynamic_uuid_via_token(session, bearer):
         return None
 
 def get_cookies_via_selenium():
-    """Carga página con Selenium, extrae deviceToken de 'system.login' en localStorage, luego UUID y cookies."""
+    """Carga página con Selenium, extrae deviceToken Y deviceUuid de 'system.login', luego UUID y cookies."""
     global UUID, URL_BASE
     
     use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
@@ -129,9 +142,9 @@ def get_cookies_via_selenium():
         bearer = os.environ.get('BEARER_TOKEN', '')
         session_temp = requests.Session()
         get_dynamic_uuid_via_token(session_temp, bearer)
-        return {'cookies': FALLBACK_COOKIES, 'uuid': UUID, 'bearer': bearer}
+        return {'cookies': FALLBACK_COOKIES, 'uuid': UUID, 'bearer': bearer, 'device_uuid': None}
     
-    logger.info(f"Loading {SITE_URL} con Selenium para deviceToken auto y cookies...")
+    logger.info(f"Loading {SITE_URL} con Selenium para deviceToken/deviceUuid auto y cookies...")
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
@@ -150,28 +163,31 @@ def get_cookies_via_selenium():
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         
         logger.info("Waiting for SPA to load and set localStorage...")
-        time.sleep(25)  # Más tiempo para JS init, /account fetch, y system.login set (ajusta si lento)
+        time.sleep(25)  # Tiempo para JS init y system.login set
         
         # Extrae 'system.login' de localStorage
         system_login_str = driver.execute_script("return localStorage.getItem('system.login');")
         bearer = None
+        device_uuid = None
         if system_login_str:
             try:
                 system_login = json.loads(system_login_str)
                 bearer = system_login.get('data', {}).get('deviceToken')
-                if bearer:
+                device_uuid = system_login.get('data', {}).get('deviceUuid')
+                if bearer and device_uuid:
                     os.environ['BEARER_TOKEN'] = bearer
-                    logger.info(f"deviceToken extraído de system.login: {bearer[:20]}... (largo: {len(bearer)}, exp en JWT: futuro)")
-                    # Opcional: Test /account con bearer para verify
+                    logger.info(f"deviceToken extraído de system.login: {bearer[:20]}... (largo: {len(bearer)})")
+                    logger.info(f"deviceUuid extraído: {device_uuid}")
+                    # Test /account con bearer para verify
                     test_session = requests.Session()
                     test_resp = test_session.get("https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/account", 
                                                  headers=get_token_headers(bearer), timeout=10, verify=False)
                     if test_resp.status_code == 200:
                         logger.info(f"Verify /account success: 200 (accountId: {test_resp.json()[0].get('accountId', 'N/A')})")
                     else:
-                        logger.warning(f"/account test: {test_resp.status_code}")
+                        logger.warning(f"/account test: {test_resp.status_code} - {test_resp.text[:100]}")
                 else:
-                    logger.warning("No 'deviceToken' en system.login data")
+                    logger.warning("Falta 'deviceToken' o 'deviceUuid' en system.login data")
             except json.JSONDecodeError as je:
                 logger.error(f"JSON error en system.login: {je} - String: {system_login_str[:200]}")
         else:
@@ -183,7 +199,7 @@ def get_cookies_via_selenium():
             if not bearer:
                 logger.error("No Bearer disponible - cannot fetch UUID/EPG")
                 driver.quit()
-                return {'cookies': {}, 'uuid': None, 'bearer': None}
+                return {'cookies': {}, 'uuid': None, 'bearer': None, 'device_uuid': None}
         
         # Extrae cookies post-load
         selenium_cookies = driver.get_cookies()
@@ -197,31 +213,32 @@ def get_cookies_via_selenium():
         driver.quit()
         logger.info(f"Final cookies: {list(relevant_cookies.keys())}")
         
-        # Obtén UUID via token API (con deviceToken y cookies)
+        # Obtén UUID via token API (con fallback a device_uuid si 403)
         temp_session = requests.Session()
         for name, value in relevant_cookies.items():
             temp_session.cookies.set(name, value)
-        get_dynamic_uuid_via_token(temp_session, bearer)
+        get_dynamic_uuid_via_token(temp_session, bearer, device_uuid)
         
-        return {'cookies': relevant_cookies, 'uuid': UUID, 'bearer': bearer}
+        return {'cookies': relevant_cookies, 'uuid': UUID, 'bearer': bearer, 'device_uuid': device_uuid}
         
     except TimeoutException:
         logger.error("Timeout loading page")
         driver.quit()
         bearer = os.environ.get('BEARER_TOKEN', '')
         get_dynamic_uuid_via_token(requests.Session(), bearer)
-        return {'cookies': FALLBACK_COOKIES, 'uuid': UUID, 'bearer': bearer}
+        return {'cookies': FALLBACK_COOKIES, 'uuid': UUID, 'bearer': bearer, 'device_uuid': None}
     except Exception as e:
         logger.error(f"Selenium error: {e}")
         driver.quit()
         bearer = os.environ.get('BEARER_TOKEN', '')
         get_dynamic_uuid_via_token(requests.Session(), bearer)
-        return {'cookies': FALLBACK_COOKIES, 'uuid': UUID, 'bearer': bearer}
+        return {'cookies': FALLBACK_COOKIES, 'uuid': UUID, 'bearer': bearer, 'device_uuid': None}
 
 def fetch_channel_contents(channel_id, date_from, date_to, session, bearer):
     """Fetch contents para un canal (con Bearer en headers)."""
     global URL_BASE
     url = URL_BASE.format(channel_id, date_from, date_to)
+
     logger.info(f"Fetching channel {channel_id} with UUID {UUID}: {url}")
     
     request_headers = get_headers_with_bearer(HEADERS_EPG, bearer)
@@ -261,10 +278,13 @@ def fetch_channel_contents(channel_id, date_from, date_to, session, bearer):
         return []
 
 def build_xmltv(channels_data):
-    """Build XMLTV mergeado para todos los canales (con indentación y null checks)."""
+    """Build XMLTV mergeado para todos los canales (con indentación, null checks y timezone offset)."""
     if not channels_data:
         logger.warning("No data to build XMLTV - skipping")
         return False
+    
+    offset = int(os.environ.get('TIMEZONE_OFFSET', '0'))
+    tz_str = f" {'+' if offset >= 0 else ''}{offset}00"  # e.g., " -0600" para México
     
     tv = ET.Element("tv", attrib={
         "generator-info-name": "MVS Hub Multi-Channel Dynamic 24h",
@@ -307,7 +327,7 @@ def build_xmltv(channels_data):
             channels[channel_id] = True
             logger.info(f"Added channel {channel_id}: {call_sign} (number: {number}, logo: {logo_src})")
         
-        # Programmes para este canal (con null checks)
+        # Programmes para este canal (con null checks y timezone)
         for content in contents:
             # Start/End times (requeridos - chequea)
             start_elem = content.find(f"{ns}startDateTime")
@@ -322,9 +342,11 @@ def build_xmltv(channels_data):
                 logger.warning(f"Invalid start/end timestamp in {channel_id} - skipping programme")
                 continue
             
+            start_dt = datetime.utcfromtimestamp(start_ms / 1000) + timedelta(hours=offset)
+            end_dt = datetime.utcfromtimestamp(end_ms / 1000) + timedelta(hours=offset)
             programme = ET.SubElement(tv, "programme", attrib={
-                "start": datetime.utcfromtimestamp(start_ms / 1000).strftime("%Y%m%d%H%M%S") + " +0000",
-                "stop": datetime.utcfromtimestamp(end_ms / 1000).strftime("%Y%m%d%H%M%S") + " +0000",
+                "start": start_dt.strftime("%Y%m%d%H%M%S") + tz_str,
+                "stop": end_dt.strftime("%Y%m%d%H%M%S") + tz_str,
                 "channel": str(channel_id)
             })
             
@@ -357,8 +379,8 @@ def build_xmltv(channels_data):
     
     num_channels = len(channels)
     total_programmes = sum(len(contents) for _, contents in channels_data if contents)
-    logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes) - Formateado con indentación")
-    logger.info(f"Processed {len([p for _, cs in channels_data for p in cs if p])} valid programmes (skipped invalid/missing fields)")
+    logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes) - Timezone: {tz_str}")
+    logger.info(f"Processed {sum(1 for _, cs in channels_data for c in cs if c.find(f'{ns}startDateTime') is not None)} valid programmes (skipped invalid)")
     return True
 
 def main():
@@ -369,7 +391,7 @@ def main():
     now = datetime.utcnow() + timedelta(hours=offset)
     date_from = int(now.timestamp() * 1000)
     date_to = int((now + timedelta(hours=24)).timestamp() * 1000)
-    logger.info(f"Date range (offset {offset}): {now} to {now + timedelta(hours=24)} (24h)")
+    logger.info(f"Date range (offset {offset}): {now} to {now + timedelta(hours=24)} (24h window)")
     
     # Overrides (CLI/env)
     if len(sys.argv) > 1:
@@ -390,25 +412,27 @@ def main():
     session = requests.Session()
     session.headers.update(HEADERS_EPG)
 
-    # Get cookies via Selenium, deviceToken auto, y UUID via token API
+    # Get cookies via Selenium, deviceToken/deviceUuid auto, y UUID via token API (con fallback)
     result = get_cookies_via_selenium()
     cookies = result['cookies']
     bearer = result['bearer']
+    device_uuid = result['device_uuid']
     for name, value in cookies.items():
         session.cookies.set(name, value)
     logger.info(f"Cookies set in session: {list(cookies.keys())}")
     logger.info(f"Bearer disponible: {'yes' if bearer else 'no'} (auto o manual)")
+    logger.info(f"deviceUuid disponible: {'yes' if device_uuid else 'no'}")
 
-    # Chequeo estricto: Si no hay Bearer válido, error (fallback UUID no sirve)
+    # Chequeo estricto: Si no hay Bearer válido, error
     if not bearer:
-        logger.error("No Bearer (deviceToken o manual) - cannot fetch UUID/EPG. Configura BEARER_TOKEN o chequea Selenium load.")
+        logger.error("No Bearer (deviceToken o manual) - cannot fetch EPG. Configura BEARER_TOKEN o chequea Selenium.")
         return False
 
     # Test fetch para canal 222 (debug)
     logger.info("=== TEST FETCH FOR CHANNEL 222 (debug) ===")
     test_contents = fetch_channel_contents(222, date_from, date_to, session, bearer)
     if not test_contents:
-        logger.error("Test fetch for 222 failed (0 programmes) - Check logs for status/response.")
+        logger.error("Test fetch for 222 failed (0 programmes) - Check logs for status/response. Try manual BEARER_TOKEN.")
         return False
     else:
         logger.info(f"Test success: {len(test_contents)} programmes for 222 - Proceeding to all channels.")
@@ -420,13 +444,13 @@ def main():
         logger.info(f"--- Fetching {channel_id} ---")
         contents = fetch_channel_contents(channel_id, date_from, date_to, session, bearer)
         channels_data.append((channel_id, contents))
-        time.sleep(1)  # Rate limit
+        time.sleep(1)  # Rate limit suave
 
     # Build XMLTV
     logger.info("=== BUILDING XMLTV ===")
     success = build_xmltv(channels_data)
     if success:
-        logger.info("¡Éxito! EPG XMLTV generado con deviceToken auto via Selenium. Revisa epgmvs.xml y raw_response_*.xml.")
+        logger.info("¡Éxito! EPG XMLTV generado con deviceToken + deviceUuid fallback. Revisa epgmvs.xml y raw_response_*.xml.")
     else:
         logger.warning("Build failed or no data - XML may be empty.")
 
