@@ -85,7 +85,7 @@ def extract_uuid_from_page(page_source):
         # Debug: Snippet con 'uuid' para ajustar regex
         uuid_snippet = re.search(r'.{0,500}uuid.{0,500}', page_source, re.IGNORECASE | re.DOTALL)
         if uuid_snippet:
-            logger.warning(f"No UUID match - source snippet con 'uuid': {uuid_snippet.group(0)[:300]}...")  # Limita para logs
+            logger.warning(f"No UUID match - source snippet con 'uuid': {uuid_snippet.group(0)[:300]}...")
         else:
             logger.warning("No 'uuid' even in source - check if page loads correctly")
         return None
@@ -211,4 +211,111 @@ def fetch_channel_contents(channel_id, date_from, date_to, session):
         logger.error(f"Exception for {channel_id}: {e}")
         return []
 
-def build_xml
+def build_xmltv(channels_data):
+    """Build XMLTV mergeado para todos los canales (con indentación)."""
+    if not channels_data:
+        logger.warning("No data to build XMLTV - skipping")
+        return False
+    
+    tv = ET.Element("tv", attrib={
+        "generator-info-name": "MVS Hub Multi-Channel Dynamic 24h",
+        "generator-info-url": "https://www.mvshub.com.mx/"
+    })
+    
+    ns = "{http://ws.minervanetworks.com/}"
+    channels = {}  # Cache para evitar duplicados
+    
+    for channel_id, contents in channels_data:
+        if not contents:
+            continue
+        
+        # Channel info (de first content)
+        first_content = contents[0]
+        tv_channel = first_content.find(f".//{ns}TV_CHANNEL")
+        call_sign = str(channel_id)  # Default
+        if tv_channel is not None:
+            call_sign_elem = tv_channel.find(f"{ns}callSign")
+            call_sign = call_sign_elem.text if call_sign_elem is not None else str(channel_id)
+            number_elem = tv_channel.find(f"{ns}number")
+            number = number_elem.text if number_elem is not None else ""
+            image = tv_channel.find(f".//{ns}image")
+            logo_src = ""
+            if image is not None:
+                url_elem = image.find(f"{ns}url")
+                logo_src = url_elem.text if url_elem is not None else ""
+        else:
+            number = ""
+            logo_src = ""
+        
+        # Agrega channel si no existe
+        if channel_id not in channels:
+            channel = ET.SubElement(tv, "channel", id=str(channel_id))
+            ET.SubElement(channel, "display-name").text = call_sign
+            if number:
+                ET.SubElement(channel, "display-name").text = number
+            if logo_src:
+                ET.SubElement(channel, "icon", src=logo_src)
+            channels[channel_id] = True
+        
+        # Programmes para este canal
+        for content in contents:
+            start_ms = int(content.find(f"{ns}startDateTime").text)
+            end_ms = int(content.find(f"{ns}endDateTime").text)
+            programme = ET.SubElement(tv, "programme", attrib={
+                "start": datetime.utcfromtimestamp(start_ms / 1000).strftime("%Y%m%d%H%M%S") + " +0000",
+                "stop": datetime.utcfromtimestamp(end_ms / 1000).strftime("%Y%m%d%H%M%S") + " +0000",
+                "channel": str(channel_id)
+            })
+            
+            title = content.find(f"{ns}title").text
+            if title:
+                ET.SubElement(programme, "title", lang="es").text = title
+            
+            desc = content.find(f"{ns}description").text
+            if desc:
+                ET.SubElement(programme, "desc", lang="es").text = desc
+            
+            # Genres
+            genres = content.findall(f".//{ns}genres/{ns}genre/{ns}name")
+            for genre in genres:
+                if genre.text:
+                    ET.SubElement(programme, "category", lang="es").text = genre.text
+    
+    # Indentación
+    rough_string = ET.tostring(tv, encoding='unicode', method='xml')
+    reparsed = ET.fromstring(rough_string)
+    ET.indent(reparsed, space="  ", level=0)
+    tree = ET.ElementTree(reparsed)
+    tree.write(OUTPUT_FILE, encoding="utf-8", xml_declaration=True)
+    
+    num_channels = len(channels)
+    total_programmes = sum(len(contents) for _, contents in channels_data)
+    logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes) - Formateado con indentación")
+    return True
+
+def main():
+    global CHANNEL_IDS, UUID, URL_BASE, SITE_URL
+    
+    # Timestamps dinámicos: Ahora (UTC) a +24h, ajusta con TIMEZONE_OFFSET
+    offset = int(os.environ.get('TIMEZONE_OFFSET', '0'))
+    now = datetime.utcnow() + timedelta(hours=offset)
+    date_from = int(now.timestamp() * 1000)
+    date_to = int((now + timedelta(hours=24)).timestamp() * 1000)
+    logger.info(f"Date range (offset {offset}): {now} to {now + timedelta(hours=24)} (24h)")
+    
+    # Overrides (CLI/env)
+    if len(sys.argv) > 1:
+        CHANNEL_IDS = [int(id.strip()) for id in sys.argv[1].split(',')]
+    if 'CHANNEL_IDS' in os.environ:
+        CHANNEL_IDS = [int(id.strip()) for id in os.environ['CHANNEL_IDS'].split(',')]
+    if 'SITE_URL' in os.environ:
+        SITE_URL = os.environ['SITE_URL']
+
+    if not CHANNEL_IDS:
+        logger.error("No channels provided.")
+        return False
+
+    logger.info(f"Channels: {CHANNEL_IDS}")
+    logger.info(f"Visiting site: {SITE_URL}")
+
+    # Imprime primeros 1000 chars
