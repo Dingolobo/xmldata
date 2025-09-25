@@ -5,39 +5,129 @@ from datetime import datetime, timedelta
 import sys
 import os
 import logging
+import time  # Para sleep
+import re  # Para extraer UUID
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import TimeoutException
 
 # Setup logging simple
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Configuration
-CHANNEL_IDS = [222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704]  # Array de canales por defecto (agrega más, e.g., 766)
-UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"
-URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"  # Dinámico: channel_id en {}
-LINEUP_ID = "220"  # Fijo
+CHANNEL_IDS = [222, 807]  # Array de canales por defecto
+UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"  # Fijo; se actualiza si cambia via Selenium
+URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
+LINEUP_ID = "220"
 OUTPUT_FILE = "epgmvs.xml"
+SITE_URL = "https://www.mvshub.com.mx/#spa/epg"  # URL de la parrilla EPG (SPA)
 
-# Headers mínimos (basados en tu Request Headers - simplificados)
+# Headers mínimos
 HEADERS = {
-    'accept': 'application/xml, text/xml, */*',  # Prioriza XML
+    'accept': 'application/xml, text/xml, */*',
     'accept-language': 'es-419,es;q=0.9',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
     'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
-    'sec-fetch-dest': 'empty',  # Para API
+    'sec-fetch-dest': 'empty',
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'none',
     'cache-control': 'no-cache',
     'pragma': 'no-cache'
 }
 
-# Cookies - ¡ACTUALIZA CON VALORES FRES COS DE DEVTOOLS!
-COOKIES = {
-    'JSESSIONID': 'JGh9Rz4gjwtUyT6A0g_Tqv9gkYPc4cL_hzOElL1T913AbT0Qd3X1!-880225720',  # Tu valor real
-    'AWSALB': 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y',  # Tu valor real
-    'AWSALBCORS': 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y'  # Tu valor real
+# Cookies hardcodeadas (fallback - ¡ACTUALIZA si usas manual!)
+FALLBACK_COOKIES = {
+    'JSESSIONID': 'JGh9Rz4gjwtUyT6A0g_Tqv9gkYPc4cL_hzOElL1T913AbT0Qd3X1!-880225720',
+    'AWSALB': 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y',
+    'AWSALBCORS': 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y'
 }
+
+def get_cookies_via_selenium():
+    """Visita la página MVS Hub EPG para generar y extraer cookies frescas (SPA sin login)."""
+    if not os.environ.get('USE_SELENIUM', 'true').lower() == 'true':
+        logger.info("Selenium disabled via env - using fallback")
+        return {}
+    
+    logger.info(f"Using Selenium to visit {SITE_URL} for fresh cookies...")
+    options = Options()
+    options.add_argument("--headless")  # Sin GUI (cambia a False para debug visual)
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36")
+    options.add_argument("--disable-blink-features=AutomationControlled")  # Anti-detección
+    options.add_argument("--disable-extensions")
+    options.add_argument("--window-size=1920,1080")  # Para SPA responsive
+    
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+    
+    try:
+        # Paso 1: Visita la página SPA EPG
+        driver.get(SITE_URL)
+        wait = WebDriverWait(driver, 20)  # Timeout más largo para SPA
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        
+        # Paso 2: Espera load completo del SPA (JS carga parrilla y cookies)
+        logger.info("Waiting for SPA to load...")
+        time.sleep(10)  # Ajusta si es lento (SPA puede tardar en fetch API interna)
+        
+        # Paso 3: Opcional - Espera elemento específico de la parrilla (ajusta selector si inspeccionas)
+        # Ejemplo: Si hay un div con ID "epg-grid" o clase "channel-list"
+        # try:
+        #     wait.until(EC.presence_of_element_located((By.ID, "epg-container")))  # Ajusta basado en inspección
+        #     logger.info("EPG grid loaded")
+        # except TimeoutException:
+        #     logger.warning("EPG element not found - continuing anyway")
+        
+        # Paso 4: Extrae UUID si cambia (busca en page_source o URL)
+        page_source = driver.page_source.lower()
+        current_url = driver.current_url
+        new_uuid = UUID
+        # Regex para UUID en HTML/JS (e.g., en scripts o URLs internas)
+        uuid_match = re.search(r'/list/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/', page_source + current_url)
+        if uuid_match:
+            new_uuid = uuid_match.group(1)
+            if new_uuid != UUID:
+                global UUID, URL_BASE
+                UUID = new_uuid
+                URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
+                logger.info(f"UUID updated to: {UUID}")
+        else:
+            logger.info("UUID not found in page - using fixed value")
+        
+        # Paso 5: Extrae cookies
+        selenium_cookies = driver.get_cookies()
+        cookies_dict = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
+        logger.info(f"Selenium extracted {len(cookies_dict)} cookies: {list(cookies_dict.keys())}")
+        
+        # Filtra relevantes (basado en DevTools: JSESSIONID, AWSALB, AWSALBCORS - agrega si ves más)
+        relevant_cookies = {k: v for k, v in cookies_dict.items() if k in ['JSESSIONID', 'AWSALB', 'AWSALBCORS']}
+        if not relevant_cookies:
+            logger.warning("No relevant cookies found - check if site sets them on load. Try non-headless for debug.")
+            # Opcional: Guarda screenshot para debug
+            # driver.save_screenshot('debug_screenshot.png')
+            return {}
+        
+        driver.quit()
+        logger.info(f"Extracted relevant cookies: {list(relevant_cookies.keys())}")
+        return relevant_cookies
+        
+    except TimeoutException:
+        logger.error("Timeout loading MVS Hub page - check internet/VPN or increase wait time")
+        driver.quit()
+        return {}
+    except Exception as e:
+        logger.error(f"Selenium error: {e}")
+        driver.quit()
+        return {}
 
 def fetch_channel_contents(channel_id, date_from, date_to, session):
     """Fetch contents para un canal específico (page=0)."""
@@ -72,8 +162,8 @@ def fetch_channel_contents(channel_id, date_from, date_to, session):
 def build_xmltv(channels_data):
     """Build XMLTV mergeado para todos los canales (con indentación)."""
     tv = ET.Element("tv", attrib={
-        "generator-info-name": "Minerva Multi-Channel Dynamic 24h",
-        "generator-info-url": "https://example.com"
+        "generator-info-name": "MVS Hub Multi-Channel Dynamic 24h",
+        "generator-info-url": "https://www.mvshub.com.mx/"
     })
     
     ns = "{http://ws.minervanetworks.com/}"
@@ -135,10 +225,10 @@ def build_xmltv(channels_data):
                 if genre.text:
                     ET.SubElement(programme, "category", lang="es").text = genre.text
     
-    # Indentación: Reparsea y aplica formato (para Python 3.9+)
+    # Indentación
     rough_string = ET.tostring(tv, encoding='unicode', method='xml')
     reparsed = ET.fromstring(rough_string)
-    ET.indent(reparsed, space="  ", level=0)  # Indenta con 2 espacios
+    ET.indent(reparsed, space="  ", level=0)
     tree = ET.ElementTree(reparsed)
     tree.write(OUTPUT_FILE, encoding="utf-8", xml_declaration=True)
     
@@ -148,7 +238,7 @@ def build_xmltv(channels_data):
     return True
 
 def main():
-    global CHANNEL_IDS
+    global CHANNEL_IDS, UUID, URL_BASE, SITE_URL
     
     # Timestamps dinámicos: Ahora (UTC) a +24h
     now = datetime.utcnow()
@@ -161,19 +251,35 @@ def main():
         CHANNEL_IDS = [int(id.strip()) for id in sys.argv[1].split(',')]
     if 'CHANNEL_IDS' in os.environ:
         CHANNEL_IDS = [int(id.strip()) for id in os.environ['CHANNEL_IDS'].split(',')]
+    if 'SITE_URL' in os.environ:
+        SITE_URL = os.environ['SITE_URL']
 
     if not CHANNEL_IDS:
         logger.error("No channels provided.")
         return False
 
     logger.info(f"Channels: {CHANNEL_IDS}")
+    logger.info(f"Visiting site: {SITE_URL}")
 
-    # Session global (cookies compartidas)
+    # Session
     session = requests.Session()
     session.headers.update(HEADERS)
-    for name, value in COOKIES.items():
+
+    # Obtén cookies: Selenium auto si enabled, sino fallback
+    cookies = {}
+    selenium_cookies = get_cookies_via_selenium()
+    if selenium_cookies:
+        cookies = selenium_cookies
+        # Actualiza URL_BASE si UUID cambió (ya hecho en get_cookies)
+        logger.info("Using Selenium-fetched cookies from MVS Hub")
+    else:
+        cookies = FALLBACK_COOKIES
+        logger.info("Using hardcoded cookies (set USE_SELENIUM=true for auto from MVS Hub)")
+
+    # Setea cookies en session
+    for name, value in cookies.items():
         session.cookies.set(name, value)
-    logger.info(f"Cookies set: {list(COOKIES.keys())}")
+    logger.info(f"Cookies set: {list(cookies.keys())}")
 
     # Fetch por canal
     channels_data = []
