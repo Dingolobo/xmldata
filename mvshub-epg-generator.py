@@ -256,6 +256,12 @@ def build_xmltv(channels_data):
         # Channel info
         first = contents[0]
         tv_channel = first.find(f".//{ns}TV_CHANNEL")
+        call_sign = str(channel_id)
+        number = ""
+        logo = ""
+        if tv_channel is not None:
+            cs_elem = tv_channel.find(f"{ns}callSign")
+            if cs
             call_sign = cs_elem.text if cs_elem is not None and cs_elem.text else call_sign
             number_elem = tv_channel.find(f"{ns}number")
             number = number_elem.text if number_elem is not None and number_elem.text else ""
