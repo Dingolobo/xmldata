@@ -24,20 +24,18 @@ jobs:
 
       - name: Run EPG Converter
         env:
-          USE_SELENIUM: true  # Habilita Selenium para cookies y UUID auto
-          CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"  # Tus canales
-          TIMEZONE_OFFSET: 0  # 0=UTC (default); -6=México si datos son local
-          # Fallback cookies via secrets (opcional)
-          # JSESSIONID: ${{ secrets.JSESSIONID }}
-          # AWSALB: ${{ secrets.AWSALB }}
-          # AWSALBCORS: ${{ secrets.AWSALBCORS }}
+          USE_SELENIUM: true  # Para cookies iniciales
+          CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"
+          TIMEZONE_OFFSET: 0  # O -6 para México
+          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}  # ¡Configura este secret con tu JWT!
         run: |
-          # Debug: Muestra env
+          # Debug: Muestra env (sin Bearer por seguridad)
           echo "CHANNEL_IDS: $CHANNEL_IDS"
           echo "USE_SELENIUM: $USE_SELENIUM"
           echo "TIMEZONE_OFFSET: $TIMEZONE_OFFSET"
+          echo "BEARER_TOKEN set: $([ -n '$BEARER_TOKEN' ] && echo 'yes' || echo 'no')"
           python mvshub-epg-generator.py "$CHANNEL_IDS"
-          # Debug: Muestra XML generado y raw files
+          # Debug output
           echo "--- EPGMVS.XML HEAD (primeros 20 lines) ---"
           cat epgmvs.xml | head -20 || echo "epgmvs.xml not generated"
           echo "--- RAW FILES ---"
