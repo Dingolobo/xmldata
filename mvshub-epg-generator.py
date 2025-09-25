@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Configuration
-CHANNEL_IDS = [222, 807, 809]  # Array de canales por defecto (agrega más, e.g., 766)
+CHANNEL_IDS = [222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704]  # Array de canales por defecto (agrega más, e.g., 766)
 UUID = "a8e7b76a-818e-4830-a518-a83debab41ce"
 URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"  # Dinámico: channel_id en {}
 LINEUP_ID = "220"  # Fijo
