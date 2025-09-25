@@ -199,7 +199,7 @@ def intercept_uuid_via_selenium():
         return {}, None
 
 def fetch_channel_contents(channel_id, date_from, date_to, session):
-    """Fetch EPG con UUID intercepted."""
+    """Fetch EPG con UUID intercepted – maneja JSON o XML response."""
     if not URL_BASE:
         logger.error("No URL_BASE - UUID not set.")
         return []
@@ -214,26 +214,51 @@ def fetch_channel_contents(channel_id, date_from, date_to, session):
             logger.error(f"Error {channel_id}: {response.status_code} - {response.text[:300]}")
             return []
         
-        raw_file = f"raw_response_{channel_id}.xml"
+        raw_file = f"raw_response_{channel_id}.xml"  # Mantén .xml por convención, aunque JSON
         with open(raw_file, 'w', encoding='utf-8') as f:
             f.write(response.text)
         logger.info(f"Raw saved: {raw_file} (len: {len(response.text)})")
         
-        # Parse XML
-        root = ET.fromstring(response.content)
-        contents = root.findall(".//{http://ws.minervanetworks.com/}content")
-        logger.info(f"Found {len(contents)} programmes for {channel_id}")
-        return contents
+        contents = []
+        response_text = response.text.strip()
+        if response_text.startswith('{'):  # JSON response
+            import json
+            try:
+                data = json.loads(response_text)
+                contents_list = data.get('contents', {}).get('content', [])
+                logger.info(f"Parsed as JSON: {len(contents_list)} programmes for {channel_id}")
+                # Convierte a dicts uniformes (simula ET-like para build_xmltv)
+                for item in contents_list:
+                    contents.append({
+                        'title': {'text': item.get('title', 'Sin título')},
+                        'description': {'text': item.get('description', '')},
+                        'startDateTime': {'text': str(item.get('startDateTime', 0))},
+                        'endDateTime': {'text': str(item.get('endDateTime', 0))},
+                        # Genres: asume array de strings
+                        'genres': [{'name': {'text': g}} for g in item.get('genres', [])] if isinstance(item.get('genres'), list) else [],
+                        # Channel info en first
+                        'TV_CHANNEL': {'callSign': {'text': item.get('callSign', str(channel_id))},
+                                       'number': {'text': item.get('number', '')},
+                                       'image': {'url': {'text': item.get('logo', '')}}} if 'callSign' in item else None
+                    })
+                if contents:
+                    logger.info(f"Sample programme: {contents[0]['title']['text'][:50]}...")
+                return contents
+            except json.JSONDecodeError as je:
+                logger.error(f"JSON parse error {channel_id}: {je} - {response_text[:200]}")
+                return []
+        else:  # XML fallback (si cambia)
+            root = ET.fromstring(response.content)
+            contents = root.findall(".//{http://ws.minervanetworks.com/}content")
+            logger.info(f"Parsed as XML: {len(contents)} programmes for {channel_id}")
+            return contents  # ET elements como antes
         
-    except ET.ParseError as pe:
-        logger.error(f"Parse error {channel_id}: {pe} - {response.text[:300]}")
-        return []
     except Exception as e:
-        logger.error(f"Fetch error {channel_id}: {e}")
+        logger.error(f"Fetch/parse error {channel_id}: {e}")
         return []
 
 def build_xmltv(channels_data):
-    """Build XMLTV con timezone -6."""
+    """Build XMLTV con timezone -6 – maneja JSON dicts o XML elements."""
     if not channels_data:
         logger.warning("No data - XML empty.")
         return False
@@ -242,32 +267,38 @@ def build_xmltv(channels_data):
     tz_str = f"{offset:+03d}00"  # e.g., " -0600"
     
     tv = ET.Element("tv", attrib={
-        "generator-info-name": "MVS Hub Public Auto EPG (UUID Intercept)",
+        "generator-info-name": "MVS Hub Public Auto EPG (JSON/XML Intercept)",
         "generator-info-url": "https://www.mvshub.com.mx/"
     })
     
-    ns = "{http://ws.minervanetworks.com/}"
+    ns = "{http://ws.minervanetworks.com/}"  # Solo para XML fallback
     channels = set()
     
     for channel_id, contents in channels_data:
         if not contents:
             continue
         
-        # Channel info
+        # Channel info (unificado: de first content)
         first = contents[0]
-        tv_channel = first.find(f".//{ns}TV_CHANNEL")
         call_sign = str(channel_id)
         number = ""
         logo = ""
-        if tv_channel is not None:
-            cs_elem = tv_channel.find(f"{ns}callSign")
-            call_sign = cs_elem.text if cs_elem is not None and cs_elem.text else call_sign
-            number_elem = tv_channel.find(f"{ns}number")
-            number = number_elem.text if number_elem is not None and number_elem.text else ""
-            image = tv_channel.find(f".//{ns}image")
-            if image is not None:
-                url_elem = image.find(f"{ns}url")
-                logo = url_elem.text if url_elem is not None and url_elem.text else ""
+        if isinstance(first, dict):  # JSON dict
+            tv_channel = first.get('TV_CHANNEL', {})
+            call_sign = tv_channel.get('callSign', {}).get('text', call_sign)
+            number = tv_channel.get('number', {}).get('text', '')
+            logo = tv_channel.get('image', {}).get('url', {}).get('text', '')
+        else:  # XML ET element
+            tv_channel = first.find(f".//{ns}TV_CHANNEL")
+            if tv_channel is not None:
+                cs_elem = tv_channel.find(f"{ns}callSign")
+                call_sign = cs_elem.text if cs_elem is not None and cs_elem.text else call_sign
+                number_elem = tv_channel.find(f"{ns}number")
+                number = number_elem.text if number_elem is not None and number_elem.text else ""
+                image = tv_channel.find(f".//{ns}image")
+                if image is not None:
+                    url_elem = image.find(f"{ns}url")
+                    logo = url_elem.text if url_elem is not None and url_elem.text else ""
         
         # Agrega channel si nuevo
         if channel_id not in channels:
@@ -280,16 +311,28 @@ def build_xmltv(channels_data):
             channels.add(channel_id)
             logger.info(f"Channel added {channel_id}: {call_sign} (number: {number}, logo: {logo})")
         
-        # Programmes loop
+        # Programmes loop (unificado)
         for content in contents:
-            start_elem = content.find(f"{ns}startDateTime")
-            end_elem = content.find(f"{ns}endDateTime")
-            if start_elem is None or end_elem is None:
-                logger.warning(f"Missing timestamps in {channel_id} - skipping programme")
-                continue
-            try:
+            if isinstance(content, dict):  # JSON
+                start_ms = int(content.get('startDateTime', {}).get('text', 0))
+                end_ms = int(content.get('endDateTime', {}).get('text', 0))
+                title_text = content.get('title', {}).get('text', 'Sin título')
+                desc_text = content.get('description', {}).get('text', '')
+                genres = [g.get('name', {}).get('text', '') for g in content.get('genres', []) if g.get('name', {}).get('text')]
+            else:  # XML
+                start_elem = content.find(f"{ns}startDateTime")
+                end_elem = content.find(f"{ns}endDateTime")
+                if start_elem is None or end_elem is None:
+                    continue
                 start_ms = int(start_elem.text)
                 end_ms = int(end_elem.text)
+                title_elem = content.find(f"{ns}title")
+                title_text = title_elem.text if title_elem is not None and title_elem.text else "Sin título"
+                desc_elem = content.find(f"{ns}description")
+                desc_text = desc_elem.text if desc_elem is not None and desc_elem.text else ''
+                genres = [genre.text for genre in content.findall(f".//{ns}genres/{ns}genre/{ns}name") if genre.text]
+            
+            try:
                 start_dt = datetime.utcfromtimestamp(start_ms / 1000) + timedelta(hours=offset)
                 end_dt = datetime.utcfromtimestamp(end_ms / 1000) + timedelta(hours=offset)
                 programme = ET.SubElement(tv, "programme", attrib={
@@ -298,30 +341,25 @@ def build_xmltv(channels_data):
                     "channel": str(channel_id)
                 })
                 
-                # Title
-                title_elem = content.find(f"{ns}title")
-                title_text = title_elem.text if title_elem is not None and title_elem.text else "Sin título"
                 ET.SubElement(programme, "title", lang="es").text = title_text
-                
-                # Description
-                desc_elem = content.find(f"{ns}description")
-                if desc_elem is not None and desc_elem.text:
-                    ET.SubElement(programme, "desc", lang="es").text = desc_elem.text
-                
-                # Categories/Genres
-                genres = content.findall(f".//{ns}genres/{ns}genre/{ns}name")
-                for genre_elem in genres:
-                    if genre_elem is not None and genre_elem.text:
-                        ET.SubElement(programme, "category", lang="es").text = genre_elem.text
+                if desc_text:
+                    ET.SubElement(programme, "desc", lang="es").text = desc_text
+                for genre in genres:
+                    if genre:
+                        ET.SubElement(programme, "category", lang="es").text = genre
                         
-            except (ValueError, TypeError) as ve:
+            except (ValueError, TypeError, OSError) as ve:
                 logger.warning(f"Invalid timestamp in {channel_id}: {ve} - skipping")
                 continue
             except Exception as pe:
                 logger.warning(f"Programme build error in {channel_id}: {pe}")
                 continue
     
-    # Write XML (indent)
+    # Write XML (indent) – solo si data
+    if not channels:
+        logger.warning("No channels - skipping XML write.")
+        return False
+    
     rough_string = ET.tostring(tv, encoding='unicode', method='xml')
     reparsed = ET.fromstring(rough_string)
     ET.indent(reparsed, space="  ", level=0)
