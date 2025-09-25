@@ -301,7 +301,7 @@ def build_xmltv(channels_data):
     tree = ET.ElementTree(reparsed)
     tree.write(OUTPUT_FILE, encoding="utf-8", xml_declaration=True)
     
-        num_channels = len(channels)
+    num_channels = len(channels)
     total_programmes = sum(len(contents) for _, contents in channels_data if contents)
     logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes) - Formateado con indentación")
     return True
