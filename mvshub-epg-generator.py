@@ -52,6 +52,8 @@ FALLBACK_COOKIES = {
 
 def get_cookies_via_selenium():
     """Visita la página MVS Hub EPG para generar y extraer cookies frescas (SPA sin login)."""
+    global UUID, URL_BASE  # <-- MOVIDO AL TOP: Declara globals antes de usar UUID/URL_BASE
+    
     if not os.environ.get('USE_SELENIUM', 'true').lower() == 'true':
         logger.info("Selenium disabled via env - using fallback")
         return {}
@@ -90,13 +92,12 @@ def get_cookies_via_selenium():
         # Paso 4: Extrae UUID si cambia (busca en page_source o URL)
         page_source = driver.page_source.lower()
         current_url = driver.current_url
-        new_uuid = UUID
+        new_uuid = UUID  # Usa el global aquí (después de declaración)
         # Regex para UUID en HTML/JS (e.g., en scripts o URLs internas)
         uuid_match = re.search(r'/list/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/', page_source + current_url)
         if uuid_match:
             new_uuid = uuid_match.group(1)
             if new_uuid != UUID:
-                global UUID, URL_BASE
                 UUID = new_uuid
                 URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
                 logger.info(f"UUID updated to: {UUID}")
