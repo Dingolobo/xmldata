@@ -99,7 +99,7 @@ def get_dynamic_uuid_via_token(session=None):
         
         if uuid_val:
             UUID = uuid_val
-            # Actualiza URL_BASE si cacheUrl difiere (raro, pero flexible)
+            # Actualiza URL_BASE si cacheUrl difiere
             base_host = cache_url.replace('https://', '').replace('/xtv-ws-client', '')
             URL_BASE = f"https://{base_host}/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
             logger.info(f"UUID obtenido via token API: {UUID} (exp: {expiration}, cacheUrl: {cache_url})")
@@ -145,7 +145,7 @@ def get_cookies_via_selenium():
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         
         logger.info("Waiting for SPA to load...")
-        time.sleep(15)  # Más tiempo para JS fetches (incluyendo token)
+        time.sleep(15)  # Más tiempo para JS
         
         # Extrae cookies
         selenium_cookies = driver.get_cookies()
@@ -159,7 +159,7 @@ def get_cookies_via_selenium():
         driver.quit()
         logger.info(f"Final cookies: {list(relevant_cookies.keys())}")
         
-        # Ahora, obtén UUID via token API (usa session con cookies)
+        # Obtén UUID via token API (con cookies)
         temp_session = requests.Session()
         for name, value in relevant_cookies.items():
             temp_session.cookies.set(name, value)
@@ -170,7 +170,7 @@ def get_cookies_via_selenium():
     except TimeoutException:
         logger.error("Timeout loading page")
         driver.quit()
-        get_dynamic_uuid_via_token()  # Fallback sin cookies
+        get_dynamic_uuid_via_token()
         return {'cookies': FALLBACK_COOKIES, 'uuid': UUID}
     except Exception as e:
         logger.error(f"Selenium error: {e}")
@@ -178,6 +178,30 @@ def get_cookies_via_selenium():
         get_dynamic_uuid_via_token()
         return {'cookies': FALLBACK_COOKIES, 'uuid': UUID}
 
+def fetch_channel_contents(channel_id, date_from, date_to, session):
+    """Fetch contents para un canal."""
+    global URL_BASE
+    url = URL_BASE.format(channel_id, date_from, date_to)
+    logger.info(f"Fetching channel {channel_id} with UUID {UUID}: {url}")
+    
+    request_headers = HEADERS_EPG.copy()
+    # Opcional: Agrega Bearer a EPG si necesario (descomenta si 401)
+    # bearer = os.environ.get('BEARER_TOKEN', '')
+    # if bearer:
+    #     request_headers['authorization'] = f'Bearer {bearer}'
+    
+    try:
+        response = session.get(url, headers=request_headers, timeout=15, verify=False)
+        logger.info(f"Status for {channel_id}: {response.status_code}")
+        
+        if response.status_code != 200:
+            logger.error(f"Error for {channel_id}: {response.status_code} - {response.text[:300]}")
+            return []
+        
+        if len(response.text.strip()) < 100:
+            logger.warning(f"Empty response for {channel_id}: {response.text[:200]}")
+            return []
+        
         raw_file = f"raw_response_{channel_id}.xml"
         with open(raw_file, 'w', encoding='utf-8') as f:
             f.write(response.text)
@@ -277,7 +301,7 @@ def build_xmltv(channels_data):
     tree = ET.ElementTree(reparsed)
     tree.write(OUTPUT_FILE, encoding="utf-8", xml_declaration=True)
     
-    num_channels = len(channels)
+        num_channels = len(channels)
     total_programmes = sum(len(contents) for _, contents in channels_data if contents)
     logger.info(f"XMLTV generated: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} total programmes) - Formateado con indentación")
     return True
@@ -354,3 +378,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+    
