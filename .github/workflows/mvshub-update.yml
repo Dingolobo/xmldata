@@ -19,12 +19,23 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          pip install requests selenium webdriver-manager lxml
 
       - name: Run EPG Converter
         env:
-          CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"  # Or use repo secrets/env for dynamic list
+          USE_SELENIUM: true  # Habilita Selenium para cookies auto (default sí)
+          CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"  # Tus canales
+          # Fallback cookies via secrets (configura en repo Settings > Secrets)
+          JSESSIONID: ${{ secrets.JSESSIONID }}
+          AWSALB: ${{ secrets.AWSALB }}
+          AWSALBCORS: ${{ secrets.AWSALBCORS }}
+          # Opcional: SITE_URL si quieres override
+          # SITE_URL: "https://www.mvshub.com.mx/#spa/epg"
         run: |
+          # Debug: Muestra env (comenta para producción)
+          echo "CHANNEL_IDS: $CHANNEL_IDS"
+          echo "USE_SELENIUM: $USE_SELENIUM"
           python mvshub-epg-generator.py "$CHANNEL_IDS"
 
       - name: Commit and push XML
