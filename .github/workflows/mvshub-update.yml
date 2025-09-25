@@ -1,8 +1,8 @@
-name: Update MVS EPG XMLTV
+name: Update MVS EPG XMLTV (Public Auto - No Login)
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily midnight UTC (ajusta si needed)
+    - cron: '0 0 * * *'  # Daily midnight UTC
   workflow_dispatch:
 
 jobs:
@@ -21,17 +21,16 @@ jobs:
         run: |
           pip install requests selenium webdriver-manager lxml beautifulsoup4
 
-      - name: Run EPG Converter
+      - name: Run EPG Converter (Public SPA Intercept)
         env:
-          USE_SELENIUM: false  # Desactiva Selenium (usa Bearer manual para /token; cookies fallback)
+          USE_SELENIUM: true  # Requerido para intercept UUID dinámico
           CHANNEL_IDS: "222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704"
           TIMEZONE_OFFSET: -6  # México CDT
-          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}  # Requerido: JWT logueado para /token 200
         run: |
           echo "CHANNEL_IDS: $CHANNEL_IDS"
           echo "USE_SELENIUM: $USE_SELENIUM"
           echo "TIMEZONE_OFFSET: $TIMEZONE_OFFSET"
-          echo "BEARER_TOKEN set: $([ -n '$BEARER_TOKEN' ] && echo 'yes (logueado)' || echo 'no - configura secret')"
+          echo "No creds needed - public access"
           python mvshub-epg-generator.py "$CHANNEL_IDS"
           echo "--- EPGMVS.XML HEAD (20 lines) ---"
           head -20 epgmvs.xml || echo "XML empty"
@@ -47,7 +46,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes - skip commit"
           else
-            git commit -m "Update EPG XMLTV $(date +'%Y-%m-%d %H:%M UTC')"
+            git commit -m "Update EPG XMLTV Public Auto $(date +'%Y-%m-%d %H:%M UTC')"
             git push
             echo "Pushed updated XML"
           fi
