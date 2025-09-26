@@ -314,7 +314,7 @@ def main():
             channel_map[ch_id] = {'callSign': call_sign, 'number': number, 'logo': logo}
             
             xml_content += f'  <channel id="c{ch_id}">\n'
-                xml_content += f'    <display-name>{call_sign}</display-name>\n'
+            xml_content += f'    <display-name>{call_sign}</display-name>\n'
             if number:
                 xml_content += f'    <display-name>{number} {call_sign}</display-name>\n'
             if logo:
