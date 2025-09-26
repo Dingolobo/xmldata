@@ -328,7 +328,7 @@ def main():
     logger.info(f"Date range: {datetime.fromtimestamp(date_from/1000)} to {datetime.fromtimestamp(date_to/1000)} (ms: {date_from}-{date_to})")
     
     # Channels (test con 1442 primero, agrega más de Network tab)
-    CHANNEL_IDS = [1442, 1443, 1444]  # Ejemplo - ajusta con IDs reales (e.g., 222=DI si known)
+    CHANNEL_IDS = [222, 807, 809, 808, 822, 823, 762, 801, 764, 734, 806, 814, 705, 704]  # Ejemplo - ajusta con IDs reales (e.g., 222=DI si known)
     
     # Intercept UUID via network
     result = intercept_uuid_via_selenium()
