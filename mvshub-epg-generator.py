@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import os
 import sys
 import urllib3
+import tempfile
+import shutil  # Para cleanup dir
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -17,12 +19,12 @@ from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 import xml.etree.ElementTree as ET
 import re
-from urllib.parse import urlparse, parse_qs  # Para parse query dates
+from urllib.parse import urlparse, parse_qs
 
 # Configuración
 SITE_URL = "https://www.mvshub.com.mx/#spa/epg"
 EPG_BASE = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list"
-LINEUP_ID = 220  # Default, pero flexible
+LINEUP_ID = 220
 TOKEN_HEADERS_BASE = {
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'es-419,es;q=0.9',
@@ -46,12 +48,11 @@ DATE_TO = None
 CAPTURED_CHANNEL = None
 CAPTURED_LINEUP = LINEUP_ID
 driver_global = None
+USER_DATA_DIR = None  # Para cleanup
 
-# Manual fallback from user example
+# Manual fallback
 MANUAL_UUID = "001098f1-684a-4777-9b86-3e75e6658538"
 MANUAL_CHANNEL = 1442
-MANUAL_DATE_FROM = None  # Dynamic
-MANUAL_DATE_TO = None
 
 # Logging
 def setup_logging():
@@ -62,18 +63,17 @@ def setup_logging():
 logger = setup_logging()
 
 def get_fallback_dates():
-    """Dates fallback: +1 día 08:00-16:00 ms (como site requests)."""
+    """+1 día 08:00-16:00 ms."""
     now = datetime.now() + timedelta(days=1)
     start = datetime(now.year, now.month, now.day, 8, 0, 0)
     end = start + timedelta(hours=8)
     df = int(start.timestamp() * 1000)
     dt = int(end.timestamp() * 1000)
-    logger.info(f"Fallback dates: {df}-{dt} ({datetime.fromtimestamp(df/1000)} to {datetime.fromtimestamp(dt/1000)})")
+    logger.info(f"Fallback dates: {df}-{dt}")
     return df, dt
 
 def extract_uuid_from_logs(driver_logs):
-    """Parse flexible: UUID/channel/lineup de path, dates de query si available."""
-    # Flexible pattern: /list/UUID/CHANNEL/LINEUP?...
+    """Flexible parse UUID/channel/lineup/dates."""
     path_pattern = re.compile(r'/epgcache/list/([a-f0-9\-]{36})/(\d+)/(\d+)')
     for entry in driver_logs:
         try:
@@ -81,34 +81,25 @@ def extract_uuid_from_logs(driver_logs):
             if message['message']['method'] == 'Network.responseReceived':
                 url = message['message']['params']['response']['url']
                 if 'epgcache/list' in url:
-                    # Extract path
                     match = path_pattern.search(url)
                     if match:
                         uuid_found = match.group(1)
                         ch = int(match.group(2))
                         lineup = int(match.group(3))
-                        logger.info(f"Network path match: UUID={uuid_found}, ch={ch}, lineup={lineup}")
+                        logger.info(f"Path match: UUID={uuid_found}, ch={ch}, lineup={lineup}")
                         
-                        # Extract dates from query (optional)
                         parsed_url = urlparse(url)
                         query = parse_qs(parsed_url.query)
                         df = int(query.get('dateFrom', [0])[0]) if 'dateFrom' in query else None
                         dt = int(query.get('dateTo', [0])[0]) if 'dateTo' in query else None
                         
                         if df and dt:
-                            logger.info(f"  + Dates from query: {df}-{dt}")
-                        else:
-                            logger.warning("  No dates in query - use fallback")
-                        
+                            logger.info(f"Dates: {df}-{dt}")
                         return uuid_found, ch, lineup, df, dt
-                        
-                    else:
-                        logger.debug(f"URL no path match: {url}")
-        except Exception as e:
-            logger.debug(f"Log parse error: {e}")
+        except:
             continue
     
-    # Broader search: Any /list/UUID/...
+    # UUID only fallback
     uuid_only = re.compile(r'/epgcache/list/([a-f0-9\-]{36})/')
     for entry in driver_logs:
         try:
@@ -118,30 +109,33 @@ def extract_uuid_from_logs(driver_logs):
                 if 'epgcache/list' in url:
                     match = uuid_only.search(url)
                     if match:
-                        uuid_found = match.group(1)
-                        logger.info(f"Partial match: UUID={uuid_found} (no channel/lineup - fallback)")
-                        return uuid_found, None, None, None, None
+                        logger.info(f"Partial UUID: {match.group(1)}")
+                        return match.group(1), None, None, None, None
         except:
             continue
     
-    logger.warning("No EPG URL at all in logs - headless block?")
+    logger.warning("No EPG in logs")
     return None, None, None, None, None
 
 def get_epg_headers(is_json=True):
-    """Headers JSON o XML."""
     headers = TOKEN_HEADERS_BASE.copy()
     headers['accept'] = 'application/json, */*' if is_json else 'application/xml, */*'
     return headers
 
 def intercept_uuid_via_selenium():
-    """Captura flexible + manual fallback si fail."""
+    """Captura con unique user-data-dir para evitar lock."""
     use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
     if not use_selenium:
-        logger.error("Selenium required.")
         return {}, None, None
     
-    headless = os.environ.get('USE_HEADLESS', 'false').lower() == 'true'  # Default false (visible)
-    logger.info(f"Loading SPA (headless={headless})... for real EPG requests.")
+    headless = os.environ.get('USE_HEADLESS', 'true').lower() == 'true'  # Default true para CI
+    logger.info(f"Loading (headless={headless})...")
+    
+    # Unique user-data-dir para fix lock
+    global USER_DATA_DIR
+    USER_DATA_DIR = tempfile.mkdtemp(prefix='chrome_session_')
+    logger.info(f"Unique user-data-dir: {USER_DATA_DIR}")
+    
     options = Options()
     if headless:
         options.add_argument("--headless")
@@ -150,31 +144,40 @@ def intercept_uuid_via_selenium():
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--disable-web-security")
+    options.add_argument("--no-first-run")  # Skip init
+    options.add_argument("--no-default-browser-check")
+    options.add_argument(f"--user-data-dir={USER_DATA_DIR}")  # Fix lock
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
     
     service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
-    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    try:
+        driver = webdriver.Chrome(service=service, options=options)
+        driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+        logger.info("Driver created successfully (no session lock)")
+    except Exception as de:
+        logger.error(f"Driver creation failed: {de}")
+        if os.path.exists(USER_DATA_DIR):
+            shutil.rmtree(USER_DATA_DIR, ignore_errors=True)
+        return {}, None, None
+    
     global driver_global
     driver_global = driver
     
     uuid_f, ch_f, lu_f, df_f, dt_f = None, None, None, None, None
     cache_url = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"
-    max_att = 2  # Menos attempts para fallback quick
+    max_att = 2
     
     for att in range(1, max_att + 1):
         logger.info(f"--- Attempt {att}/{max_att} ---")
         try:
             driver.get(SITE_URL)
-            wait = WebDriverWait(driver, 60)
-            wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-            time.sleep(15)  # Longer initial delay para SPA + 8s EPG
+            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            time.sleep(15)
             
-            # Improved trigger: Simulate user better
+            # Trigger
             driver.execute_script("""
-                // Random mouse moves
                 function randomClick() {
                     var x = Math.random() * window.innerWidth;
                     var y = Math.random() * window.innerHeight;
@@ -184,54 +187,47 @@ def intercept_uuid_via_selenium():
                 for (let i = 0; i < 5; i++) {
                     setTimeout(randomClick, i * 2000);
                 }
-                // Scroll + resize
                 window.scrollTo(0, Math.random() * document.body.scrollHeight);
                 window.dispatchEvent(new Event('resize'));
-                // Keypress simulate
                 var keyEvent = new KeyboardEvent('keydown', {key: 'ArrowDown'});
                 document.dispatchEvent(keyEvent);
             """)
-            time.sleep(10)  # Post-trigger wait
+            time.sleep(10)
             
-            # Try specific clicks
             selectors = ["[href*='epg']", ".channel-item", ".epg-grid", "button[aria-label*='guide']", ".menu-item", "a[href='#epg']"]
             for sel in selectors:
                 try:
                     elem = driver.find_element(By.CSS_SELECTOR, sel)
                     ActionChains(driver).move_to_element(elem).click().perform()
-                    logger.info(f"Clicked {sel} for EPG trigger")
+                    logger.info(f"Clicked {sel}")
                     time.sleep(5)
                 except:
                     continue
             
-            time.sleep(60)  # Longer para requests (~85s total)
+            time.sleep(60)
             
             logs = driver.get_log('performance')
             result = extract_uuid_from_logs(logs)
             uuid_f, ch_f, lu_f, df_f, dt_f = result
             
             if uuid_f:
-                logger.info(f"Success capture: UUID={uuid_f}, ch={ch_f or 'N/A'}, lineup={lu_f or LINEUP_ID}, dates={df_f}-{dt_f or 'fallback'}")
+                logger.info(f"Capture success: UUID={uuid_f}, ch={ch_f}, lineup={lu_f}, dates={df_f}-{dt_f}")
                 break
             else:
-                logger.warning(f"Attempt {att}: No capture - refresh")
                 driver.refresh()
                 time.sleep(20)
-        
         except Exception as e:
-            logger.error(f"Attempt {att} error: {e}")
-            continue
+            logger.error(f"Attempt {att}: {e}")
     
-    # MANUAL FALLBACK si no capture (usa tu ejemplo + dates dynamic)
+    # Fallback manual si no
     if not uuid_f:
-        logger.warning("Capture failed - using MANUAL UUID from your example for valid URL.")
+        logger.warning("Capture failed - manual UUID fallback")
         uuid_f = MANUAL_UUID
         ch_f = MANUAL_CHANNEL
         lu_f = LINEUP_ID
-        df_f, dt_f = get_fallback_dates()  # Dynamic future dates
-        logger.info(f"Manual setup: UUID={uuid_f}, test_ch={ch_f}, dates={df_f}-{dt_f}")
+        df_f, dt_f = get_fallback_dates()
     
-    # Set globals
+    # Globals
     global UUID, URL_BASE, DATE_FROM, DATE_TO, CAPTURED_CHANNEL, CAPTURED_LINEUP
     UUID = uuid_f
     CAPTURED_CHANNEL = ch_f
@@ -239,29 +235,26 @@ def intercept_uuid_via_selenium():
     DATE_FROM = df_f or get_fallback_dates()[0]
     DATE_TO = dt_f or get_fallback_dates()[1]
     URL_BASE = f"{cache_url}/api/epgcache/list/{UUID}/{{channel}}/{CAPTURED_LINEUP}?page=0&size=100&dateFrom={DATE_FROM}&dateTo={DATE_TO}"
-    logger.info(f"FINAL URL_BASE: {URL_BASE.format(channel='TEST')} (UUID valid, dates future)")
+    logger.info(f"FINAL URL_BASE ready (UUID valid: {UUID[:8]}...)")
     
     # Cookies
     cookies = driver.get_cookies()
     cookies_dict = {c['name']: c['value'] for c in cookies}
     relevant = {k: v for k, v in cookies_dict.items() if k in ['AWSALB', 'AWSALBCORS', 'JSESSIONID']}
-    logger.info(f"Cookies captured: {list(relevant.keys())}")
+    logger.info(f"Cookies: {list(relevant.keys())}")
     
     return relevant, None, driver
 
-# ... (fetch_channel_contents igual que anterior - parse XML/JSON, raw .txt, etc. - no cambia)
-
 def fetch_channel_contents(channel_id, session, use_selenium=False):
-    """Fetch con JSON first, retry XML. Parse JSON/XML. (Igual que versión anterior)"""
+    """Fetch JSON/XML (igual anterior)."""
     if not URL_BASE:
-        logger.error("No URL_BASE - UUID invalid.")
+        logger.error("No URL_BASE.")
         return []
     url = URL_BASE.format(channel=channel_id)
     
     response_text = ""
     status = 0
     
-    # JSON first
     json_h = get_epg_headers(is_json=True)
     xml_h = get_epg_headers(is_json=False)
     
@@ -287,16 +280,15 @@ def fetch_channel_contents(channel_id, session, use_selenium=False):
             result = driver_global.execute_async_script(script, url, js_h)
             status = result['status']
             response_text = result['response']
-            logger.info(f"Selenium JSON {channel_id}: status {status}")
+            logger.info(f"Selenium JSON {channel_id}: {status}")
             if status == 406:
-                logger.info(f"Selenium JSON 406 - retry XML {channel_id}")
                 xml_js_h = {k: str(v) for k, v in xml_h.items()}
                 result = driver_global.execute_async_script(script, url, xml_js_h)
                 status = result['status']
                 response_text = result['response']
-                logger.info(f"Selenium XML {channel_id}: status {status}")
+                logger.info(f"Selenium XML {channel_id}: {status}")
         except Exception as se:
-            logger.warning(f"Selenium fetch {channel_id}: {se} - fallback requests")
+            logger.warning(f"Selenium {channel_id}: {se}")
             use_selenium = False
     
     if not use_selenium:
@@ -304,42 +296,36 @@ def fetch_channel_contents(channel_id, session, use_selenium=False):
             resp = session.get(url, headers=json_h, timeout=15, verify=False)
             status = resp.status_code
             response_text = resp.text
-            logger.info(f"Requests JSON {channel_id}: status {status}")
             if status == 406:
-                logger.info(f"Requests JSON 406 - retry XML {channel_id}")
                 resp = session.get(url, headers=xml_h, timeout=15, verify=False)
                 status = resp.status_code
                 response_text = resp.text
-                logger.info(f"Requests XML {channel_id}: status {status}")
+            logger.info(f"Requests {channel_id}: {status}")
         except Exception as re:
-            logger.error(f"Requests fetch {channel_id}: {re}")
+            logger.error(f"Requests {channel_id}: {re}")
             return []
     
-    # Save raw (incluye status para debug)
     raw_file = f"raw_{channel_id}.txt"
     with open(raw_file, 'w', encoding='utf-8') as f:
-        f.write(f"Status: {status}\nURL: {url}\nResponse:\n{response_text}")
-    logger.info(f"Raw saved {channel_id}: len={len(response_text)}, status={status}")
+        f.write(f"Status: {status}\nURL: {url}\n{response_text}")
+    logger.info(f"Raw {channel_id}: len={len(response_text)}, status={status}")
     
     if status != 200:
-        logger.error(f"Fetch error {channel_id}: {status} - Snippet: {response_text[:200]}")
+        logger.error(f"Error {channel_id}: {status}")
         return []
     
     contents = []
     response_text = response_text.strip()
     
     try:
-        if response_text.startswith('<') or '<?xml' in response_text.lower():
-            # XML parse full
+        if response_text.startswith('<') or '<?xml' in response_text:
             ns = {'minerva': 'http://ws.minervanetworks.com/'}
             root = ET.fromstring(response_text)
             schedules = root.findall(".//minerva:content[@xsi:type='schedule']", ns) or root.findall(".//content[@xsi:type='schedule']")
-            logger.info(f"XML parse {channel_id}: {len(schedules)} schedules")
+            logger.info(f"XML {channel_id}: {len(schedules)}")
             
             for sched in schedules:
                 prog = {}
-                
-                # Basics
                 title_e = sched.find('.//minerva:title', ns) or sched.find('.//title')
                 prog['title'] = title_e.text if title_e else 'Sin título'
                 
@@ -355,7 +341,6 @@ def fetch_channel_contents(channel_id, session, use_selenium=False):
                 rat_e = sched.find('.//minerva:rating', ns) or sched.find('.//rating')
                 prog['rating'] = rat_e.text if rat_e else ''
                 
-                # Channel info
                 tv_ch_e = sched.find('.//minerva:TV_CHANNEL', ns) or sched.find('.//TV_CHANNEL')
                 if tv_ch_e:
                     call_e = tv_ch_e.find('.//minerva:callSign', ns) or tv_ch_e.find('.//callSign')
@@ -398,10 +383,10 @@ def fetch_channel_contents(channel_id, session, use_selenium=False):
                 contents.append(prog)
             
         else:
-            # JSON parse fallback (asume {'contents' o 'schedules': [...]})
+            # JSON fallback
             data = json.loads(response_text)
             schedules = data.get('contents', []) or data.get('schedules', []) or data.get('data', {}).get('schedules', [])
-            logger.info(f"JSON parse {channel_id}: {len(schedules)} schedules")
+            logger.info(f"JSON {channel_id}: {len(schedules)}")
             
             for sched in schedules:
                 prog = {
@@ -420,24 +405,24 @@ def fetch_channel_contents(channel_id, session, use_selenium=False):
         
         if contents:
             sample = contents[0]
-            logger.info(f"Sample {channel_id}: '{sample['title'][:30]}...' (channel: {sample['channel_callSign']})")
+            logger.info(f"Sample {channel_id}: '{sample['title'][:30]}...' (ch: {sample['channel_callSign']})")
         
-        logger.info(f"Parsed {len(contents)} programmes for {channel_id}")
+        logger.info(f"Parsed {len(contents)} for {channel_id}")
         return contents
         
     except ET.ParseError as pe:
-        logger.error(f"XML error {channel_id}: {pe} - Raw snippet: {response_text[:300]}")
+        logger.error(f"XML {channel_id}: {pe} - {response_text[:300]}")
     except json.JSONDecodeError as je:
-        logger.error(f"JSON error {channel_id}: {je}")
+        logger.error(f"JSON {channel_id}: {je}")
     except Exception as e:
-        logger.error(f"Parse error {channel_id}: {e}")
+        logger.error(f"Parse {channel_id}: {e}")
     
     return []
 
 def main():
-    global UUID, URL_BASE, DATE_FROM, DATE_TO, CAPTURED_CHANNEL, CAPTURED_LINEUP, driver_global
+    global UUID, URL_BASE, DATE_FROM, DATE_TO, CAPTURED_CHANNEL, CAPTURED_LINEUP, driver_global, USER_DATA_DIR
     
-    # Parse tu CHANNEL_IDS from env (default tu lista)
+    # CHANNEL_IDS tu lista
     channel_str = os.environ.get('CHANNEL_IDS', '222,807,809,808,822,823,762,801,764,734,806,814,705,704')
     CHANNEL_IDS = [int(cid.strip()) for cid in channel_str.split(',') if cid.strip()]
     logger.info(f"CHANNEL_IDS: {CHANNEL_IDS} (len: {len(CHANNEL_IDS)})")
@@ -446,7 +431,7 @@ def main():
     tz_offset = int(os.environ.get('TIMEZONE_OFFSET', '-6'))
     logger.info(f"Timezone: {tz_offset}")
     
-    # Intercept (captura o fallback manual UUID válido)
+    # Intercept (con fix user-data-dir)
     result = intercept_uuid_via_selenium()
     cookies, device_token, driver = result
     if driver is None or UUID is None:
@@ -457,25 +442,25 @@ def main():
     session = requests.Session()
     for name, value in cookies.items():
         session.cookies.set(name, value)
-    logger.info("Session with cookies ready")
+    logger.info("Session ready")
     
-    # Test con captured/manual channel (1442 si fallback)
+    # Test con manual/captured (1442 fallback)
     test_ch = CAPTURED_CHANNEL or MANUAL_CHANNEL
-    logger.info(f"=== TESTING CHANNEL {test_ch} (UUID valid: {UUID[:8]}...) VIA SELENIUM ===")
+    logger.info(f"=== TEST {test_ch} (UUID: {UUID[:8]}...) ===")
     test_contents = fetch_channel_contents(test_ch, session, use_selenium=True)
     if not test_contents:
-        logger.info("Selenium test fail - requests fallback")
+        logger.info("Selenium fail - requests")
         time.sleep(2)
         test_contents = fetch_channel_contents(test_ch, session)
     if not test_contents:
-        logger.error(f"TEST FAIL {test_ch}: 0 progs. Check raw_{test_ch}.txt (UUID/dates invalid?).")
+        logger.error(f"TEST FAIL {test_ch}: Check raw_{test_ch}.txt")
         if driver_global:
             driver_global.quit()
         return False
-    logger.info(f"TEST SUCCESS: {len(test_contents)} programmes for {test_ch}!")
+    logger.info(f"TEST OK: {len(test_contents)} progs {test_ch}")
     
-    # Full fetch tu channels
-    logger.info("=== FULL FETCH YOUR CHANNELS (222,807,...) ===")
+    # Full loop
+    logger.info("=== FULL FETCH CHANNELS ===")
     channels_data = []
     total_progs = 0
     for channel_id in CHANNEL_IDS:
@@ -485,10 +470,10 @@ def main():
         total_progs += len(contents)
         time.sleep(1.5)
     
-    logger.info(f"FULL COMPLETE: {total_progs} programmes / {len(CHANNEL_IDS)} channels")
+    logger.info(f"FULL: {total_progs} progs / {len(CHANNEL_IDS)} channels")
     
-    # XMLTV build (con timezone adjust)
-    logger.info("=== BUILDING XMLTV ===")
+    # XMLTV
+    logger.info("=== XMLTV BUILD ===")
     xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n<tv>\n'
     
     # Channels
@@ -513,7 +498,6 @@ def main():
     offset_sec = tz_offset * 3600
     for ch_id, contents in channels_data:
         for prog in contents:
-            # Start/stop con offset
             start_str = prog.get('start', '0')
             try:
                 if start_str.isdigit():
@@ -536,9 +520,8 @@ def main():
             except:
                 stop_xml = start_xml
             
-            # Escape
             title = prog.get('title', 'Sin título').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-            desc = (prog.get('description', ''))[:255].replace('&', '&amp;').replace('<', '&lt;')
+            desc = prog.get('description', '')[:255].replace('&', '&amp;').replace('<', '&lt;')
             genres_list = prog.get('genres', [])
             p_image = prog.get('programme_image', '')
             rating = prog.get('rating', '')
@@ -562,19 +545,22 @@ def main():
     xml_file = 'mvshub_epg.xml'
     with open(xml_file, 'w', encoding='utf-8') as f:
         f.write(xml_content)
-    logger.info(f"XMLTV saved: {xml_file} ({len(channel_map)} channels, {total_progs} progs)")
+    logger.info(f"XMLTV: {xml_file} ({len(channel_map)} ch, {total_progs} progs)")
     
     # Cleanup
     if driver_global:
         driver_global.quit()
-        logger.info("Driver quit.")
+        logger.info("Driver quit")
+    if USER_DATA_DIR and os.path.exists(USER_DATA_DIR):
+        shutil.rmtree(USER_DATA_DIR, ignore_errors=True)
+        logger.info("User  data dir cleaned")
     
     return True
 
 if __name__ == "__main__":
     success = main()
     if success:
-        logger.info("¡ÉXITO! EPG generado con UUID válido (capturado o fallback).")
+        logger.info("¡ÉXITO TOTAL! EPG XML listo.")
     else:
-        logger.error("Fallo - check logs/raw files.")
+        logger.error("Fallo - logs/raw.")
         sys.exit(1)
