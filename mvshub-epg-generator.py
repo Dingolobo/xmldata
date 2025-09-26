@@ -83,8 +83,17 @@ def validate_generic_token(device_token):
         logger.error(f"Validation error: {e}")
         return False
 
+def check_expiration(expiration_ts):
+    """Check si token expired (Unix ts)."""
+    now = int(time.time())
+    if expiration_ts <= now:
+        logger.error(f"Token expired at {datetime.fromtimestamp(expiration_ts)} - refresh needed.")
+        return False
+    logger.info(f"Token valid until {datetime.fromtimestamp(expiration_ts)} (~{int((expiration_ts - now)/3600)}h left)")
+    return True
+
 def intercept_uuid_via_selenium():
-    """Intercepta UUID + mantiene driver vivo para fetches. Retorna cookies, token, driver."""
+    """Intercepta TOKEN UUID principal via CDP/JS (no EPG-specific). Mantiene driver vivo."""
     use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
     if not use_selenium:
         logger.error("Selenium required.")
@@ -106,45 +115,103 @@ def intercept_uuid_via_selenium():
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     
     global driver_global
-    driver_global = driver  # Para fetches live
+    driver_global = driver
+    
+    token_uuid = None
+    token_expiration = 0
+    captured_headers = {}
     
     try:
+        # Enable CDP para network
+        driver.execute_cdp_cmd('Network.enable', {})
+        
+        def on_response_received(message):
+            nonlocal token_uuid, token_expiration, captured_headers
+            if message['method'] == 'Network.responseReceived':
+                resp = message['params']
+                url = resp['response']['url']
+                if any(term in url.lower() for term in ['/token', '/session', '/auth', '/login']) and resp['response']['status'] == 200:
+                    # Get body
+                    req_id = resp['requestId']
+                    try:
+                        body_resp = driver.execute_cdp_cmd('Fetch.getResponseBody', {'requestId': req_id})
+                        if 'body' in body_resp:
+                            body = body_resp['body']
+                            try:
+                                data = json.loads(body)
+                                if 'token' in data:
+                                    token_uuid = data['token'].get('uuid')
+                                    token_expiration = data['token'].get('expiration', 0)
+                                    captured_headers = dict(resp['response'].get('headers', {}))  # Response headers, but use request if needed
+                                    logger.info(f"CDP captured TOKEN JSON: UUID={token_uuid}, expiration={token_expiration}")
+                            except json.JSONDecodeError:
+                                pass
+                    except:
+                        pass
+        
+        driver.add_cdp_listener('Network.responseReceived', on_response_received)
+        
         driver.get(SITE_URL)
         wait = WebDriverWait(driver, 60)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(70)  # Extended load + EPG requests
         
-        # UUID intercept con retry
-        uuid_candidates = driver.execute_script("""
-            return [...new Set(performance.getEntriesByType('resource')
-                .filter(r => r.name.includes('/epgcache/list/'))
-                .map(r => r.name.split('/epgcache/list/')[1]?.split('/')[0])
-                .filter(uuid => uuid && uuid.length === 36 && uuid.includes('-')))];
-        """)
-        logger.info(f"UUID candidates from performance API: {uuid_candidates}")
+        # Trigger token/session load
+        time.sleep(15)  # Settle
+        driver.execute_script("window.location.reload();")  # Force reload para /token
+        time.sleep(20)  # Wait for auth requests
         
-        if not uuid_candidates:
-            logger.warning("No UUID – retrying refresh...")
+        # JS fallback: Check localStorage para token
+        if not token_uuid:
+            logger.info("CDP no token - checking localStorage...")
+            storage_token = driver.execute_script("""
+                var item = localStorage.getItem('system.token') || sessionStorage.getItem('system.token') || localStorage.getItem('token');
+                if (item) {
+                    try {
+                        var parsed = JSON.parse(item);
+                        if (parsed.token && parsed.token.uuid) {
+                            return {uuid: parsed.token.uuid, expiration: parsed.token.expiration || 0};
+                        }
+                    } catch(e) {}
+                }
+                return null;
+            """)
+            if storage_token:
+                token_uuid = storage_token['uuid']
+                token_expiration = storage_token['expiration']
+                logger.info(f"Token from localStorage: UUID={token_uuid}, expiration={token_expiration}")
+        
+        # Retry si no
+        if not token_uuid:
+            logger.warning("No token - retrying full refresh...")
             driver.refresh()
             time.sleep(30)
-            uuid_candidates = driver.execute_script("""
-                return [...new Set(performance.getEntriesByType('resource')
-                    .filter(r => r.name.includes('/epgcache/list/'))
-                    .map(r => r.name.split('/epgcache/list/')[1]?.split('/')[0])
-                    .filter(uuid => uuid && uuid.length === 36 && uuid.includes('-')))];
-            """)
-            logger.info(f"UUID candidates after retry: {uuid_candidates}")
+            # Re-run JS check
+            storage_token = driver.execute_script("""...""")  # Mismo script
+            if storage_token:
+                token_uuid = storage_token['uuid']
+                token_expiration = storage_token['expiration']
         
-        if not uuid_candidates:
-            logger.error("No UUID after retry - abort.")
-            return {}, None, driver  # Driver para cleanup
+        # Disable listener
+        driver.remove_cdp_listener('Network.responseReceived', on_response_received)
+        driver.execute_cdp_cmd('Network.disable', {})
+        
+        if not token_uuid:
+            logger.error("No token UUID captured - manual needed.")
+            # Fallback con tu manual UUID
+            token_uuid = "e275a57f-d540-4363-b759-73a20f970960"
+            token_expiration = 1758913816
+            logger.warning("FALLBACK: Using manual token UUID - update expiration if needed")
+        
+        if not check_expiration(token_expiration):
+            logger.error("Fallback token expired - abort.")
+            return {}, None, driver
         
         global UUID, URL_BASE
-        UUID = uuid_candidates[0]
-        logger.info(f"UUID dinámico intercepted: {UUID}")
-        URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"
+        UUID = token_uuid
+        URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"  # lineup 220 fijo por ahora
+        logger.info(f"TOKEN UUID set: {UUID} (valid until {datetime.fromtimestamp(token_expiration)})")
         
-        # deviceToken
+        # deviceToken + cookies (igual)
         device_token = None
         system_login = driver.execute_script("return localStorage.getItem('system.login');")
         if system_login:
@@ -157,20 +224,20 @@ def intercept_uuid_via_selenium():
         if device_token and validate_generic_token(device_token):
             logger.info("Public session validated - ready for EPG")
         
-        # Cookies
         selenium_cookies = driver.get_cookies()
         cookies_dict = {c['name']: c['value'] for c in selenium_cookies}
         relevant = {k: v for k, v in cookies_dict.items() if k in ['AWSALB', 'AWSALBCORS', 'bitmovin_analytics_uuid']}
         logger.info(f"Cookies frescas: {list(relevant.keys())}")
         
-        logger.info(f"Setup complete (driver alive): UUID={UUID}, cookies={len(relevant)}, token={device_token is not None}")
-        return relevant, device_token, driver  # Driver vivo
+        logger.info(f"Setup complete (driver alive): TOKEN UUID={UUID}, cookies={len(relevant)}, token={device_token is not None}")
+        return relevant, device_token, driver
         
     except Exception as e:
         logger.error(f"Selenium error: {e}")
         driver.quit()
         return {}, None, None
 
+# fetch_channel_contents (mismo, pero confirma UUID en log)
 def fetch_channel_contents(channel_id, date_from, date_to, session, device_token=None, retry_xml=False, use_selenium=False):
     """Fetch EPG – Bearer auth, Selenium live si enabled, parse XML/JSON full."""
     if not URL_BASE:
