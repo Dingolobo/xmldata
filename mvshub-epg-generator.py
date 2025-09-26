@@ -41,6 +41,7 @@ TOKEN_HEADERS_BASE = {
 # Globals
 UUID = None
 URL_BASE = None
+HARDCODE_MODE = os.environ.get('HARDCODE_TOKEN', 'false').lower() == 'true'
 driver_global = None
 
 # Logging setup
@@ -108,7 +109,7 @@ def get_epg_headers(device_token=None, retry_xml=False):
     return headers
 
 def intercept_uuid_via_selenium():
-    """Extrae deviceToken + simula GET token endpoint para UUID real. Driver vivo."""
+    """Extrae deviceToken + simula GET token endpoint para UUID real. Driver vivo. Hardcode fallback."""
     use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
     if not use_selenium:
         logger.error("Selenium required.")
@@ -135,106 +136,135 @@ def intercept_uuid_via_selenium():
     device_token = None
     token_uuid = None
     token_expiration = 0
-    cache_url = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"  # Default
+    cache_url = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"
     
-    try:
-        driver.get(SITE_URL)
-        wait = WebDriverWait(driver, 60)
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(30)  # Load SPA + auth
-        
-        # Extrae deviceToken de localStorage (para Bearer en token GET)
-        system_login = driver.execute_script("return localStorage.getItem('system.login');")
-        if system_login:
-            try:
-                parsed = json.loads(system_login)
-                device_token = parsed.get('data', {}).get('deviceToken')
-                logger.info(f"deviceToken extraído para Bearer: yes (largo: {len(device_token) if device_token else 0})")
-            except:
-                pass
-        
-        if not device_token:
-            logger.error("No deviceToken - cannot auth token endpoint.")
-            return {}, None, driver
-        
-        # Valida deviceToken (igual antes)
-        if validate_generic_token(device_token):
-            logger.info("deviceToken validated - ready for token GET")
-        else:
-            logger.warning("deviceToken not validated - may fail token GET")
-        
-        # Simula GET token endpoint con headers exactos (Bearer deviceToken)
-        if device_token:
-            headers_with_bearer = TOKEN_HEADERS_BASE.copy()
-            headers_with_bearer['authorization'] = f'Bearer {device_token}'  # Tu JWT
-            js_headers = {k: str(v) for k, v in headers_with_bearer.items()}
+      # Hardcode mode (si env true o manual needed)
+    if HARDCODE_MODE:
+        logger.warning("HARDCODE MODE: Using manual fresh tokens - set env HARDCODE_TOKEN=true")
+        device_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwiZXhwIjoxNzU4OTUzNTE4LCJhY2NvdW50SWQiOiI3MDM1IiwicmVnaW9uSWQiOiIxOCIsImRldmljZSI6eyJkZXZpY2VJZCI6IjE0MDMyIiwiZGV2aWNlVHlwZSI6ImNsb3VkX2NsaWVudCIsImlwQWRkcmVzcyI6IiIsImRldmljZU5hbWUiOiJTVEIxIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsInNlcmlhbE51bWJlciI6IiIsInN0YXR1cyI6IkEiLCJ1dWlkIjoiQUFBQUFBRDhERDQ0In0sImRldmljZVRhZ3MiOltdfQ.TPTyf2dMdahuIyEeuSMnwChy1gv05TMjgBxSPCyuBeU"  # Tu fresco
+        token_uuid = "e275a57f-d540-4363-b759-73a20f970960"
+        token_expiration = 1758913816  # Tu exp
+        logger.info(f"Hardcode deviceToken (largo: {len(device_token)}), UUID: {token_uuid}")
+        # Skip validation/GET - directo a set
+    else:
+        try:
+            driver.get(SITE_URL)
+            wait = WebDriverWait(driver, 60)
+            wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+            time.sleep(30)  # Load SPA + auth
             
-            result = driver.execute_async_script("""
-                var callback = arguments[arguments.length - 1];
-                var url = arguments[0];
-                var headers = arguments[1];
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
-                for (var key in headers) {
-                    xhr.setRequestHeader(key, headers[key]);
-                }
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        callback({
-                            status: xhr.status,
-                            response: xhr.responseText
-                        });
-                    }
-                };
-                xhr.send();
-            """, TOKEN_URL, js_headers)
-            
-            status = result['status']
-            response_text = result['response']
-            logger.info(f"Token GET status: {status} (len: {len(response_text)})")
-            
-            if status == 200:
+            # Extrae deviceToken
+            system_login = driver.execute_script("return localStorage.getItem('system.login');")
+            if system_login:
                 try:
-                    data = json.loads(response_text)
-                    token_data = data.get('token', {})
-                    token_uuid = token_data.get('uuid')
-                    token_expiration = token_data.get('expiration', 0)
-                    cache_url = token_data.get('cacheUrl', cache_url)
-                    logger.info(f"Token UUID parsed: {token_uuid}, exp={token_expiration}, cacheUrl={cache_url}")
-                except json.JSONDecodeError as je:
-                    logger.error(f"JSON parse error: {je} - response: {response_text[:200]}")
+                    parsed = json.loads(system_login)
+                    device_token = parsed.get('data', {}).get('deviceToken')
+                    logger.info(f"deviceToken extraído para Bearer: yes (largo: {len(device_token) if device_token else 0})")
+                except:
+                    pass
+            
+            if not device_token:
+                logger.error("No deviceToken - cannot auth token endpoint.")
+                return {}, None, driver
+            
+            # Valida deviceToken
+            if validate_generic_token(device_token):
+                logger.info("deviceToken validated - ready for token GET")
             else:
-                logger.error(f"Token GET failed {status}: {response_text[:200]}")
+                logger.warning("deviceToken not validated (403?) - trying session refresh...")
+                # Refresh session para nuevo token
+                driver.refresh()
+                time.sleep(20)
+                system_login = driver.execute_script("return localStorage.getItem('system.login');")
+                if system_login:
+                    try:
+                        parsed = json.loads(system_login)
+                        device_token = parsed.get('data', {}).get('deviceToken')  # Re-extrae
+                        logger.info(f"Refreshed deviceToken: yes (largo: {len(device_token)})")
+                        if validate_generic_token(device_token):
+                            logger.info("Refreshed deviceToken validated!")
+                    except:
+                        pass
+            
+            # Simula GET token (igual antes)
+            if device_token:
+                headers_with_bearer = TOKEN_HEADERS_BASE.copy()
+                headers_with_bearer['authorization'] = f'Bearer {device_token}'
+                js_headers = {k: str(v) for k, v in headers_with_bearer.items()}
+                
+                result = driver.execute_async_script("""
+                    var callback = arguments[arguments.length - 1];
+                    var url = arguments[0];
+                    var headers = arguments[1];
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', url, true);
+                    for (var key in headers) {
+                        xhr.setRequestHeader(key, headers[key]);
+                    }
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            callback({
+                                status: xhr.status,
+                                response: xhr.responseText
+                            });
+                        }
+                    };
+                    xhr.send();
+                """, TOKEN_URL, js_headers)
+                
+                status = result['status']
+                response_text = result['response']
+                logger.info(f"Token GET status: {status} (len: {len(response_text)})")
+                
+                if status == 200:
+                    try:
+                        data = json.loads(response_text)
+                        token_data = data.get('token', {})
+                        token_uuid = token_data.get('uuid')
+                        token_expiration = token_data.get('expiration', 0)
+                        cache_url = token_data.get('cacheUrl', cache_url)
+                        logger.info(f"Token UUID parsed: {token_uuid}, exp={token_expiration}, cacheUrl={cache_url}")
+                    except json.JSONDecodeError as je:
+                        logger.error(f"JSON parse error: {je} - response: {response_text[:200]}")
+                else:
+                    logger.error(f"Token GET failed {status}: {response_text[:200]}")
+            
+            # Fallback si no UUID (o usa hardcode si no modo)
+            if not token_uuid:
+                logger.warning("No fresh token - fallback to manual")
+                token_uuid = "e275a57f-d540-4363-b759-73a20f970960"
+                token_expiration = 1758913816
+                device_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwiZXhwIjoxNzU4OTUzNTE4LCJhY2NvdW50SWQiOiI3MDM1IiwicmVnaW9uSWQiOiIxOCIsImRldmljZSI6eyJkZXZpY2VJZCI6IjE0MDMyIiwiZGV2aWNlVHlwZSI6ImNsb3VkX2NsaWVudCIsImlwQWRkcmVzcyI6IiIsImRldmljZU5hbWUiOiJTVEIxIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsInNlcmlhbE51bWJlciI6IiIsInN0YXR1cyI6IkEiLCJ1dWlkIjoiQUFBQUFBRDhERDQ0In0sImRldmljZVRhZ3MiOltdfQ.TPTyf2dMdahuIyEeuSMnwChy1gv05TMjgBxSPCyuBeU"
+                cache_url = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"
         
-        # Fallback si GET falla (usa tu manual)
-        if not token_uuid:
-            logger.warning("Token GET failed - using manual UUID")
-            token_uuid = "e275a57f-d540-4363-b759-73a20f970960"
-            token_expiration = 1758913816
-            cache_url = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"
-        
+        except Exception as e:
+            logger.error(f"Selenium setup error: {e}")
+            return {}, None, None
+    
+    # Check expiration (skip si hardcode y exp near)
+    if HARDCODE_MODE or token_expiration > int(time.time()) + 3600:  # Allow 1h buffer si manual
         if not check_expiration(token_expiration):
-            return {}, None, driver  # Abort si exp
-        
-        # Set global UUID/URL_BASE
-        global UUID, URL_BASE
-        UUID = token_uuid
-        URL_BASE = f"{cache_url}/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"  # lineup 220 fijo
-        logger.info(f"TOKEN UUID set for EPG: {UUID} (cacheUrl: {cache_url})")
-        
-        # Cookies (igual)
-        selenium_cookies = driver.get_cookies()
-        cookies_dict = {c['name']: c['value'] for c in selenium_cookies}
-        relevant = {k: v for k, v in cookies_dict.items() if k in ['AWSALB', 'AWSALBCORS', 'bitmovin_analytics_uuid']}
-        logger.info(f"Cookies frescas: {list(relevant.keys())}")
-        
-        logger.info(f"Setup complete (driver alive): TOKEN UUID={UUID}, deviceToken={device_token is not None}")
-        return relevant, device_token, driver  # device_token para Bearer en EPG
-        
-    except Exception as e:
-        logger.error(f"Selenium/token error: {e}")
-        driver.quit()
-        return {}, None, None
+            if HARDCODE_MODE:
+                logger.warning("Hardcode token near exp - but proceeding for test")
+            else:
+                return {}, None, driver
+    else:
+        logger.warning("Token exp check skipped - manual mode")
+    
+    # Set global
+    global UUID, URL_BASE
+    UUID = token_uuid
+    URL_BASE = f"{cache_url}/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"
+    logger.info(f"TOKEN UUID set for EPG: {UUID} (cacheUrl: {cache_url})")
+    
+    # Cookies
+    selenium_cookies = driver.get_cookies()
+    cookies_dict = {c['name']: c['value'] for c in selenium_cookies}
+    relevant = {k: v for k, v in cookies_dict.items() if k in ['AWSALB', 'AWSALBCORS', 'bitmovin_analytics_uuid']}
+    logger.info(f"Cookies frescas: {list(relevant.keys())}")
+    
+    logger.info(f"Setup complete (driver alive): TOKEN UUID={UUID}, deviceToken={device_token is not None}")
+    return relevant, device_token, driver
 
 def fetch_channel_contents(channel_id, date_from, date_to, session, device_token=None, retry_xml=False, use_selenium=False):
     """Fetch EPG – Bearer auth, Selenium live si enabled, parse XML/JSON full."""
@@ -427,19 +457,26 @@ def main():
     # Channel IDs (ajusta según canales reales de MVSHub, e.g., 222=DI, 223=Noticias, etc.)
     CHANNEL_IDS = [222, 223, 224, 225, 226]  # Ejemplo - agrega más si known (hasta 50 para test)
     
-    # Intercept token UUID
+    # Intercept (con hardcode option)
     result = intercept_uuid_via_selenium()
     cookies, device_token, driver = result
-    if driver is None or UUID is None:
-        logger.error("Selenium/token UUID failed - abort.")
+    if driver is None:
+        logger.error("Selenium failed - abort.")
         return False
+    if UUID is None:
+        logger.warning("No UUID from intercept - trying hardcode fallback in main")
+        global UUID, URL_BASE
+        UUID = "e275a57f-d540-4363-b759-73a20f970960"
+        URL_BASE = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}".format(UUID=UUID)
+        device_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwiZXhwIjoxNzU4OTUzNTE4LCJhY2NvdW50SWQiOiI3MDM1IiwicmVnaW9uSWQiOiIxOCIsImRldmljZSI6eyJkZXZpY2VJZCI6IjE0MDMyIiwiZGV2aWNlVHlwZSI6ImNsb3VkX2NsaWVudCIsImlwQWRkcmVzcyI6IiIsImRldmljZU5hbWUiOiJTVEIxIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsInNlcmlhbE51bWJlciI6IiIsInN0YXR1cyI6IkEiLCJ1dWlkIjoiQUFBQUFBRDhERDQ0In0sImRldmljZVRhZ3MiOltdfQ.TPTyf2dMdahuIyEeuSMnwChy1gv05TMjgBxSPCyuBeU"
+        logger.info(f"Fallback UUID set in main: {UUID}")
     
-    # Session con cookies
+    # Session
     session = requests.Session()
     for name, value in cookies.items():
         session.cookies.set(name, value)
     
-    # Test 222 via Selenium primero (sesión viva)
+    # Test 222 (igual)
     logger.info("=== TESTING CHANNEL 222 VIA SELENIUM (LIVE SESSION) ===")
     test_contents = fetch_channel_contents(222, date_from, date_to, session, device_token, use_selenium=True)
     if not test_contents:
@@ -447,7 +484,7 @@ def main():
         time.sleep(2)
         test_contents = fetch_channel_contents(222, date_from, date_to, session, device_token, retry_xml=True)
     if not test_contents:
-        logger.error("TEST FAILED: 0 progs for 222. Check raw_response_222.xml. Manual browser recommended.")
+        logger.error("TEST FAILED: 0 progs for 222. Check raw_response_222.xml.")
         if driver:
             driver.quit()
         return False
