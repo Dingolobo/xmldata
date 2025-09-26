@@ -8,17 +8,33 @@ import sys
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import xml.etree.ElementTree as ET
+import re  # Regex para titles fallback
+
+# Selenium para SPA cookies + auto UUID
+try:
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.chrome.service import Service
+    from selenium.webdriver.common.by import By
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    from webdriver_manager.chrome import ChromeDriverManager
+    SELENIUM_AVAILABLE = True
+except ImportError:
+    SELENIUM_AVAILABLE = False
+    logging.warning("Selenium not installed: pip install selenium webdriver-manager")
 
 # Config
 TOKEN_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/login/cache/token"
 LINEUP_ID = 220
+MVS_SPA_URL = "https://www.mvshub.com.mx/#spa/epg"  # SPA EPG corregido
 TOKEN_HEADERS_BASE = {
     'accept': 'application/json, */*',
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'es-419,es;q=0.9',
     'cache-control': 'no-cache',
     'origin': 'https://www.mvshub.com.mx',
-    'referer': 'https://www.mvshub.com.mx/',
+    'referer': 'https://www.mvshub.com.mx/#spa/epg',
     'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
@@ -34,7 +50,7 @@ CACHE_URL = None
 DATE_FROM = None
 DATE_TO = None
 
-# Manual fallback (tu ejemplo fresco/validado)
+# Manual fallback (solo si auto fail)
 MANUAL_UUID = "001098f1-684a-4777-9b86-3e75e6658538"
 MANUAL_CACHE_URL = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"
 
@@ -47,7 +63,6 @@ def setup_logging():
 logger = setup_logging()
 
 def get_fallback_dates():
-    """+1 día 08:00-16:00 ms (real 2024 ts)."""
     now = datetime.now() + timedelta(days=1)
     start = datetime(now.year, now.month, now.day, 8, 0, 0)
     end = start + timedelta(hours=8)
@@ -56,11 +71,76 @@ def get_fallback_dates():
     logger.info(f"Fallback dates: {df}-{dt} ({start} to {end})")
     return df, dt
 
+def get_auto_uuid_selenium():
+    """Auto UUID: Load SPA #/epg, get cookies, fetch token con ellas para fresco."""
+    if not SELENIUM_AVAILABLE:
+        logger.warning("Selenium unavailable - skip auto UUID")
+        return None, None
+    
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--user-agent=' + TOKEN_HEADERS_BASE['user-agent'])
+    
+    try:
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
+        logger.info(f"Selenium: Loading SPA {MVS_SPA_URL} for fresh cookies/token...")
+        
+        driver.get(MVS_SPA_URL)
+        # Espera load EPG (busca elemento o timeout 10s)
+        wait = WebDriverWait(driver, 10)
+        wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))  # O selector EPG si known
+        time.sleep(5)  # Extra para API calls JS
+        
+        # Get cookies del SPA session
+        cookies = driver.get_cookies()
+        cookie_dict = {c['name']: c['value'] for c in cookies if c['domain'] in ['mvshub.com.mx', '.ses.com', '.ovp.ses.com']}
+        logger.info(f"Selenium: {len(cookie_dict)} cookies extracted (e.g., session/JSESSIONID)")
+        
+        driver.quit()
+        
+        if cookie_dict:
+            # Fetch token con cookies SPA
+            session = requests.Session()
+            for name, value in cookie_dict.items():
+                session.cookies.set(name, value)
+            session.headers.update(TOKEN_HEADERS_BASE)
+            
+            response = session.get(TOKEN_URL, timeout=10, verify=False)
+            logger.info(f"Selenium cookies + token response: {response.status_code}")
+            
+            if response.status_code == 200:
+                data = response.json()
+                token_data = data.get('token', {})
+                fetched_uuid = token_data.get('uuid')
+                cache_url = token_data.get('cacheUrl', MANUAL_CACHE_URL)
+                expiration = token_data.get('expiration', 0)
+                
+                now_ts = int(time.time())
+                
+                if fetched_uuid and expiration > now_ts:
+                    logger.info(f"Selenium AUTO success: UUID={fetched_uuid[:8]}..., CACHE_URL={cache_url}, exp={expiration} (fresh via SPA cookies)")
+                    return fetched_uuid, cache_url
+                else:
+                    logger.warning(f"Selenium token stale even with cookies (exp: {expiration}, now: {now_ts}, UUID={fetched_uuid[:8] if fetched_uuid else 'None'})")
+            else:
+                logger.warning(f"Selenium token fail {response.status_code}: {response.text[:100]}")
+        else:
+            logger.warning("No cookies from SPA - skip auto")
+            
+    except Exception as e:
+        logger.warning(f"Selenium error: {e} - fallback requests/manual")
+    
+    return None, None
+
 def get_token():
-    """Fetch token, force manual si expired/stale."""
+    """Auto UUID: Selenium SPA cookies first, then requests simple, manual si stale."""
     global UUID, CACHE_URL, DATE_FROM, DATE_TO
     
-    # Dates (env o fallback)
+    # Dates
     df = int(os.environ.get('DATE_FROM', '0'))
     dt = int(os.environ.get('DATE_TO', '0'))
     if df and dt:
@@ -69,10 +149,17 @@ def get_token():
     else:
         DATE_FROM, DATE_TO = get_fallback_dates()
     
-    # Try fetch token
+    # 1. Selenium auto con SPA #/epg cookies
+    fetched_uuid, cache_url = get_auto_uuid_selenium()
+    if fetched_uuid:
+        UUID = fetched_uuid
+        CACHE_URL = cache_url
+        return True
+    
+    # 2. Fallback requests GET simple (stale probable)
     try:
         response = requests.get(TOKEN_URL, headers=TOKEN_HEADERS_BASE, timeout=10, verify=False)
-        logger.info(f"Token response: {response.status_code}")
+        logger.info(f"Requests token response: {response.status_code}")
         
         if response.status_code == 200:
             data = response.json()
@@ -84,29 +171,27 @@ def get_token():
             now_ts = int(time.time())
             
             if fetched_uuid and expiration > now_ts:
-                # Fresco: Usa
                 UUID = fetched_uuid
                 CACHE_URL = cache_url
-                logger.info(f"Token FRESH success: UUID={UUID[:8]}..., CACHE_URL={CACHE_URL}, exp={expiration}")
+                logger.info(f"Requests FRESH success: UUID={UUID[:8]}..., CACHE_URL={CACHE_URL}, exp={expiration}")
                 return True
             else:
-                # Stale/expired: Force manual
-                logger.warning(f"Token stale/expired (exp: {expiration}, now: {now_ts}, UUID={fetched_uuid[:8] if fetched_uuid else 'None'}) - force manual fresh")
+                logger.warning(f"Requests stale (exp: {expiration}, now: {now_ts}) - manual")
         else:
-            logger.warning(f"Token fail {response.status_code}: {response.text[:100]} - force manual")
-            
+            logger.warning(f"Requests fail {response.status_code} - manual")
     except Exception as e:
-        logger.warning(f"Token error: {e} - force manual")
+        logger.warning(f"Requests error: {e} - manual")
     
-    # Force manual (tu validado)
+    # 3. Manual
     UUID = MANUAL_UUID
     CACHE_URL = MANUAL_CACHE_URL
-    logger.info(f"Manual UUID applied: {UUID[:8]}... (fresh per user test, exp Oct 2025)")
+    logger.info(f"Manual fallback: UUID={UUID[:8]}... (install Selenium for auto)")
     return True
 
 def get_epg_headers(is_xml=True):
     headers = TOKEN_HEADERS_BASE.copy()
     headers['accept'] = 'application/xml, */*' if is_xml else 'application/json, */*'
+    headers['referer'] = MVS_SPA_URL  # SPA referer
     return headers
 
 def fetch_channel_contents(channel_id, session):
@@ -154,41 +239,77 @@ def fetch_channel_contents(channel_id, session):
     
     try:
         if response_text.startswith('<') or '<?xml' in response_text:
-            # XML parse - FIX: Agrega 'xsi' NS para @xsi:type
+            # XML parse - Flexible NS
             ns = {
                 'minerva': 'http://ws.minervanetworks.com/',
                 'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
             }
             root = ET.fromstring(response_text)
-            schedules = root.findall(".//minerva:content[@xsi:type='schedule']", ns) or root.findall(".//content[@xsi:type='schedule']", ns)
+            schedules = (root.findall(".//minerva:content[@xsi:type='schedule']", ns) or 
+                         root.findall(".//content[@xsi:type='schedule']", ns) or 
+                         root.findall(".//schedule") or 
+                         root.findall(".//programme"))
             logger.info(f"XML {channel_id}: {len(schedules)} schedules")
+            
+            sched_text = ET.tostring(root, encoding='unicode')  # Para regex fallback
             
             for sched in schedules:
                 prog = {}
                 
-                title_e = sched.find('.//minerva:title', ns) or sched.find('.//title')
-                prog['title'] = title_e.text if title_e else 'Sin título'
+                # Title - Flexible ET + regex backup
+                title_e = (sched.find('.//minerva:title', ns) or 
+                           sched.find('.//title') or 
+                           sched.find('.//programmeTitle') or 
+                           sched.find('.//name') or 
+                           sched.find('.//displayTitle'))
+                if title_e is not None and title_e.text:
+                    prog['title'] = title_e.text.strip()
+                else:
+                    # Regex fallback para title (extrae de sched_text o full response)
+                    title_match = re.search(r'<title[^>]*>([^<]+)</title>', ET.tostring(sched, encoding='unicode'), re.I | re.DOTALL)
+                    if title_match:
+                        prog['title'] = title_match.group(1).strip()
+                    else:
+                        title_match = re.search(r'<programmeTitle[^>]*>([^<]+)</programmeTitle>', sched_text, re.I | re.DOTALL)
+                        prog['title'] = title_match.group(1).strip() if title_match else 'Sin título'
                 
+                # Start time
                 start_e = sched.find('.//minerva:startTime', ns) or sched.find('.//startTime')
                 prog['start'] = start_e.text if start_e else '0'
                 
+                # Duration
                 dur_e = sched.find('.//minerva:duration', ns) or sched.find('.//duration')
                 prog['duration'] = dur_e.text if dur_e else '3600'
                 
-                syn_e = sched.find('.//minerva:synopsis', ns) or sched.find('.//synopsis')
+                # Description/Synopsis
+                syn_e = (sched.find('.//minerva:synopsis', ns) or 
+                         sched.find('.//synopsis') or 
+                         sched.find('.//description') or 
+                         sched.find('.//longDescription'))
                 prog['description'] = syn_e.text if syn_e else ''
                 
+                # Rating
                 rat_e = sched.find('.//minerva:rating', ns) or sched.find('.//rating')
                 prog['rating'] = rat_e.text if rat_e else ''
                 
-                tv_ch_e = sched.find('.//minerva:TV_CHANNEL', ns) or sched.find('.//TV_CHANNEL')
+                # Channel info - Flexible
+                tv_ch_e = (sched.find('.//minerva:TV_CHANNEL', ns) or 
+                           sched.find('.//TV_CHANNEL') or 
+                           sched.find('.//channel') or 
+                           sched.find('.//service'))
                 if tv_ch_e:
-                    call_e = tv_ch_e.find('.//minerva:callSign', ns) or tv_ch_e.find('.//callSign')
+                    # CallSign/Name
+                    call_e = (tv_ch_e.find('.//minerva:callSign', ns) or 
+                              tv_ch_e.find('.//callSign') or 
+                              tv_ch_e.find('.//name') or 
+                              tv_ch_e.find('.//displayName'))
                     prog['channel_callSign'] = call_e.text if call_e else str(channel_id)
                     
+                    # Number
                     num_e = tv_ch_e.find('.//minerva:number', ns) or tv_ch_e.find('.//number')
                     prog['channel_number'] = num_e.text if num_e else ''
                     
+                    # Logo - Busca <image usage="LOGO">
                     imgs = tv_ch_e.findall('.//minerva:image', ns) or tv_ch_e.findall('.//image')
                     logo = ''
                     if imgs:
@@ -203,15 +324,23 @@ def fetch_channel_contents(channel_id, session):
                             logo = url_e.text if url_e else ''
                     prog['channel_logo'] = logo
                 
+                # Genres
                 genres = []
-                g_elems = sched.findall('.//minerva:genres/minerva:genre', ns) or sched.findall('.//genres/genre')
+                g_elems = (sched.findall('.//minerva:genres/minerva:genre', ns) or 
+                           sched.findall('.//genres/genre') or 
+                           sched.findall('.//category'))
                 for g in g_elems:
-                    n_e = g.find('minerva:name', ns) or g.find('name')
-                    if n_e:
-                        genres.append(n_e.text or '')
+                    n_e = g.find('minerva:name', ns) or g.find('name') or g
+                    genre_text = n_e.text if n_e else g.text
+                    if genre_text:
+                        genres.append(genre_text.strip())
                 prog['genres'] = genres
                 
-                p_imgs = sched.findall('.//minerva:images/minerva:image', ns) or sched.findall('.//images/image')
+                # Programme image (poster/thumbnail)
+                p_imgs = (sched.findall('.//minerva:images/minerva:image', ns) or 
+                          sched.findall('.//images/image') or 
+                          sched.findall('.//poster') or 
+                          sched.findall('.//thumbnail'))
                 p_image = ''
                 if p_imgs:
                     url_e = p_imgs[0].find('.//minerva:url', ns) or p_imgs[0].find('.//url')
@@ -221,23 +350,23 @@ def fetch_channel_contents(channel_id, session):
                 contents.append(prog)
             
         else:
-            # JSON fallback
+            # JSON fallback (si response JSON)
             data = json.loads(response_text)
-            schedules = data.get('contents', []) or data.get('schedules', [])
+            schedules = data.get('contents', []) or data.get('schedules', []) or data.get('programmes', [])
             logger.info(f"JSON {channel_id}: {len(schedules)}")
             
             for sched in schedules:
                 prog = {
-                    'title': sched.get('title', 'Sin título'),
+                    'title': sched.get('title', sched.get('programmeTitle', sched.get('name', 'Sin título'))),
                     'start': str(sched.get('startTime', '0')),
                     'duration': str(sched.get('duration', '3600')),
-                    'description': sched.get('synopsis', ''),
+                    'description': sched.get('synopsis', sched.get('description', '')),
                     'rating': sched.get('rating', ''),
-                    'channel_callSign': sched.get('channel', {}).get('callSign', str(channel_id)),
+                    'channel_callSign': sched.get('channel', {}).get('callSign', sched.get('channel', {}).get('name', str(channel_id))),
                     'channel_number': sched.get('channel', {}).get('number', ''),
                     'channel_logo': sched.get('channel', {}).get('logo', ''),
-                    'genres': sched.get('genres', []),
-                    'programme_image': sched.get('image', '')
+                    'genres': sched.get('genres', sched.get('categories', [])),
+                    'programme_image': sched.get('image', sched.get('poster', ''))
                 }
                 contents.append(prog)
         
@@ -269,7 +398,7 @@ def main():
     tz_offset = int(os.environ.get('TIMEZONE_OFFSET', '-6'))
     logger.info(f"Timezone: {tz_offset}")
     
-    # Token focus (fetch + force manual si stale)
+    # Token auto (Selenium SPA + cookies → fresh UUID)
     if not get_token():
         logger.error("No UUID - abort.")
         return False
@@ -277,14 +406,14 @@ def main():
     # Session
     session = requests.Session()
     session.headers.update(TOKEN_HEADERS_BASE)
-    logger.info("Session ready (focus: token UUID)")
+    logger.info("Session ready (auto UUID from SPA)")
     
-    # Test con 969 (tu ejemplo validado)
+    # Test con 969 (validado)
     test_ch = 969
-    logger.info(f"=== TEST {test_ch} (UUID from token/manual) ===")
+    logger.info(f"=== TEST {test_ch} (UUID auto/manual) ===")
     test_contents = fetch_channel_contents(test_ch, session)
     if not test_contents:
-        logger.error(f"TEST FAIL {test_ch}: Check raw_{test_ch}.xml (try dates +2d?)")
+        logger.error(f"TEST FAIL {test_ch}: Check raw_{test_ch}.xml (UUID/dates?)")
         return False
     logger.info(f"TEST SUCCESS: {len(test_contents)} programmes for {test_ch}!")
     
@@ -297,13 +426,15 @@ def main():
         contents = fetch_channel_contents(channel_id, session)
         channels_data.append((channel_id, contents))
         total_progs += len(contents)
-        time.sleep(1)
+        time.sleep(1)  # Rate limit
     
     logger.info(f"FULL: {total_progs} progs / {len(CHANNEL_IDS)} channels")
     
     # XMLTV
     logger.info("=== BUILDING XMLTV ===")
-    xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n<tv>\n'
+    xml_content = '''<?xml version="1.0" encoding="UTF-8"?>
+<tv generator-info-name="MVS Hub EPG Auto Generator" generator-info-url="https://www.mvshub.com.mx/#spa/epg">
+'''
     
     # Channels
     channel_map = {}
@@ -313,8 +444,8 @@ def main():
             call_sign = first.get('channel_callSign', f'MVSHub{ch_id}')
             number = first.get('channel_number', '')
             logo = first.get('channel_logo', '')
-            channel_map[ch_id] = {'callSign': call_sign, 'number': number, 'logo':
-                logo}
+            channel_map[ch_id] = {'callSign': call_sign, 'number': number, 'logo': logo}
+            
             xml_content += f'  <channel id="c{ch_id}">\n'
             xml_content += f'    <display-name>{call_sign}</display-name>\n'
             if number:
@@ -325,10 +456,10 @@ def main():
     
     # Programmes
     offset_sec = tz_offset * 3600
-    total_progs = 0  # Reset para count final
+    prog_count = 0
     for ch_id, contents in channels_data:
         for prog in contents:
-            total_progs += 1
+            prog_count += 1
             start_str = prog.get('start', '0')
             try:
                 if start_str.isdigit():
@@ -337,9 +468,9 @@ def main():
                     start_ts = datetime.fromisoformat(start_str.replace('Z', '+00:00')).timestamp()
                 start_local = start_ts + offset_sec
                 start_dt = datetime.fromtimestamp(start_local)
-                tz_str = f"{tz_offset:+03d}000"
-                start_xml = start_dt.strftime('%Y%m%d%H%M%S') + ' ' + tz_str
-            except:
+                tz_str = f"{tz_offset:+03d}00"
+                start_xml = start_dt.strftime('%Y%m%d%H%M%S') + tz_str
+            except Exception:
                 start_xml = '19700101000000 +0000'
             
             dur_str = prog.get('duration', '3600')
@@ -347,17 +478,16 @@ def main():
                 dur_sec = int(dur_str)
                 end_local = start_local + dur_sec
                 end_dt = datetime.fromtimestamp(end_local)
-                stop_xml = end_dt.strftime('%Y%m%d%H%M%S') + ' ' + tz_str
-            except:
+                stop_xml = end_dt.strftime('%Y%m%d%H%M%S') + tz_str
+            except Exception:
                 stop_xml = start_xml
             
             title = prog.get('title', 'Sin título').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-            desc = prog.get('description', '')[:255].replace('&', '&amp;').replace('<', '&lt;')
+            desc = prog.get('description', '')[:255].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
             genres_list = prog.get('genres', [])
             p_image = prog.get('programme_image', '')
             rating = prog.get('rating', '')
             
-            # F-String corregido: Completo en una línea
             xml_content += f'  <programme start="{start_xml}" stop="{stop_xml}" channel="c{ch_id}">\n'
             xml_content += f'    <title lang="es">{title}</title>\n'
             if desc:
@@ -377,14 +507,14 @@ def main():
     xml_file = 'mvshub_epg.xml'
     with open(xml_file, 'w', encoding='utf-8') as f:
         f.write(xml_content)
-    logger.info(f"XMLTV saved: {xml_file} ({len(channel_map)} channels, {total_progs} programmes)")
+    logger.info(f"XMLTV saved: {xml_file} ({len(channel_map)} channels, {prog_count} programmes)")
     
     return True
 
 if __name__ == "__main__":
     success = main()
     if success:
-        logger.info("¡ÉXITO TOTAL! EPG XML generado (token focus: fresh o manual UUID, NS fix).")
+        logger.info("¡ÉXITO TOTAL! EPG XML auto generado (fresh UUID via Selenium SPA, real titles/logos).")
     else:
-        logger.error("Fallo - revisa epg_fetch.log y raw_*.xml (UUID/dates?).")
+        logger.error("Fallo - revisa epg_fetch.log y raw_*.xml (Selenium/cookies?).")
         sys.exit(1)
