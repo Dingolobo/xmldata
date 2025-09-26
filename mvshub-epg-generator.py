@@ -80,11 +80,11 @@ def validate_generic_token(device_token):
         return False
 
 def intercept_uuid_via_selenium():
-    """Intercepta UUID dinámico de SPA pública via performance API. Sin fallbacks."""
+    """Intercepta UUID dinámico de SPA pública via performance API. Siempre retorna tuple (incluso fallo)."""
     use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
     if not use_selenium:
         logger.error("Selenium required for UUID intercept - enable it.")
-        return None
+        return {}, None  # Tuple vacío en fallo
     
     logger.info("Loading SPA pública para intercept UUID dinámico...")
     options = Options()
@@ -93,17 +93,21 @@ def intercept_uuid_via_selenium():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--window-size=1920,1080")
+    options.add_argument("--disable-web-security")  # Ayuda con CORS si needed
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
     
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     
     try:
         driver.get(SITE_URL)
-        wait = WebDriverWait(driver, 30)
+        wait = WebDriverWait(driver, 60)  # Timeout up a 60s
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(45)  # Espera full SPA load y EPG requests
+        time.sleep(60)  # Más tiempo para SPA + EPG requests (crítico para UUID)
         
-        # Extrae UUID unique de /epgcache/list/ requests
+        # Retry si no UUID inicial
         uuid_candidates = driver.execute_script("""
             return [...new Set(performance.getEntriesByType('resource')
                 .filter(r => r.name.includes('/epgcache/list/'))
@@ -113,15 +117,27 @@ def intercept_uuid_via_selenium():
         logger.info(f"UUID candidates from performance API: {uuid_candidates}")
         
         if not uuid_candidates:
-            logger.error("No UUID intercepted - SPA no loaded EPG requests.")
-            return None
+            logger.warning("No UUID on first load – retrying page refresh...")
+            driver.refresh()
+            time.sleep(30)  # Espera reload
+            uuid_candidates = driver.execute_script("""
+                return [...new Set(performance.getEntriesByType('resource')
+                    .filter(r => r.name.includes('/epgcache/list/'))
+                    .map(r => r.name.split('/epgcache/list/')[1]?.split('/')[0])
+                    .filter(uuid => uuid && uuid.length === 36 && uuid.includes('-')))];
+            """)
+            logger.info(f"UUID candidates after retry: {uuid_candidates}")
+        
+        if not uuid_candidates:
+            logger.error("No UUID intercepted after retry - SPA no loaded EPG requests. Check site/network.")
+            return {}, None  # Cambiado: Siempre tuple, no None
         
         global UUID, URL_BASE
         UUID = uuid_candidates[0]
         logger.info(f"UUID dinámico intercepted: {UUID}")
         URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"
         
-        # deviceToken genérico
+        # deviceToken genérico (igual)
         device_token = None
         system_login = driver.execute_script("return localStorage.getItem('system.login');")
         if system_login:
@@ -133,20 +149,23 @@ def intercept_uuid_via_selenium():
                 pass
         if device_token and validate_generic_token(device_token):
             logger.info("Public session validated - ready for EPG")
+        else:
+            logger.warning("Generic token not validated - may fail EPG")
         
-        # Cookies frescas
+        # Cookies frescas (igual)
         selenium_cookies = driver.get_cookies()
         cookies_dict = {c['name']: c['value'] for c in selenium_cookies}
         relevant = {k: v for k, v in cookies_dict.items() if k in ['AWSALB', 'AWSALBCORS', 'bitmovin_analytics_uuid']}
         logger.info(f"Cookies frescas: {list(relevant.keys())}")
         
         driver.quit()
-        return relevant, device_token
+        logger.info(f"Setup complete: UUID={UUID}, cookies={len(relevant)}, token validated={'yes' if device_token else 'no'}")
+        return relevant, device_token  # Siempre tuple
         
     except Exception as e:
         logger.error(f"Selenium error: {e}")
         driver.quit()
-        return {}, None
+        return {}, None  # Tuple en except también
 
 def fetch_channel_contents(channel_id, date_from, date_to, session, retry_xml=False):
     """Fetch EPG – maneja XML/JSON, guarda raw siempre, retry 406 con XML only."""
@@ -262,7 +281,7 @@ def fetch_channel_contents(channel_id, date_from, date_to, session, retry_xml=Fa
 def main():
     global CHANNEL_IDS, UUID, URL_BASE
     
-    # Date range (local con offset)
+    # Date range (igual)
     offset = int(os.environ.get('TIMEZONE_OFFSET', '-6'))
     now_local = datetime.utcnow() + timedelta(hours=offset)
     date_from = int(now_local.timestamp() * 1000)
@@ -281,13 +300,16 @@ def main():
     
     logger.info(f"Channels to fetch: {CHANNEL_IDS}")
     
-    # Intercept UUID fresco + cookies
-    cookies, device_token = intercept_uuid_via_selenium()
-    if not UUID:
-        logger.error("UUID intercept failed - abort.")
+        # Intercept con manejo de fallo
+    result = intercept_uuid_via_selenium()
+    if result is None:  # Legacy check (no needed ahora)
+        logger.error("Intercept returned None - abort.")
         return False
+    cookies, device_token = result  # Seguro: siempre tuple
     
-    logger.info(f"Setup complete: UUID={UUID}, cookies={len(cookies)}, token validated={'yes' if device_token else 'no'}")
+    if UUID is None:
+        logger.error("UUID intercept failed completely - no UUID found. Abort.")
+        return False
     
     # Session con cookies frescas
     session = requests.Session()
