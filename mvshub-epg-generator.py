@@ -34,7 +34,7 @@ CACHE_URL = None
 DATE_FROM = None
 DATE_TO = None
 
-# Manual fallback (tu ejemplo válido)
+# Manual fallback (tu ejemplo fresco/validado)
 MANUAL_UUID = "001098f1-684a-4777-9b86-3e75e6658538"
 MANUAL_CACHE_URL = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"
 
@@ -47,7 +47,7 @@ def setup_logging():
 logger = setup_logging()
 
 def get_fallback_dates():
-    """+1 día 08:00-16:00 ms."""
+    """+1 día 08:00-16:00 ms (real 2024 ts)."""
     now = datetime.now() + timedelta(days=1)
     start = datetime(now.year, now.month, now.day, 8, 0, 0)
     end = start + timedelta(hours=8)
@@ -57,10 +57,10 @@ def get_fallback_dates():
     return df, dt
 
 def get_token():
-    """Fetch token con headers browser-like, fallback manual si 400."""
+    """Fetch token, force manual si expired/stale."""
     global UUID, CACHE_URL, DATE_FROM, DATE_TO
     
-    # Dates
+    # Dates (env o fallback)
     df = int(os.environ.get('DATE_FROM', '0'))
     dt = int(os.environ.get('DATE_TO', '0'))
     if df and dt:
@@ -69,7 +69,7 @@ def get_token():
     else:
         DATE_FROM, DATE_TO = get_fallback_dates()
     
-    # Try token fetch
+    # Try fetch token
     try:
         response = requests.get(TOKEN_URL, headers=TOKEN_HEADERS_BASE, timeout=10, verify=False)
         logger.info(f"Token response: {response.status_code}")
@@ -77,43 +77,42 @@ def get_token():
         if response.status_code == 200:
             data = response.json()
             token_data = data.get('token', {})
-            UUID = token_data.get('uuid')
-            CACHE_URL = token_data.get('cacheUrl', MANUAL_CACHE_URL)
+            fetched_uuid = token_data.get('uuid')
+            cache_url = token_data.get('cacheUrl', MANUAL_CACHE_URL)
             expiration = token_data.get('expiration', 0)
             
-            if UUID:
-                now_ts = int(time.time())
-                if expiration < now_ts:
-                    logger.warning(f"Token expired (exp: {expiration}, now: {now_ts})")
-                logger.info(f"Token success: UUID={UUID[:8]}..., CACHE_URL={CACHE_URL}")
+            now_ts = int(time.time())
+            
+            if fetched_uuid and expiration > now_ts:
+                # Fresco: Usa
+                UUID = fetched_uuid
+                CACHE_URL = cache_url
+                logger.info(f"Token FRESH success: UUID={UUID[:8]}..., CACHE_URL={CACHE_URL}, exp={expiration}")
                 return True
             else:
-                logger.error("No UUID in token JSON")
-                raise ValueError("Invalid token response")
-        
+                # Stale/expired: Force manual
+                logger.warning(f"Token stale/expired (exp: {expiration}, now: {now_ts}, UUID={fetched_uuid[:8] if fetched_uuid else 'None'}) - force manual fresh")
         else:
-            logger.warning(f"Token fail {response.status_code}: {response.text[:100]} - using manual fallback")
+            logger.warning(f"Token fail {response.status_code}: {response.text[:100]} - force manual")
             
     except Exception as e:
-        logger.warning(f"Token error: {e} - manual fallback")
+        logger.warning(f"Token error: {e} - force manual")
     
-    # Fallback manual (tu UUID válido)
+    # Force manual (tu validado)
     UUID = MANUAL_UUID
     CACHE_URL = MANUAL_CACHE_URL
-    logger.info(f"Manual fallback: UUID={UUID[:8]}..., CACHE_URL={CACHE_URL} (valid per user test)")
+    logger.info(f"Manual UUID applied: {UUID[:8]}... (fresh per user test, exp Oct 2025)")
     return True
 
 def get_epg_headers(is_xml=True):
-    """Headers EPG: XML o JSON (usa TOKEN_HEADERS_BASE base)."""
     headers = TOKEN_HEADERS_BASE.copy()
     headers['accept'] = 'application/xml, */*' if is_xml else 'application/json, */*'
     return headers
 
 def fetch_channel_contents(channel_id, session):
-    """Fetch EPG con UUID + dates."""
     global UUID, CACHE_URL, DATE_FROM, DATE_TO
     if not UUID or not CACHE_URL:
-        logger.error("No token/UUID")
+        logger.error("No UUID/CACHE_URL")
         return []
     
     url = f"{CACHE_URL}/api/epgcache/list/{UUID}/{channel_id}/{LINEUP_ID}?page=0&size=100&dateFrom={DATE_FROM}&dateTo={DATE_TO}"
@@ -140,14 +139,14 @@ def fetch_channel_contents(channel_id, session):
         logger.error(f"Fetch {channel_id}: {e}")
         return []
     
-    # Raw
+    # Raw save
     raw_file = f"raw_{channel_id}.xml"
     with open(raw_file, 'w', encoding='utf-8') as f:
         f.write(f"Status: {status}\nURL: {url}\n{response_text}")
     logger.info(f"Raw {channel_id}: len={len(response_text)}, status={status}")
     
     if status != 200:
-        logger.error(f"Error {channel_id}: {status} - {response_text[:200]}")
+        logger.error(f"Error {channel_id}: {status} - {response_text[:200]} (UUID={UUID[:8]}..., dates={DATE_FROM}-{DATE_TO})")
         return []
     
     contents = []
@@ -155,7 +154,6 @@ def fetch_channel_contents(channel_id, session):
     
     try:
         if response_text.startswith('<') or '<?xml' in response_text:
-            # XML parse
             ns = {'minerva': 'http://ws.minervanetworks.com/'}
             root = ET.fromstring(response_text)
             schedules = root.findall(".//minerva:content[@xsi:type='schedule']", ns) or root.findall(".//content[@xsi:type='schedule']")
@@ -219,7 +217,7 @@ def fetch_channel_contents(channel_id, session):
                 contents.append(prog)
             
         else:
-            # JSON
+            # JSON fallback
             data = json.loads(response_text)
             schedules = data.get('contents', []) or data.get('schedules', [])
             logger.info(f"JSON {channel_id}: {len(schedules)}")
@@ -247,9 +245,9 @@ def fetch_channel_contents(channel_id, session):
         return contents
         
     except ET.ParseError as pe:
-        logger.error(f"XML {channel_id}: {pe}")
+        logger.error(f"XML parse {channel_id}: {pe}")
     except json.JSONDecodeError as je:
-        logger.error(f"JSON {channel_id}: {je}")
+        logger.error(f"JSON parse {channel_id}: {je}")
     except Exception as e:
         logger.error(f"Parse {channel_id}: {e}")
     
@@ -267,27 +265,27 @@ def main():
     tz_offset = int(os.environ.get('TIMEZONE_OFFSET', '-6'))
     logger.info(f"Timezone: {tz_offset}")
     
-    # Token (con fallback)
+    # Token focus (fetch + force manual si stale)
     if not get_token():
-        logger.error("No UUID setup - abort.")
+        logger.error("No UUID - abort.")
         return False
     
     # Session
     session = requests.Session()
     session.headers.update(TOKEN_HEADERS_BASE)
-    logger.info("Session ready")
+    logger.info("Session ready (focus: token UUID)")
     
-    # Test con 222 (tu lista)
-    test_ch = 222
-    logger.info(f"=== TEST {test_ch} (UUID valid) ===")
+    # Test con 969 (tu ejemplo validado)
+    test_ch = 969
+    logger.info(f"=== TEST {test_ch} (UUID from token/manual) ===")
     test_contents = fetch_channel_contents(test_ch, session)
     if not test_contents:
-        logger.error(f"TEST FAIL {test_ch}: Check raw_{test_ch}.xml")
+        logger.error(f"TEST FAIL {test_ch}: Check raw_{test_ch}.xml (try dates +2d?)")
         return False
     logger.info(f"TEST SUCCESS: {len(test_contents)} programmes for {test_ch}!")
     
-    # Full
-    logger.info("=== FULL FETCH ===")
+    # Full fetch
+    logger.info("=== FULL FETCH CHANNELS ===")
     channels_data = []
     total_progs = 0
     for channel_id in CHANNEL_IDS:
@@ -300,7 +298,7 @@ def main():
     logger.info(f"FULL: {total_progs} progs / {len(CHANNEL_IDS)} channels")
     
     # XMLTV
-    logger.info("=== XMLTV ===")
+    logger.info("=== BUILDING XMLTV ===")
     xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n<tv>\n'
     
     # Channels
@@ -313,6 +311,7 @@ def main():
             logo = first.get('channel_logo', '')
             channel_map[ch_id] = {'callSign': call_sign, 'number': number, 'logo': logo}
             
+            xml_content
             xml_content += f'  <channel id="c{ch_id}">\n'
             xml_content += f'    <display-name>{call_sign}</display-name>\n'
             if number:
@@ -353,7 +352,7 @@ def main():
             p_image = prog.get('programme_image', '')
             rating = prog.get('rating', '')
             
-            # F-String corregido: Completo
+            # F-String corregido: Completo en una línea
             xml_content += f'  <programme start="{start_xml}" stop="{stop_xml}" channel="c{ch_id}">\n'
             xml_content += f'    <title lang="es">{title}</title>\n'
             if desc:
@@ -380,7 +379,7 @@ def main():
 if __name__ == "__main__":
     success = main()
     if success:
-        logger.info("¡ÉXITO TOTAL! EPG XML generado (token o manual UUID).")
+        logger.info("¡ÉXITO TOTAL! EPG XML generado (token focus: fresh o manual UUID).")
     else:
-        logger.error("Fallo - revisa epg_fetch.log y raw_*.xml.")
+        logger.error("Fallo - revisa epg_fetch.log y raw_*.xml (UUID/dates?).")
         sys.exit(1)
