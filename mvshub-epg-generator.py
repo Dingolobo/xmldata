@@ -561,7 +561,7 @@ def main():
     logger.info(f"XMLTV saved: {xml_file} ({len(channels_data)} channels, {total_progs} programmes)")
     
     # Cleanup driver
-     if driver:
+    if driver:
         driver.quit()
         logger.info("Driver cleaned up.")
     
