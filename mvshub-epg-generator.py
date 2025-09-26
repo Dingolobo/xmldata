@@ -39,10 +39,10 @@ HEADERS_ACCOUNT = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
 }
 
-# Headers EPG – ahora con Bearer param (set en fetch)
+# Headers EPG base – solo Bearer, sin retry logic aquí
 def get_epg_headers(device_token=None):
     headers = {
-        'accept': 'application/xml, application/json, text/plain, */*',
+        'accept': 'application/xml, application/json, text/plain, */*',  # Default: XML/JSON
         'accept-encoding': 'gzip, deflate, br, zstd',
         'accept-language': 'es-419,es;q=0.9',
         'cache-control': 'no-cache',
@@ -58,10 +58,8 @@ def get_epg_headers(device_token=None):
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
     }
     if device_token:
-        headers['authorization'] = f'Bearer {device_token}'  # Crítico: Autentica EPG como /account
-        headers['content-type'] = 'application/json'  # Mantiene para Bearer
-    if retry_xml:  # Param de fetch
-        headers['accept'] = 'application/xml, */*'
+        headers['authorization'] = f'Bearer {device_token}'  # Autentica EPG
+        headers['content-type'] = 'application/json'
     return headers
 
 def validate_generic_token(device_token):
@@ -86,11 +84,11 @@ def validate_generic_token(device_token):
         return False
 
 def intercept_uuid_via_selenium():
-    """Intercepta UUID dinámico de SPA pública via performance API. Siempre retorna tuple (incluso fallo)."""
+    """Intercepta UUID + mantiene driver vivo para fetches. Retorna cookies, token, driver."""
     use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
     if not use_selenium:
-        logger.error("Selenium required for UUID intercept - enable it.")
-        return {}, None  # Tuple vacío en fallo
+        logger.error("Selenium required.")
+        return {}, None, None
     
     logger.info("Loading SPA pública para intercept UUID dinámico...")
     options = Options()
@@ -99,7 +97,7 @@ def intercept_uuid_via_selenium():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--window-size=1920,1080")
-    options.add_argument("--disable-web-security")  # Ayuda con CORS si needed
+    options.add_argument("--disable-web-security")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     
@@ -107,16 +105,16 @@ def intercept_uuid_via_selenium():
     driver = webdriver.Chrome(service=service, options=options)
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     
-    global driver_global  # Para acceso en main
-    driver_global = driver  # Guarda ref para fetches
+    global driver_global
+    driver_global = driver  # Para fetches live
     
     try:
         driver.get(SITE_URL)
         wait = WebDriverWait(driver, 60)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(70)  # Extended: Load SPA + multiple EPG requests
+        time.sleep(70)  # Extended load + EPG requests
         
-        # UUID intercept (con retry igual)
+        # UUID intercept con retry
         uuid_candidates = driver.execute_script("""
             return [...new Set(performance.getEntriesByType('resource')
                 .filter(r => r.name.includes('/epgcache/list/'))
@@ -129,19 +127,24 @@ def intercept_uuid_via_selenium():
             logger.warning("No UUID – retrying refresh...")
             driver.refresh()
             time.sleep(30)
-            uuid_candidates = driver.execute_script("""...""")  # Igual script
-            logger.info(f"UUID after retry: {uuid_candidates}")
+            uuid_candidates = driver.execute_script("""
+                return [...new Set(performance.getEntriesByType('resource')
+                    .filter(r => r.name.includes('/epgcache/list/'))
+                    .map(r => r.name.split('/epgcache/list/')[1]?.split('/')[0])
+                    .filter(uuid => uuid && uuid.length === 36 && uuid.includes('-')))];
+            """)
+            logger.info(f"UUID candidates after retry: {uuid_candidates}")
         
         if not uuid_candidates:
             logger.error("No UUID after retry - abort.")
-            return {}, None, driver  # Return driver para quit manual
+            return {}, None, driver  # Driver para cleanup
         
         global UUID, URL_BASE
         UUID = uuid_candidates[0]
         logger.info(f"UUID dinámico intercepted: {UUID}")
         URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"
         
-        # deviceToken + cookies (igual)
+        # deviceToken
         device_token = None
         system_login = driver.execute_script("return localStorage.getItem('system.login');")
         if system_login:
@@ -154,14 +157,14 @@ def intercept_uuid_via_selenium():
         if device_token and validate_generic_token(device_token):
             logger.info("Public session validated - ready for EPG")
         
+        # Cookies
         selenium_cookies = driver.get_cookies()
         cookies_dict = {c['name']: c['value'] for c in selenium_cookies}
         relevant = {k: v for k, v in cookies_dict.items() if k in ['AWSALB', 'AWSALBCORS', 'bitmovin_analytics_uuid']}
         logger.info(f"Cookies frescas: {list(relevant.keys())}")
         
-        # NO QUIT AQUÍ – return driver para main
         logger.info(f"Setup complete (driver alive): UUID={UUID}, cookies={len(relevant)}, token={device_token is not None}")
-        return relevant, device_token, driver  # + driver ref
+        return relevant, device_token, driver  # Driver vivo
         
     except Exception as e:
         logger.error(f"Selenium error: {e}")
@@ -169,43 +172,60 @@ def intercept_uuid_via_selenium():
         return {}, None, None
 
 def fetch_channel_contents(channel_id, date_from, date_to, session, device_token=None, retry_xml=False, use_selenium=False):
-    """Fetch – Bearer auth + optional Selenium (sesión viva)."""
+    """Fetch EPG – Bearer auth, Selenium live si enabled, parse XML/JSON full."""
     if not URL_BASE:
+        logger.error("No URL_BASE - UUID not set.")
         return []
     url = URL_BASE.format(channel_id, 220, date_from, date_to)
-    headers = get_epg_headers(device_token)  # Bearer si token
+    headers = get_epg_headers(device_token)  # Base + Bearer
     if retry_xml:
-        headers['accept'] = 'application/xml, */*'
+        headers['accept'] = 'application/xml, */*'  # Ajuste retry aquí
         logger.info(f"Retry {channel_id} with XML-only + Bearer")
     
     logger.info(f"Fetching {channel_id} with UUID {UUID} (Bearer: {'yes' if device_token else 'no'}): {url}")
     
-    if use_selenium and 'driver_global' in globals() and driver_global:
-        # Fetch via Selenium (sesión viva – evita 406)
+    response_text = ""
+    status = 0
+    
+    if use_selenium and driver_global:
+        # Fetch via Selenium (sesión viva)
         try:
+            js_headers = {k: str(v) for k, v in headers.items()}  # JS dict
             result = driver_global.execute_async_script("""
                 var callback = arguments[arguments.length - 1];
+                var url = arguments[0];
+                var headers = arguments[1];
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', arguments[0], true);
-                for (var h in arguments[1]) { xhr.setRequestHeader(h, arguments[1][h]); }
+                xhr.open('GET', url, true);
+                for (var key in headers) {
+                    xhr.setRequestHeader(key, headers[key]);
+                }
                 xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) callback({status: xhr.status, response: xhr.responseText});
+                    if (xhr.readyState === 4) {
+                        callback({
+                            status: xhr.status,
+                            response: xhr.responseText
+                        });
+                    }
                 };
                 xhr.send();
-            """, url, dict(headers))  # Headers como dict JS
+            """, url, js_headers)
             status = result['status']
             response_text = result['response']
             logger.info(f"Status for {channel_id} via Selenium: {status}")
         except Exception as se:
             logger.warning(f"Selenium fetch error {channel_id}: {se} - fallback to requests")
+            use_selenium = False
+    
+    if not use_selenium:
+        # Fallback requests
+        try:
             response = session.get(url, headers=headers, timeout=15, verify=False)
             status = response.status_code
             response_text = response.text
-    else:
-        # Fallback requests
-        response = session.get(url, headers=headers, timeout=15, verify=False)
-        status = response.status_code
-        response_text = response.text
+        except Exception as re:
+            logger.error(f"Requests error {channel_id}: {re}")
+            return []
     
     # Raw siempre
     raw_file = f"raw_response_{channel_id}.xml"
@@ -218,12 +238,121 @@ def fetch_channel_contents(channel_id, date_from, date_to, session, device_token
         logger.error(f"Error {channel_id}: {status} - {error_snippet}")
         return []
     
-    # Parse XML/JSON (igual del fix anterior – usa ET para XML, json para JSON)
-    # ... (código de parsing igual: if starts with '<' → ET with ns, else json.loads)
-    # (Mantén el bloque completo de parsing de mi respuesta anterior – detecta XML/JSON, extrae TV_CHANNEL, genres, etc.)
+    response_text = response_text.strip()
+    contents = []
     
-    # Si parsing OK, return contents (igual)
-    return contents  # Lista de dicts
+    try:
+        if response_text.startswith('<'):  # XML parsing (snippet style)
+            import xml.etree.ElementTree as ET
+            ns = {'minerva': 'http://ws.minervanetworks.com/'}
+            root = ET.fromstring(response_text)
+            # Find contents (handle ns)
+            contents_list = root.findall(".//minerva:content[@xsi:type='schedule']", ns)
+            if not contents_list:
+                contents_list = root.findall(".//content[@xsi:type='schedule']")  # No ns fallback
+            logger.info(f"Parsed XML: {len(contents_list)} programmes for {channel_id}")
+            
+            for item in contents_list:
+                # TV_CHANNEL
+                tv_channel_elem = item.find('.//minerva:TV_CHANNEL', ns) or item.find('.//TV_CHANNEL')
+                tv_channel_dict = {}
+                if tv_channel_elem is not None:
+                    call_sign_elem = tv_channel_elem.find('.//minerva:callSign', ns) or tv_channel_elem.find('.//callSign')
+                    tv_channel_dict['callSign'] = call_sign_elem.text if call_sign_elem is not None else str(channel_id)
+                    
+                    number_elem = tv_channel_elem.find('.//minerva:number', ns) or tv_channel_elem.find('.//number')
+                    tv_channel_dict['number'] = number_elem.text if number_elem is not None else ''
+                    
+                    # Logo: CH_LOGO priority
+                    images_elems = tv_channel_elem.findall('.//minerva:image', ns) or tv_channel_elem.findall('.//image')
+                    logo = ''
+                    for img_elem in images_elems:
+                        usage_elem = img_elem.find('.//minerva:usage', ns) or img_elem.find('.//usage')
+                        if usage_elem is not None and usage_elem.text.upper() == 'CH_LOGO':
+                            url_elem = img_elem.find('.//minerva:url', ns) or img_elem.find('.//url')
+                            logo = url_elem.text if url_elem is not None else ''
+                            break
+                    if logo:
+                        tv_channel_dict['logo'] = logo
+                    elif images_elems:
+                        url_elem = images_elems[0].find('.//minerva:url', ns) or images_elems[0].find('.//url')
+                        tv_channel_dict['logo'] = url_elem.text if url_elem is not None else ''
+                
+                # Genres
+                genres_elems = item.findall('.//minerva:genres/minerva:genre', ns) or item.findall('.//genres/genre')
+                genres = [g.find('minerva:name', ns).text if g.find('minerva:name', ns) is not None else g.find('name').text for g in genres_elems if g.find('minerva:name', ns) is not None or g.find('name') is not None]
+                
+                # Programme image (first DETAILS/BROWSE)
+                prog_images_elems = item.findall('.//minerva:images/minerva:image', ns) or item.findall('.//images/image')
+                prog_image = ''
+                if prog_images_elems:
+                    url_elem = prog_images_elems[0].find('.//minerva:url', ns) or prog_images_elems[0].find('.//url')
+                    prog_image = url_elem.text if url_elem is not None else ''
+                
+                # Core fields
+                title_elem = item.find('minerva:title', ns) or item.find('title')
+                title = title_elem.text if title_elem is not None else 'Sin título'
+                
+                desc_elem = item.find('minerva:description', ns) or item.find('description')
+                description = desc_elem.text if desc_elem is not None else ''
+                
+                start_elem = item.find('minerva:startDateTime', ns) or item.find('startDateTime')
+                startDateTime = int(start_elem.text) if start_elem is not None and start_elem.text else 0
+                
+                end_elem = item.find('minerva:endDateTime', ns) or item.find('endDateTime')
+                endDateTime = int(end_elem.text) if end_elem is not None and end_elem.text else 0
+                
+                content_dict = {
+                    'title': title,
+                    'description': description,
+                    'startDateTime': startDateTime,
+                    'endDateTime': endDateTime,
+                    'TV_CHANNEL': tv_channel_dict,
+                    'genres': genres,
+                    'programme_image': prog_image
+                }
+                contents.append(content_dict)
+        
+        else:  # JSON fallback (si server devuelve JSON)
+            data = json.loads(response_text)
+            contents_list = data.get('contents', {}).get('content', [])
+            logger.info(f"Parsed JSON: {len(contents_list)} programmes for {channel_id}")
+            
+            for item in contents_list:
+                tv_channel = item.get('TV_CHANNEL', {})
+                logo = ''
+                if 'images' in tv_channel:
+                    channel_images = tv_channel['images'].get('image', [])
+                    for img in channel_images:
+                        if img.get('usage', '').upper() == 'CH_LOGO':
+                            logo = img.get('url', '')
+                            break
+                    if not logo and channel_images:
+                        logo = channel_images[0].get('url', '')
+                tv_channel['logo'] = logo
+                
+                genres = [g.get('name', '') for g in item.get('genres', {}).get('genre', []) if g.get('name')]
+                prog_image = item.get('images', {}).get('image', [{}])[0].get('url', '') if item.get('images') else ''
+                
+                content_dict = {
+                    'title': item.get('title', 'Sin título'),
+                    'description': item.get('description', ''),
+                    'startDateTime': item.get('startDateTime', 0),
+                    'endDateTime': item.get('endDateTime', 0),
+                    'TV_CHANNEL': tv_channel,
+                    'genres': genres,
+                    'programme_image': prog_image
+                }
+                contents.append(content_dict)
+        
+        if contents:
+            sample_call = contents[0].get('TV_CHANNEL', {}).get('callSign', 'N/A')
+            logger.info(f"Sample: {contents[0]['title'][:50]}... (callSign: {sample_call})")
+        return contents
+        
+    except Exception as e:
+        logger.error(f"Parse error {channel_id}: {e} - Raw: {response_text[:200]}")
+        return []
 
 def main():
     global CHANNEL_IDS, UUID, URL_BASE, driver_global
