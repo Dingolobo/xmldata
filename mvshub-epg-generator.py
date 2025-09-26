@@ -154,9 +154,13 @@ def fetch_channel_contents(channel_id, session):
     
     try:
         if response_text.startswith('<') or '<?xml' in response_text:
-            ns = {'minerva': 'http://ws.minervanetworks.com/'}
+            # XML parse - FIX: Agrega 'xsi' NS para @xsi:type
+            ns = {
+                'minerva': 'http://ws.minervanetworks.com/',
+                'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+            }
             root = ET.fromstring(response_text)
-            schedules = root.findall(".//minerva:content[@xsi:type='schedule']", ns) or root.findall(".//content[@xsi:type='schedule']")
+            schedules = root.findall(".//minerva:content[@xsi:type='schedule']", ns) or root.findall(".//content[@xsi:type='schedule']", ns)
             logger.info(f"XML {channel_id}: {len(schedules)} schedules")
             
             for sched in schedules:
@@ -309,9 +313,8 @@ def main():
             call_sign = first.get('channel_callSign', f'MVSHub{ch_id}')
             number = first.get('channel_number', '')
             logo = first.get('channel_logo', '')
-            channel_map[ch_id] = {'callSign': call_sign, 'number': number, 'logo': logo}
-            
-            xml_content
+            channel_map[ch_id] = {'callSign': call_sign, 'number': number, 'logo':
+                logo}
             xml_content += f'  <channel id="c{ch_id}">\n'
             xml_content += f'    <display-name>{call_sign}</display-name>\n'
             if number:
@@ -322,8 +325,10 @@ def main():
     
     # Programmes
     offset_sec = tz_offset * 3600
+    total_progs = 0  # Reset para count final
     for ch_id, contents in channels_data:
         for prog in contents:
+            total_progs += 1
             start_str = prog.get('start', '0')
             try:
                 if start_str.isdigit():
@@ -379,7 +384,7 @@ def main():
 if __name__ == "__main__":
     success = main()
     if success:
-        logger.info("¡ÉXITO TOTAL! EPG XML generado (token focus: fresh o manual UUID).")
+        logger.info("¡ÉXITO TOTAL! EPG XML generado (token focus: fresh o manual UUID, NS fix).")
     else:
         logger.error("Fallo - revisa epg_fetch.log y raw_*.xml (UUID/dates?).")
         sys.exit(1)
