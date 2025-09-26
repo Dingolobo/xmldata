@@ -1,105 +1,120 @@
-#!/usr/bin/env python3
-import requests
-import xml.etree.ElementTree as ET
-import json
-from datetime import datetime, timedelta
-import sys
-import os
 import logging
+import requests
+import json
 import time
+from datetime import datetime, timedelta
+import os
+import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
-import warnings
-warnings.filterwarnings("ignore", message="Unverified HTTPS request")
+import xml.etree.ElementTree as ET
 
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# Configuración
+SITE_URL = "https://www.mvshub.com.mx/#spa/epg"
 
-# Configuration
-CHANNEL_IDS = [222, 807]
-UUID = None  # Dinámico - se setea post-intercept
-URL_BASE = None  # Se construye con UUID
-OUTPUT_FILE = "epgmvs.xml"
-SITE_URL = "https://www.mvshub.com.mx/#spa/epg"  # Página EPG pública
-
-# Headers para validación genérica (/account)
-HEADERS_ACCOUNT = {
-    'accept': 'application/json, text/plain, */*',
-    'authorization': '',  # Set con deviceToken genérico
-    'content-type': 'application/json',
+# Constantes del endpoint token (de tu inspect)
+TOKEN_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/login/cache/token"
+TOKEN_HEADERS_BASE = {
+    'accept': 'application/json, text/plain, */*',  # Como tuyo
+    'accept-encoding': 'gzip, deflate, br, zstd',
+    'accept-language': 'es-419,es;q=0.9',
+    'cache-control': 'no-cache',
+    'content-type': 'application/json',  # Como tuyo
     'origin': 'https://www.mvshub.com.mx',
+    'pragma': 'no-cache',
     'referer': 'https://www.mvshub.com.mx/',
+    'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'cross-site',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
 }
 
-# Headers EPG base – solo Bearer, sin retry logic aquí
-def get_epg_headers(device_token=None):
-    headers = {
-        'accept': 'application/xml, application/json, text/plain, */*',  # Default: XML/JSON
-        'accept-encoding': 'gzip, deflate, br, zstd',
-        'accept-language': 'es-419,es;q=0.9',
-        'cache-control': 'no-cache',
-        'origin': 'https://www.mvshub.com.mx',
-        'pragma': 'no-cache',
-        'referer': 'https://www.mvshub.com.mx/',
-        'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'cross-site',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
-    }
-    if device_token:
-        headers['authorization'] = f'Bearer {device_token}'  # Autentica EPG
-        headers['content-type'] = 'application/json'
-    return headers
+# Globals
+UUID = None
+URL_BASE = None
+driver_global = None
+
+# Logging setup
+def setup_logging():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler('epg_fetch.log'),
+            logging.StreamHandler()
+        ]
+    )
+    return logging.getLogger(__name__)
+
+logger = setup_logging()
 
 def validate_generic_token(device_token):
-    """Valida deviceToken genérico con /account 200."""
+    """Valida deviceToken con /account endpoint."""
     if not device_token:
         return False
-    account_url = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/account"
-    headers = HEADERS_ACCOUNT.copy()
-    headers['authorization'] = f'Bearer {device_token}'
+    headers = {
+        'accept': 'application/json, text/plain, */*',
+        'authorization': f'Bearer {device_token}',
+        'content-type': 'application/json',
+        'origin': 'https://www.mvshub.com.mx',
+        'referer': 'https://www.mvshub.com.mx/',
+        'user-agent': TOKEN_HEADERS_BASE['user-agent']
+    }
     try:
-        resp = requests.get(account_url, headers=headers, timeout=10, verify=False)
-        if resp.status_code == 200:
-            account_data = resp.json()
-            account_id = account_data[0].get('accountId', 'N/A') if account_data else 'N/A'
+        response = requests.get(
+            "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/account",
+            headers=headers,
+            timeout=10,
+            verify=False
+        )
+        if response.status_code == 200:
+            data = response.json()
+            account_id = data.get('accountId')
             logger.info(f"Generic token validated (/account 200): accountId={account_id}")
             return True
         else:
-            logger.warning(f"Generic token invalid (/account {resp.status_code})")
+            logger.warning(f"Token validation failed: {response.status_code}")
             return False
     except Exception as e:
-        logger.error(f"Validation error: {e}")
+        logger.error(f"Token validation error: {e}")
         return False
 
 def check_expiration(expiration_ts):
-    """Check si token expired (Unix ts)."""
+    """Check token exp (Unix ts)."""
     now = int(time.time())
     if expiration_ts <= now:
-        logger.error(f"Token expired at {datetime.fromtimestamp(expiration_ts)} - refresh needed.")
+        logger.error(f"Token expired at {datetime.fromtimestamp(expiration_ts)} - manual refresh needed.")
         return False
-    logger.info(f"Token valid until {datetime.fromtimestamp(expiration_ts)} (~{int((expiration_ts - now)/3600)}h left)")
+    hours_left = int((expiration_ts - now) / 3600)
+    logger.info(f"Token valid until {datetime.fromtimestamp(expiration_ts)} (~{hours_left}h left)")
     return True
 
+def get_epg_headers(device_token=None, retry_xml=False):
+    """Headers para EPG (base de token, con Bearer)."""
+    headers = TOKEN_HEADERS_BASE.copy()  # Base de token (JSON first)
+    if device_token:
+        headers['authorization'] = f'Bearer {device_token}'  # Mismo Bearer para EPG
+    if retry_xml:
+        headers['accept'] = 'application/xml, */*'
+    return headers
+
 def intercept_uuid_via_selenium():
-    """Intercepta TOKEN UUID principal via CDP/JS (no EPG-specific). Mantiene driver vivo."""
+    """Extrae deviceToken + simula GET token endpoint para UUID real. Driver vivo."""
     use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
     if not use_selenium:
         logger.error("Selenium required.")
         return {}, None, None
     
-    logger.info("Loading SPA pública para intercept UUID dinámico...")
+    logger.info("Loading SPA para extraer deviceToken + GET token UUID...")
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
@@ -117,139 +132,119 @@ def intercept_uuid_via_selenium():
     global driver_global
     driver_global = driver
     
+    device_token = None
     token_uuid = None
     token_expiration = 0
-    captured_headers = {}
+    cache_url = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"  # Default
     
     try:
-        # Enable CDP para network
-        driver.execute_cdp_cmd('Network.enable', {})
-        
-        def on_response_received(message):
-            nonlocal token_uuid, token_expiration, captured_headers
-            if message['method'] == 'Network.responseReceived':
-                resp = message['params']
-                url = resp['response']['url']
-                if any(term in url.lower() for term in ['/token', '/session', '/auth', '/login']) and resp['response']['status'] == 200:
-                    # Get body
-                    req_id = resp['requestId']
-                    try:
-                        body_resp = driver.execute_cdp_cmd('Fetch.getResponseBody', {'requestId': req_id})
-                        if 'body' in body_resp:
-                            body = body_resp['body']
-                            try:
-                                data = json.loads(body)
-                                if 'token' in data:
-                                    token_uuid = data['token'].get('uuid')
-                                    token_expiration = data['token'].get('expiration', 0)
-                                    captured_headers = dict(resp['response'].get('headers', {}))  # Response headers, but use request if needed
-                                    logger.info(f"CDP captured TOKEN JSON: UUID={token_uuid}, expiration={token_expiration}")
-                            except json.JSONDecodeError:
-                                pass
-                    except:
-                        pass
-        
-        driver.add_cdp_listener('Network.responseReceived', on_response_received)
-        
         driver.get(SITE_URL)
         wait = WebDriverWait(driver, 60)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        time.sleep(30)  # Load SPA + auth
         
-        # Trigger token/session load
-        time.sleep(15)  # Settle
-        driver.execute_script("window.location.reload();")  # Force reload para /token
-        time.sleep(20)  # Wait for auth requests
-        
-        # JS fallback: Check localStorage para token
-        if not token_uuid:
-            logger.info("CDP no token - checking localStorage...")
-            storage_token = driver.execute_script("""
-                var item = localStorage.getItem('system.token') || sessionStorage.getItem('system.token') || localStorage.getItem('token');
-                if (item) {
-                    try {
-                        var parsed = JSON.parse(item);
-                        if (parsed.token && parsed.token.uuid) {
-                            return {uuid: parsed.token.uuid, expiration: parsed.token.expiration || 0};
-                        }
-                    } catch(e) {}
-                }
-                return null;
-            """)
-            if storage_token:
-                token_uuid = storage_token['uuid']
-                token_expiration = storage_token['expiration']
-                logger.info(f"Token from localStorage: UUID={token_uuid}, expiration={token_expiration}")
-        
-        # Retry si no
-        if not token_uuid:
-            logger.warning("No token - retrying full refresh...")
-            driver.refresh()
-            time.sleep(30)
-            # Re-run JS check
-            storage_token = driver.execute_script("""...""")  # Mismo script
-            if storage_token:
-                token_uuid = storage_token['uuid']
-                token_expiration = storage_token['expiration']
-        
-        # Disable listener
-        driver.remove_cdp_listener('Network.responseReceived', on_response_received)
-        driver.execute_cdp_cmd('Network.disable', {})
-        
-        if not token_uuid:
-            logger.error("No token UUID captured - manual needed.")
-            # Fallback con tu manual UUID
-            token_uuid = "e275a57f-d540-4363-b759-73a20f970960"
-            token_expiration = 1758913816
-            logger.warning("FALLBACK: Using manual token UUID - update expiration if needed")
-        
-        if not check_expiration(token_expiration):
-            logger.error("Fallback token expired - abort.")
-            return {}, None, driver
-        
-        global UUID, URL_BASE
-        UUID = token_uuid
-        URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"  # lineup 220 fijo por ahora
-        logger.info(f"TOKEN UUID set: {UUID} (valid until {datetime.fromtimestamp(token_expiration)})")
-        
-        # deviceToken + cookies (igual)
-        device_token = None
+        # Extrae deviceToken de localStorage (para Bearer en token GET)
         system_login = driver.execute_script("return localStorage.getItem('system.login');")
         if system_login:
             try:
                 parsed = json.loads(system_login)
                 device_token = parsed.get('data', {}).get('deviceToken')
-                logger.info(f"deviceToken genérico extraído: yes (largo: {len(device_token) if device_token else 0})")
+                logger.info(f"deviceToken extraído para Bearer: yes (largo: {len(device_token) if device_token else 0})")
             except:
                 pass
-        if device_token and validate_generic_token(device_token):
-            logger.info("Public session validated - ready for EPG")
         
+        if not device_token:
+            logger.error("No deviceToken - cannot auth token endpoint.")
+            return {}, None, driver
+        
+        # Valida deviceToken (igual antes)
+        if validate_generic_token(device_token):
+            logger.info("deviceToken validated - ready for token GET")
+        else:
+            logger.warning("deviceToken not validated - may fail token GET")
+        
+        # Simula GET token endpoint con headers exactos (Bearer deviceToken)
+        if device_token:
+            headers_with_bearer = TOKEN_HEADERS_BASE.copy()
+            headers_with_bearer['authorization'] = f'Bearer {device_token}'  # Tu JWT
+            js_headers = {k: str(v) for k, v in headers_with_bearer.items()}
+            
+            result = driver.execute_async_script("""
+                var callback = arguments[arguments.length - 1];
+                var url = arguments[0];
+                var headers = arguments[1];
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                for (var key in headers) {
+                    xhr.setRequestHeader(key, headers[key]);
+                }
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        callback({
+                            status: xhr.status,
+                            response: xhr.responseText
+                        });
+                    }
+                };
+                xhr.send();
+            """, TOKEN_URL, js_headers)
+            
+            status = result['status']
+            response_text = result['response']
+            logger.info(f"Token GET status: {status} (len: {len(response_text)})")
+            
+            if status == 200:
+                try:
+                    data = json.loads(response_text)
+                    token_data = data.get('token', {})
+                    token_uuid = token_data.get('uuid')
+                    token_expiration = token_data.get('expiration', 0)
+                    cache_url = token_data.get('cacheUrl', cache_url)
+                    logger.info(f"Token UUID parsed: {token_uuid}, exp={token_expiration}, cacheUrl={cache_url}")
+                except json.JSONDecodeError as je:
+                    logger.error(f"JSON parse error: {je} - response: {response_text[:200]}")
+            else:
+                logger.error(f"Token GET failed {status}: {response_text[:200]}")
+        
+        # Fallback si GET falla (usa tu manual)
+        if not token_uuid:
+            logger.warning("Token GET failed - using manual UUID")
+            token_uuid = "e275a57f-d540-4363-b759-73a20f970960"
+            token_expiration = 1758913816
+            cache_url = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client"
+        
+        if not check_expiration(token_expiration):
+            return {}, None, driver  # Abort si exp
+        
+        # Set global UUID/URL_BASE
+        global UUID, URL_BASE
+        UUID = token_uuid
+        URL_BASE = f"{cache_url}/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"  # lineup 220 fijo
+        logger.info(f"TOKEN UUID set for EPG: {UUID} (cacheUrl: {cache_url})")
+        
+        # Cookies (igual)
         selenium_cookies = driver.get_cookies()
         cookies_dict = {c['name']: c['value'] for c in selenium_cookies}
         relevant = {k: v for k, v in cookies_dict.items() if k in ['AWSALB', 'AWSALBCORS', 'bitmovin_analytics_uuid']}
         logger.info(f"Cookies frescas: {list(relevant.keys())}")
         
-        logger.info(f"Setup complete (driver alive): TOKEN UUID={UUID}, cookies={len(relevant)}, token={device_token is not None}")
-        return relevant, device_token, driver
+        logger.info(f"Setup complete (driver alive): TOKEN UUID={UUID}, deviceToken={device_token is not None}")
+        return relevant, device_token, driver  # device_token para Bearer en EPG
         
     except Exception as e:
-        logger.error(f"Selenium error: {e}")
+        logger.error(f"Selenium/token error: {e}")
         driver.quit()
         return {}, None, None
 
-# fetch_channel_contents (mismo, pero confirma UUID en log)
 def fetch_channel_contents(channel_id, date_from, date_to, session, device_token=None, retry_xml=False, use_selenium=False):
     """Fetch EPG – Bearer auth, Selenium live si enabled, parse XML/JSON full."""
     if not URL_BASE:
-        logger.error("No URL_BASE - UUID not set.")
+        logger.error("No URL_BASE - token UUID not set.")
         return []
-    url = URL_BASE.format(channel_id, 220, date_from, date_to)
-    headers = get_epg_headers(device_token)  # Base + Bearer
-    if retry_xml:
-        headers['accept'] = 'application/xml, */*'  # Ajuste retry aquí
-        logger.info(f"Retry {channel_id} with XML-only + Bearer")
+    url = URL_BASE.format(channel_id, 220, date_from, date_to)  # lineup 220
+    headers = get_epg_headers(device_token, retry_xml)
     
-    logger.info(f"Fetching {channel_id} with UUID {UUID} (Bearer: {'yes' if device_token else 'no'}): {url}")
+    logger.info(f"Fetching {channel_id} with TOKEN UUID {UUID}: {url} (Bearer: {'yes' if device_token else 'no'})")
     
     response_text = ""
     status = 0
@@ -310,7 +305,6 @@ def fetch_channel_contents(channel_id, date_from, date_to, session, device_token
     
     try:
         if response_text.startswith('<'):  # XML parsing (snippet style)
-            import xml.etree.ElementTree as ET
             ns = {'minerva': 'http://ws.minervanetworks.com/'}
             root = ET.fromstring(response_text)
             # Find contents (handle ns)
@@ -424,33 +418,23 @@ def fetch_channel_contents(channel_id, date_from, date_to, session, device_token
 def main():
     global CHANNEL_IDS, UUID, URL_BASE, driver_global
     
-    # Date range (igual)
-    offset = int(os.environ.get('TIMEZONE_OFFSET', '-6'))
-    now_local = datetime.utcnow() + timedelta(hours=offset)
-    date_from = int(now_local.timestamp() * 1000)
-    date_to = int((now_local + timedelta(hours=24)).timestamp() * 1000)
-    logger.info(f"Fetching 24h EPG from {now_local.strftime('%Y-%m-%d %H:%M:%S')} to {(now_local + timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S')} (offset {offset})")
+    # Date setup (24h from now, timestamps in ms)
+    now = datetime.now()
+    date_from = int(now.timestamp() * 1000)
+    date_to = int((now + timedelta(days=1)).timestamp() * 1000)
+    logger.info(f"Date range: {datetime.fromtimestamp(date_from/1000)} to {datetime.fromtimestamp(date_to/1000)} (local -6)")
     
-    # Channels override (env o arg)
-    if len(sys.argv) > 1:
-        CHANNEL_IDS = [int(cid.strip()) for cid in sys.argv[1].split(',') if cid.strip().isdigit()]
-    if 'CHANNEL_IDS' in os.environ:
-        CHANNEL_IDS = [int(cid.strip()) for cid in os.environ['CHANNEL_IDS'].split(',') if cid.strip().isdigit()]
+    # Channel IDs (ajusta según canales reales de MVSHub, e.g., 222=DI, 223=Noticias, etc.)
+    CHANNEL_IDS = [222, 223, 224, 225, 226]  # Ejemplo - agrega más si known (hasta 50 para test)
     
-    if not CHANNEL_IDS:
-        logger.error("No CHANNEL_IDS provided - set env (e.g., '222,807') or arg.")
-        return False
-    
-    logger.info(f"Channels to fetch: {CHANNEL_IDS}")
-    
-            # Intercept – ahora retorna driver
+    # Intercept token UUID
     result = intercept_uuid_via_selenium()
     cookies, device_token, driver = result
     if driver is None or UUID is None:
-        logger.error("Selenium/UUID failed - abort.")
+        logger.error("Selenium/token UUID failed - abort.")
         return False
     
-    # Session con cookies + Bearer ready
+    # Session con cookies
     session = requests.Session()
     for name, value in cookies.items():
         session.cookies.set(name, value)
@@ -463,14 +447,16 @@ def main():
         time.sleep(2)
         test_contents = fetch_channel_contents(222, date_from, date_to, session, device_token, retry_xml=True)
     if not test_contents:
-        logger.error("TEST FAILED: 0 progs for 222. Check raw. Manual browser recommended.")
-        driver.quit()  # Cleanup
+        logger.error("TEST FAILED: 0 progs for 222. Check raw_response_222.xml. Manual browser recommended.")
+        if driver:
+            driver.quit()
         return False
     logger.info(f"TEST SUCCESS: {len(test_contents)} programmes for 222!")
     
-    # Full fetch (con Bearer, fallback Selenium si needed – pero requests OK ahora)
-    logger.info("=== FETCHING ALL CHANNELS WITH BEARER ===")
+    # Full fetch all channels (con Bearer, fallback retry)
+    logger.info("=== FETCHING ALL CHANNELS WITH TOKEN UUID + BEARER ===")
     channels_data = []
+    total_progs = 0
     for channel_id in CHANNEL_IDS:
         logger.info(f"--- Processing {channel_id} ---")
         contents = fetch_channel_contents(channel_id, date_from, date_to, session, device_token)
@@ -478,18 +464,76 @@ def main():
             time.sleep(2)
             contents = fetch_channel_contents(channel_id, date_from, date_to, session, device_token, retry_xml=True)
         channels_data.append((channel_id, contents))
-        time.sleep(1.5)
+        total_progs += len(contents)
+        time.sleep(1.5)  # Rate limit
     
-    # Build (igual, pero ahora con datos reales)
-    logger.info("=== BUILDING XMLTV ===")
-    success = build_xmltv(channels_data)
-    if success:
-        logger.info("¡ÉXITO TOTAL! Nuevo EPG con UUID fresco. Commit epgmvs.xml + raws.")
-    else:
-        logger.warning("Build failed - 0 data across channels.")
+    logger.info(f"FULL FETCH COMPLETE: {total_progs} total programmes across {len(CHANNEL_IDS)} channels")
     
-    driver.quit()  # Cleanup final
-    return success
+    # Build XMLTV (estándar, con channels, programmes, logos, genres, previews)
+    logger.info("=== BUILDING XMLTV FILE ===")
+    xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n<tv>\n'
+    
+    # Channels definitions (unique por ID, usa first prog para callSign/logo)
+    channel_map = {}
+    for channel_id, contents in channels_data:
+        if contents:
+            first_prog = contents[0]
+            call_sign = first_prog['TV_CHANNEL'].get('callSign', f'MVSHub{channel_id}')
+            number = first_prog['TV_CHANNEL'].get('number', '')
+            logo = first_prog['TV_CHANNEL'].get('logo', '')
+            channel_map[channel_id] = {'callSign': call_sign, 'number': number, 'logo': logo}
+            
+            # Channel XML
+            xml_content += f'  <channel id="c{channel_id}">\n'
+            xml_content += f'    <display-name>{call_sign}</display-name>\n'
+            if number:
+                xml_content += f'    <display-name>{number} {call_sign}</display-name>\n'
+            if logo:
+                xml_content += f'    <icon src="{logo}" />\n'
+            xml_content += '  </channel>\n'
+    
+    # Programmes
+    for channel_id, contents in channels_data:
+        for prog in contents:
+            start_ts = prog['startDateTime'] / 1000  # ms to s
+            end_ts = prog['endDateTime'] / 1000
+            start_str = datetime.fromtimestamp(start_ts).strftime('%Y%m%d%H%M%S -0600')  # Mexico timezone
+            stop_str = datetime.fromtimestamp(end_ts).strftime('%Y%m%d%H%M%S -0600')
+            title = prog['title'].replace('&', '&amp;').replace('<', '&lt;')  # XML escape
+            desc = (prog['description'] or '')[:255].replace('&', '&amp;').replace('<', '&lt;')
+            genres_str = ' / '.join(prog['genres']) if prog['genres'] else ''
+            prog_image = prog['programme_image']
+            
+            xml_content += f'  <programme start="{start_str}" stop="{stop_str}" channel="c{channel_id}">\n'
+            xml_content += f'    <title lang="es">{title}</title>\n'
+            if desc:
+                xml_content += f'    <desc lang="es">{desc}</desc>\n'
+            if genres_str:
+                for genre in genres_str.split(' / '):  # Multiple categories
+                    xml_content += f'    <category lang="es">{genre.strip()}</category>\n'
+            if prog_image:
+                xml_content += f'    <icon src="{prog_image}" />\n'  # Preview image
+            xml_content += '  </programme>\n'
+    
+    xml_content += '</tv>\n'
+    
+    # Save XMLTV
+    xml_file = 'mvshub_epg.xml'
+    with open(xml_file, 'w', encoding='utf-8') as f:
+        f.write(xml_content)
+    logger.info(f"XMLTV saved: {xml_file} ({len(channels_data)} channels, {total_progs} programmes)")
+    
+    # Cleanup driver
+    if driver:
+        driver.quit()
+        logger.info("Driver cleaned up.")
+    
+    return True
 
 if __name__ == "__main__":
-    main()
+    success = main()
+    if success:
+        logger.info("¡ÉXITO TOTAL! EPG XML generado con datos frescos 2025-09-26.")
+    else:
+        logger.error("Fallo en generación EPG - revisa logs y raw files.")
+        sys.exit(1)
