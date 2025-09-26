@@ -446,6 +446,7 @@ def fetch_channel_contents(channel_id, date_from, date_to, session, device_token
         return []
 
 def main():
+    global UUID, URL_BASE
     global CHANNEL_IDS, UUID, URL_BASE, driver_global
     
     # Date setup (24h from now, timestamps in ms)
@@ -465,7 +466,6 @@ def main():
         return False
     if UUID is None:
         logger.warning("No UUID from intercept - trying hardcode fallback in main")
-        global UUID, URL_BASE
         UUID = "e275a57f-d540-4363-b759-73a20f970960"
         URL_BASE = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}".format(UUID=UUID)
         device_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwiZXhwIjoxNzU4OTUzNTE4LCJhY2NvdW50SWQiOiI3MDM1IiwicmVnaW9uSWQiOiIxOCIsImRldmljZSI6eyJkZXZpY2VJZCI6IjE0MDMyIiwiZGV2aWNlVHlwZSI6ImNsb3VkX2NsaWVudCIsImlwQWRkcmVzcyI6IiIsImRldmljZU5hbWUiOiJTVEIxIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsInNlcmlhbE51bWJlciI6IiIsInN0YXR1cyI6IkEiLCJ1dWlkIjoiQUFBQUFBRDhERDQ0In0sImRldmljZVRhZ3MiOltdfQ.TPTyf2dMdahuIyEeuSMnwChy1gv05TMjgBxSPCyuBeU"
