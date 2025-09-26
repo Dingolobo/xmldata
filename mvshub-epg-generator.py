@@ -335,8 +335,8 @@ def main():
             p_image = prog.get('programme_image', '')
             rating = prog.get('rating', '')
             
-            xml_content += f'  <programme start="{start_xml}" stop="{stop_xml}"
-            channel="c{ch_id}">\n'
+            xml_content += (f'  <programme start="{start_xml}" stop="{stop_xml}" '
+                  f'channel="c{ch_id}">\n')
             xml_content += f'    <title lang="es">{title}</title>\n'
             if desc:
                 xml_content += f'    <desc lang="es">{desc}</desc>\n'
