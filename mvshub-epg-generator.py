@@ -39,9 +39,9 @@ HEADERS_ACCOUNT = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
 }
 
-# Headers para EPG (exactos de Network público: sin Bearer)
+# Headers EPG actualizados (prioriza XML, fallback JSON)
 HEADERS_EPG = {
-    'accept': 'application/json, text/plain, */*',
+    'accept': 'application/xml, application/json, text/plain, */*',  # Force XML first (snippet), then JSON
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'es-419,es;q=0.9',
     'cache-control': 'no-cache',
@@ -148,161 +148,116 @@ def intercept_uuid_via_selenium():
         driver.quit()
         return {}, None
 
-def fetch_channel_contents(channel_id, date_from, date_to, session):
-    """Fetch EPG – parse JSON mirroring XML structure (TV_CHANNEL, genres, images)."""
+def fetch_channel_contents(channel_id, date_from, date_to, session, retry_xml=False):
+    """Fetch EPG – maneja XML/JSON, guarda raw siempre, retry 406 con XML only."""
     if not URL_BASE:
         logger.error("No URL_BASE - UUID not set.")
         return []
-    url = URL_BASE.format(channel_id, 220, date_from, date_to)  # 220 = channelLineupId fijo
+    url = URL_BASE.format(channel_id, 220, date_from, date_to)
+    headers = HEADERS_EPG.copy()
+    if retry_xml:
+        headers['accept'] = 'application/xml, */*'  # Solo XML en retry
+        logger.info(f"Retry {channel_id} with XML-only Accept")
+    
     logger.info(f"Fetching {channel_id} with UUID fresco {UUID}: {url}")
     
     try:
-        response = session.get(url, headers=HEADERS_EPG, timeout=15, verify=False)
+        response = session.get(url, headers=headers, timeout=15, verify=False)
         logger.info(f"Status for {channel_id}: {response.status_code}")
         
-        if response.status_code != 200:
-            logger.error(f"Error {channel_id}: {response.status_code}")
-            return []
-        
-        raw_file = f"raw_response_{channel_id}.xml"  # Convención XML aunque JSON
+        # Guarda raw SIEMPRE (para debug 406/etc.)
+        raw_file = f"raw_response_{channel_id}.xml"
         with open(raw_file, 'w', encoding='utf-8') as f:
             f.write(response.text)
-        logger.info(f"Raw saved: {raw_file} (len: {len(response.text)})")
+        logger.info(f"Raw saved (even error): {raw_file} (len: {len(response.text)})")
         
-        data = json.loads(response.text)
-        contents_list = data.get('contents', {}).get('content', [])
-        logger.info(f"Parsed JSON: {len(contents_list)} programmes for {channel_id}")
+        if response.status_code != 200:
+            error_snippet = response.text[:300] if response.text else "Empty response"
+            logger.error(f"Error {channel_id}: {response.status_code} - {error_snippet}")
+            return []  # No parse en error
         
-        if contents_list:
-            sample_title = contents_list[0].get('title', 'Sin título')
-            logger.info(f"Sample: {sample_title[:50]}...")
-        
-        # Mapea a dicts (mirror XML: anidado TV_CHANNEL, genres.genre.name, images.image.url)
+        response_text = response.text.strip()
         contents = []
-        for item in contents_list:
-            tv_channel = item.get('TV_CHANNEL', {})  # Anidado como XML
-            images_prog = item.get('images', {}).get('image', [])  # Programme images
-            prog_image = images_prog[0].get('url', '') if images_prog else ''  # Primera url (DETAILS/BROWSE)
+        
+        # Detecta XML o JSON
+        if response_text.startswith('<'):  # XML (snippet style)
+            import xml.etree.ElementTree as ET
+            ns = {'minerva': 'http://ws.minervanetworks.com/'}
+            root = ET.fromstring(response_text)
+            contents_list = root.findall(".//minerva:content[@xsi:type='schedule']", ns) or root.findall(".//content[@xsi:type='schedule']")
+            logger.info(f"Parsed XML: {len(contents_list)} programmes for {channel_id}")
             
-            content_dict = {
-                'title': item.get('title', 'Sin título'),
-                'description': item.get('description', ''),
-                'startDateTime': item.get('startDateTime', 0),
-                'endDateTime': item.get('endDateTime', 0),
-                'TV_CHANNEL': tv_channel,  # Dict con callSign, number, images
-                'genres': [g.get('name', '') for g in item.get('genres', {}).get('genre', []) if g.get('name')],  # List[str]
-                'programme_image': prog_image  # Opcional para <icon> en programme
-            }
-            contents.append(content_dict)
+            for item in contents_list:
+                tv_channel = item.find('.//minerva:TV_CHANNEL', ns) or item.find('.//TV_CHANNEL')
+                tv_channel_dict = {}
+                if tv_channel is not None:
+                    tv_channel_dict['callSign'] = tv_channel.find('.//minerva:callSign', ns).text if tv_channel.find('.//minerva:callSign', ns) is not None else ''
+                    tv_channel_dict['number'] = tv_channel.find('.//minerva:number', ns).text if tv_channel.find('.//minerva:number', ns) is not None else ''
+                    # Logo: first CH_LOGO image
+                    images = tv_channel.findall('.//minerva:image', ns) or tv_channel.findall('.//image')
+                    logo = ''
+                    for img in images:
+                        if (img.find('.//minerva:usage', ns).text if img.find('.//minerva:usage', ns) is not None else '').upper() == 'CH_LOGO':
+                            logo = img.find('.//minerva:url', ns).text if img.find('.//minerva:url', ns) is not None else ''
+                            break
+                    if logo:
+                        tv_channel_dict['logo'] = logo
+                
+                genres = [g.find('minerva:name', ns).text for g in item.findall('.//minerva:genres/minerva:genre', ns) if g.find('minerva:name', ns) is not None]
+                prog_images = item.findall('.//minerva:images/minerva:image', ns) or item.findall('.//images/image')
+                prog_image = prog_images[0].find('minerva:url', ns).text if prog_images and prog_images[0].find('minerva:url', ns) is not None else ''
+                
+                content_dict = {
+                    'title': item.find('minerva:title', ns).text if item.find('minerva:title', ns) is not None else 'Sin título',
+                    'description': item.find('minerva:description', ns).text if item.find('minerva:description', ns) is not None else '',
+                    'startDateTime': int(item.find('minerva:startDateTime', ns).text) if item.find('minerva:startDateTime', ns) is not None else 0,
+                    'endDateTime': int(item.find('minerva:endDateTime', ns).text) if item.find('minerva:endDateTime', ns) is not None else 0,
+                    'TV_CHANNEL': tv_channel_dict,
+                    'genres': genres,
+                    'programme_image': prog_image
+                }
+                contents.append(content_dict)
+            
+        else:  # JSON fallback
+            data = json.loads(response_text)
+            contents_list = data.get('contents', {}).get('content', [])
+            logger.info(f"Parsed JSON: {len(contents_list)} programmes for {channel_id}")
+            
+            for item in contents_list:
+                tv_channel = item.get('TV_CHANNEL', {})
+                # Logo logic similar
+                logo = ''
+                if 'images' in tv_channel:
+                    channel_images = tv_channel['images'].get('image', [])
+                    for img in channel_images:
+                        if img.get('usage', '').upper() == 'CH_LOGO':
+                            logo = img.get('url', '')
+                            break
+                    if not logo and channel_images:
+                        logo = channel_images[0].get('url', '')
+                tv_channel['logo'] = logo
+                
+                genres = [g.get('name', '') for g in item.get('genres', {}).get('genre', []) if g.get('name')]
+                prog_image = item.get('images', {}).get('image', [{}])[0].get('url', '') if item.get('images') else ''
+                
+                content_dict = {
+                    'title': item.get('title', 'Sin título'),
+                    'description': item.get('description', ''),
+                    'startDateTime': item.get('startDateTime', 0),
+                    'endDateTime': item.get('endDateTime', 0),
+                    'TV_CHANNEL': tv_channel,
+                    'genres': genres,
+                    'programme_image': prog_image
+                }
+                contents.append(content_dict)
+        
+        if contents:
+            logger.info(f"Sample: {contents[0]['title'][:50]}... (callSign: {contents[0].get('TV_CHANNEL', {}).get('callSign', 'N/A')})")
         return contents
         
-    except json.JSONDecodeError as je:
-        logger.error(f"JSON error {channel_id}: {je}")
-        return []
     except Exception as e:
-        logger.error(f"Fetch error {channel_id}: {e}")
+        logger.error(f"Parse error {channel_id}: {e}")
         return []
-
-def build_xmltv(channels_data):
-    """Build XMLTV – extrae TV_CHANNEL (callSign, number, logo), genres como categories, programme icon si presente."""
-    if not channels_data:
-        logger.warning("No data - XML empty.")
-        return False
-    
-    offset = int(os.environ.get('TIMEZONE_OFFSET', '-6'))
-    tz_str = f"{offset:+03d}00"
-    
-    tv = ET.Element("tv", attrib={
-        "generator-info-name": "MVS Hub Public Auto EPG (UUID Fresco + XML Mirror)",
-        "generator-info-url": "https://www.mvshub.com.mx/"
-    })
-    
-    channels = set()
-    
-    for channel_id, contents in channels_data:
-        if not contents:
-            continue
-        
-        first = contents[0]
-        tv_channel = first.get('TV_CHANNEL', {})
-        
-        # Extrae channel info (mirror XML)
-        call_sign = tv_channel.get('callSign', str(channel_id))
-        number = tv_channel.get('number', '')
-        logo = ''
-        if 'images' in tv_channel:
-            channel_images = tv_channel['images'].get('image', [])
-            for img in channel_images:
-                if img.get('usage') == 'CH_LOGO':  # Prioriza CH_LOGO
-                    logo = img.get('url', '')
-                    break
-            if not logo and channel_images:
-                logo = channel_images[0].get('url', '')  # Fallback a primera
-        
-        # Agrega channel único
-        if channel_id not in channels:
-            channel = ET.SubElement(tv, "channel", id=str(channel_id))
-            ET.SubElement(channel, "display-name").text = call_sign
-            if number:
-                ET.SubElement(channel, "display-name").text = number
-            if logo:
-                ET.SubElement(channel, "icon", src=logo)
-            channels.add(channel_id)
-            logger.info(f"Channel added {channel_id}: {call_sign} (number: {number}, logo: {logo[:50]}...)")
-        
-        # Programmes
-        for content in contents:
-            start_ms = int(content.get('startDateTime', 0))
-            end_ms = int(content.get('endDateTime', 0))
-            if start_ms == 0 or end_ms == 0:
-                continue
-            try:
-                start_dt = datetime.utcfromtimestamp(start_ms / 1000) + timedelta(hours=offset)
-                end_dt = datetime.utcfromtimestamp(end_ms / 1000) + timedelta(hours=offset)
-                programme = ET.SubElement(tv, "programme", attrib={
-                    "start": start_dt.strftime("%Y%m%d%H%M%S") + tz_str,
-                    "stop": end_dt.strftime("%Y%m%d%H%M%S") + tz_str,
-                    "channel": str(channel_id)
-                })
-                
-                ET.SubElement(programme, "title", lang="es").text = content.get('title', 'Sin título')
-                
-                desc = content.get('description', '')
-                if desc:
-                    ET.SubElement(programme, "desc", lang="es").text = desc
-                
-                # Categories de genres
-                genres = content.get('genres', [])
-                for genre in genres:
-                    if genre:
-                        ET.SubElement(programme, "category", lang="es").text = genre
-                
-                # Icon programme si presente
-                prog_img = content.get('programme_image', '')
-                if prog_img:
-                    ET.SubElement(programme, "icon", src=prog_img)
-            except (ValueError, TypeError, OSError) as ve:
-                logger.warning(f"Invalid timestamp in {channel_id}: {ve} - skipping")
-                continue
-            except Exception as pe:
-                logger.warning(f"Programme build error in {channel_id}: {pe}")
-                continue
-    
-    # Write XML (indent) – solo si channels
-    if not channels:
-        logger.warning("No channels - skipping XML write.")
-        return False
-    
-    rough_string = ET.tostring(tv, encoding='unicode', method='xml')
-    reparsed = ET.fromstring(rough_string)
-    ET.indent(reparsed, space="  ", level=0)
-    tree = ET.ElementTree(reparsed)
-    tree.write(OUTPUT_FILE, encoding="utf-8", xml_declaration=True)
-    
-    num_channels = len(channels)
-    total_programmes = sum(len(contents) for _, contents in channels_data if contents)
-    logger.info(f"XMLTV built: {OUTPUT_FILE} ({num_channels} channels, {total_programmes} programmes) - Timezone: {tz_str}")
-    return True
 
 def main():
     global CHANNEL_IDS, UUID, URL_BASE
@@ -339,31 +294,37 @@ def main():
     for name, value in cookies.items():
         session.cookies.set(name, value)
     
-    # Test fetch para 222 (crítico para validar UUID/cookies)
+    # Test con retry
     logger.info("=== TESTING CHANNEL 222 WITH FRESH UUID ===")
     test_contents = fetch_channel_contents(222, date_from, date_to, session)
     if not test_contents:
-        logger.error("TEST FAILED: 0 programmes for 222 - UUID/cookies invalid. Check raw_response_222.xml.")
+        logger.info("Test 222 failed - retry with XML-only")
+        time.sleep(2)  # Sesión refresh
+        test_contents = fetch_channel_contents(222, date_from, date_to, session, retry_xml=True)
+    if not test_contents:
+        logger.error("TEST FAILED after retry: 0 programmes for 222 - UUID/cookies invalid. Check raw_response_222.xml for error details.")
         return False
     logger.info(f"TEST SUCCESS: {len(test_contents)} programmes for 222 - UUID works!")
     
-    # Fetch all channels
+    # Full fetch con retry si needed (por channel)
     logger.info("=== FETCHING ALL CHANNELS ===")
     channels_data = []
     for channel_id in CHANNEL_IDS:
         logger.info(f"--- Processing {channel_id} ---")
         contents = fetch_channel_contents(channel_id, date_from, date_to, session)
+        if not contents:  # Retry si 0 (probable 406)
+            time.sleep(2)
+            contents = fetch_channel_contents(channel_id, date_from, date_to, session, retry_xml=True)
         channels_data.append((channel_id, contents))
-        time.sleep(1.5)  # Rate limit suave
+        time.sleep(1.5)
     
-    # Build y save XML
+    # Build (igual, pero ahora con datos reales)
     logger.info("=== BUILDING XMLTV ===")
     success = build_xmltv(channels_data)
     if success:
-        logger.info("¡ÉXITO TOTAL! EPG público auto generado con UUID/cookies frescas. Revisa epgmvs.xml y raw_*.xml.")
-        logger.info(f"Total programmes: {sum(len(c) for _, c in channels_data if c)}")
+        logger.info("¡ÉXITO TOTAL! Nuevo EPG con UUID fresco. Commit epgmvs.xml + raws.")
     else:
-        logger.warning("Build failed - check data.")
+        logger.warning("Build failed - 0 data across channels.")
     
     return success
 
