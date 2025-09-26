@@ -80,7 +80,7 @@ def validate_generic_token(device_token):
         return False
 
 def intercept_uuid_via_selenium():
-    """Intercepta UUID dinámico de SPA pública via JS execute (localStorage o window var)."""
+    """Intercepta UUID dinámico de SPA pública via performance API. Sin fallbacks."""
     use_selenium = os.environ.get('USE_SELENIUM', 'true').lower() == 'true'
     if not use_selenium:
         logger.error("Selenium required for UUID intercept - enable it.")
@@ -101,77 +101,29 @@ def intercept_uuid_via_selenium():
         driver.get(SITE_URL)
         wait = WebDriverWait(driver, 30)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(30)  # Espera full SPA load y JS EPG requests (aumenta si lento)
+        time.sleep(45)  # Espera full SPA load y EPG requests
         
-        # Método 1: Busca en localStorage (e.g., 'epg.uuid' o 'cache.token')
-        local_storage = driver.execute_script("return localStorage;")
-        uuid_candidates = []
-        for key in local_storage:
-            value = local_storage[key]
-            if 'uuid' in key.lower() or 'token' in key.lower() or 'cache' in key.lower():
-                try:
-                    parsed = json.loads(value)
-                    if isinstance(parsed, dict) and 'uuid' in parsed:
-                        uuid_candidates.append(parsed['uuid'])
-                    elif 'uuid' in value:
-                        uuid_candidates.append(value.split('"uuid":"')[1].split('"')[0])
-                except:
-                    if 'uuid' in value:
-                        uuid_candidates.append(value)
-        logger.info(f"UUID candidates from localStorage: {uuid_candidates}")
-        
-        # Método 2: Busca en window vars (si JS expone epgUUID o similar)
-        window_vars = driver.execute_script("""
-            return {
-                epgUUID: window.epgUUID || window.epgCacheId || null,
-                cacheToken: window.cacheToken || null,
-                requests: performance.getEntriesByType('resource').filter(r => r.name.includes('/epgcache/list/')).map(r => r.name)
-            };
+        # Extrae UUID unique de /epgcache/list/ requests
+        uuid_candidates = driver.execute_script("""
+            return [...new Set(performance.getEntriesByType('resource')
+                .filter(r => r.name.includes('/epgcache/list/'))
+                .map(r => r.name.split('/epgcache/list/')[1]?.split('/')[0])
+                .filter(uuid => uuid && uuid.length === 36 && uuid.includes('-')))];
         """)
-        if window_vars.get('epgUUID'):
-            uuid_candidates.append(window_vars['epgUUID'])
-        if window_vars.get('cacheToken'):
-            try:
-                token_uuid = json.loads(window_vars['cacheToken']).get('uuid')
-                if token_uuid:
-                    uuid_candidates.append(token_uuid)
-            except:
-                pass
-        # Extrae UUID de requests logs (performance API)
-        for req_url in window_vars.get('requests', []):
-            if '/epgcache/list/' in req_url:
-                uuid_match = req_url.split('/epgcache/list/')[1].split('/')[0]
-                if len(uuid_match) == 36 and '-' in uuid_match:  # UUID format
-                    uuid_candidates.append(uuid_match)
-                    logger.info(f"UUID intercepted from request URL: {uuid_match} (full: {req_url[:100]})")
+        logger.info(f"UUID candidates from performance API: {uuid_candidates}")
         
-        # Selecciona UUID (primero válido, o deviceUuid fallback)
-        global UUID, URL_BASE
-        device_uuid = None
-        system_login = driver.execute_script("return localStorage.getItem('system.login');")
-        if system_login:
-            try:
-                parsed = json.loads(system_login)
-                device_uuid = parsed.get('data', {}).get('deviceUuid')
-                logger.info(f"deviceUuid fallback: {device_uuid}")
-            except:
-                pass
-        
-        if uuid_candidates:
-            UUID = uuid_candidates[0]  # Toma el primero (más probable)
-            logger.info(f"UUID dinámico intercepted: {UUID}")
-        elif device_uuid:
-            UUID = device_uuid
-            logger.info(f"Using deviceUuid as fallback UUID: {UUID}")
-        else:
-            logger.error("No UUID intercepted - check SPA load.")
+        if not uuid_candidates:
+            logger.error("No UUID intercepted - SPA no loaded EPG requests.")
             return None
         
-        # Construye URL_BASE
-        URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/" + "{}/220?page=0&size=100&dateFrom={}&dateTo={}"
+        global UUID, URL_BASE
+        UUID = uuid_candidates[0]
+        logger.info(f"UUID dinámico intercepted: {UUID}")
+        URL_BASE = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{UUID}/{{}}/{{}}?page=0&size=100&dateFrom={{}}&dateTo={{}}"
         
-        # Extrae deviceToken genérico y valida
+        # deviceToken genérico
         device_token = None
+        system_login = driver.execute_script("return localStorage.getItem('system.login');")
         if system_login:
             try:
                 parsed = json.loads(system_login)
@@ -181,126 +133,113 @@ def intercept_uuid_via_selenium():
                 pass
         if device_token and validate_generic_token(device_token):
             logger.info("Public session validated - ready for EPG")
-        else:
-            logger.warning("Generic token not validated - may fail EPG")
         
-        # Cookies
+        # Cookies frescas
         selenium_cookies = driver.get_cookies()
-        cookies_dict = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
+        cookies_dict = {c['name']: c['value'] for c in selenium_cookies}
         relevant = {k: v for k, v in cookies_dict.items() if k in ['AWSALB', 'AWSALBCORS', 'bitmovin_analytics_uuid']}
-        logger.info(f"Cookies: {list(relevant.keys())}")
+        logger.info(f"Cookies frescas: {list(relevant.keys())}")
         
         driver.quit()
         return relevant, device_token
         
     except Exception as e:
-        logger.error(f"Selenium intercept error: {e}")
+        logger.error(f"Selenium error: {e}")
         driver.quit()
         return {}, None
 
 def fetch_channel_contents(channel_id, date_from, date_to, session):
-    """Fetch EPG con UUID intercepted – maneja JSON o XML response."""
+    """Fetch EPG – parse JSON mirroring XML structure (TV_CHANNEL, genres, images)."""
     if not URL_BASE:
         logger.error("No URL_BASE - UUID not set.")
         return []
-    url = URL_BASE.format(channel_id, date_from, date_to)
-    logger.info(f"Fetching {channel_id} with intercepted UUID {UUID}: {url}")
+    url = URL_BASE.format(channel_id, 220, date_from, date_to)  # 220 = channelLineupId fijo
+    logger.info(f"Fetching {channel_id} with UUID fresco {UUID}: {url}")
     
     try:
         response = session.get(url, headers=HEADERS_EPG, timeout=15, verify=False)
         logger.info(f"Status for {channel_id}: {response.status_code}")
         
         if response.status_code != 200:
-            logger.error(f"Error {channel_id}: {response.status_code} - {response.text[:300]}")
+            logger.error(f"Error {channel_id}: {response.status_code}")
             return []
         
-        raw_file = f"raw_response_{channel_id}.xml"  # Mantén .xml por convención, aunque JSON
+        raw_file = f"raw_response_{channel_id}.xml"  # Convención XML aunque JSON
         with open(raw_file, 'w', encoding='utf-8') as f:
             f.write(response.text)
         logger.info(f"Raw saved: {raw_file} (len: {len(response.text)})")
         
-        contents = []
-        response_text = response.text.strip()
-        if response_text.startswith('{'):  # JSON response
-            import json
-            try:
-                data = json.loads(response_text)
-                contents_list = data.get('contents', {}).get('content', [])
-                logger.info(f"Parsed as JSON: {len(contents_list)} programmes for {channel_id}")
-                # Convierte a dicts uniformes (simula ET-like para build_xmltv)
-                for item in contents_list:
-                    contents.append({
-                        'title': {'text': item.get('title', 'Sin título')},
-                        'description': {'text': item.get('description', '')},
-                        'startDateTime': {'text': str(item.get('startDateTime', 0))},
-                        'endDateTime': {'text': str(item.get('endDateTime', 0))},
-                        # Genres: asume array de strings
-                        'genres': [{'name': {'text': g}} for g in item.get('genres', [])] if isinstance(item.get('genres'), list) else [],
-                        # Channel info en first
-                        'TV_CHANNEL': {'callSign': {'text': item.get('callSign', str(channel_id))},
-                                       'number': {'text': item.get('number', '')},
-                                       'image': {'url': {'text': item.get('logo', '')}}} if 'callSign' in item else None
-                    })
-                if contents:
-                    logger.info(f"Sample programme: {contents[0]['title']['text'][:50]}...")
-                return contents
-            except json.JSONDecodeError as je:
-                logger.error(f"JSON parse error {channel_id}: {je} - {response_text[:200]}")
-                return []
-        else:  # XML fallback (si cambia)
-            root = ET.fromstring(response.content)
-            contents = root.findall(".//{http://ws.minervanetworks.com/}content")
-            logger.info(f"Parsed as XML: {len(contents)} programmes for {channel_id}")
-            return contents  # ET elements como antes
+        data = json.loads(response.text)
+        contents_list = data.get('contents', {}).get('content', [])
+        logger.info(f"Parsed JSON: {len(contents_list)} programmes for {channel_id}")
         
+        if contents_list:
+            sample_title = contents_list[0].get('title', 'Sin título')
+            logger.info(f"Sample: {sample_title[:50]}...")
+        
+        # Mapea a dicts (mirror XML: anidado TV_CHANNEL, genres.genre.name, images.image.url)
+        contents = []
+        for item in contents_list:
+            tv_channel = item.get('TV_CHANNEL', {})  # Anidado como XML
+            images_prog = item.get('images', {}).get('image', [])  # Programme images
+            prog_image = images_prog[0].get('url', '') if images_prog else ''  # Primera url (DETAILS/BROWSE)
+            
+            content_dict = {
+                'title': item.get('title', 'Sin título'),
+                'description': item.get('description', ''),
+                'startDateTime': item.get('startDateTime', 0),
+                'endDateTime': item.get('endDateTime', 0),
+                'TV_CHANNEL': tv_channel,  # Dict con callSign, number, images
+                'genres': [g.get('name', '') for g in item.get('genres', {}).get('genre', []) if g.get('name')],  # List[str]
+                'programme_image': prog_image  # Opcional para <icon> en programme
+            }
+            contents.append(content_dict)
+        return contents
+        
+    except json.JSONDecodeError as je:
+        logger.error(f"JSON error {channel_id}: {je}")
+        return []
     except Exception as e:
-        logger.error(f"Fetch/parse error {channel_id}: {e}")
+        logger.error(f"Fetch error {channel_id}: {e}")
         return []
 
 def build_xmltv(channels_data):
-    """Build XMLTV con timezone -6 – maneja JSON dicts o XML elements."""
+    """Build XMLTV – extrae TV_CHANNEL (callSign, number, logo), genres como categories, programme icon si presente."""
     if not channels_data:
         logger.warning("No data - XML empty.")
         return False
     
     offset = int(os.environ.get('TIMEZONE_OFFSET', '-6'))
-    tz_str = f"{offset:+03d}00"  # e.g., " -0600"
+    tz_str = f"{offset:+03d}00"
     
     tv = ET.Element("tv", attrib={
-        "generator-info-name": "MVS Hub Public Auto EPG (JSON/XML Intercept)",
+        "generator-info-name": "MVS Hub Public Auto EPG (UUID Fresco + XML Mirror)",
         "generator-info-url": "https://www.mvshub.com.mx/"
     })
     
-    ns = "{http://ws.minervanetworks.com/}"  # Solo para XML fallback
     channels = set()
     
     for channel_id, contents in channels_data:
         if not contents:
             continue
         
-        # Channel info (unificado: de first content)
         first = contents[0]
-        call_sign = str(channel_id)
-        number = ""
-        logo = ""
-        if isinstance(first, dict):  # JSON dict
-            tv_channel = first.get('TV_CHANNEL', {})
-            call_sign = tv_channel.get('callSign', {}).get('text', call_sign)
-            number = tv_channel.get('number', {}).get('text', '')
-            logo = tv_channel.get('image', {}).get('url', {}).get('text', '')
-        else:  # XML ET element
-            tv_channel = first.find(f".//{ns}TV_CHANNEL")
-            if tv_channel is not None:
-                cs_elem = tv_channel.find(f"{ns}callSign")
-                call_sign = cs_elem.text if cs_elem is not None and cs_elem.text else call_sign
-                number_elem = tv_channel.find(f"{ns}number")
-                number = number_elem.text if number_elem is not None and number_elem.text else ""
-                image = tv_channel.find(f".//{ns}image")
-                if image is not None:
-                    url_elem = image.find(f"{ns}url")
-                    logo = url_elem.text if url_elem is not None and url_elem.text else ""
+        tv_channel = first.get('TV_CHANNEL', {})
         
-        # Agrega channel si nuevo
+        # Extrae channel info (mirror XML)
+        call_sign = tv_channel.get('callSign', str(channel_id))
+        number = tv_channel.get('number', '')
+        logo = ''
+        if 'images' in tv_channel:
+            channel_images = tv_channel['images'].get('image', [])
+            for img in channel_images:
+                if img.get('usage') == 'CH_LOGO':  # Prioriza CH_LOGO
+                    logo = img.get('url', '')
+                    break
+            if not logo and channel_images:
+                logo = channel_images[0].get('url', '')  # Fallback a primera
+        
+        # Agrega channel único
         if channel_id not in channels:
             channel = ET.SubElement(tv, "channel", id=str(channel_id))
             ET.SubElement(channel, "display-name").text = call_sign
@@ -309,29 +248,14 @@ def build_xmltv(channels_data):
             if logo:
                 ET.SubElement(channel, "icon", src=logo)
             channels.add(channel_id)
-            logger.info(f"Channel added {channel_id}: {call_sign} (number: {number}, logo: {logo})")
+            logger.info(f"Channel added {channel_id}: {call_sign} (number: {number}, logo: {logo[:50]}...)")
         
-        # Programmes loop (unificado)
+        # Programmes
         for content in contents:
-            if isinstance(content, dict):  # JSON
-                start_ms = int(content.get('startDateTime', {}).get('text', 0))
-                end_ms = int(content.get('endDateTime', {}).get('text', 0))
-                title_text = content.get('title', {}).get('text', 'Sin título')
-                desc_text = content.get('description', {}).get('text', '')
-                genres = [g.get('name', {}).get('text', '') for g in content.get('genres', []) if g.get('name', {}).get('text')]
-            else:  # XML
-                start_elem = content.find(f"{ns}startDateTime")
-                end_elem = content.find(f"{ns}endDateTime")
-                if start_elem is None or end_elem is None:
-                    continue
-                start_ms = int(start_elem.text)
-                end_ms = int(end_elem.text)
-                title_elem = content.find(f"{ns}title")
-                title_text = title_elem.text if title_elem is not None and title_elem.text else "Sin título"
-                desc_elem = content.find(f"{ns}description")
-                desc_text = desc_elem.text if desc_elem is not None and desc_elem.text else ''
-                genres = [genre.text for genre in content.findall(f".//{ns}genres/{ns}genre/{ns}name") if genre.text]
-            
+            start_ms = int(content.get('startDateTime', 0))
+            end_ms = int(content.get('endDateTime', 0))
+            if start_ms == 0 or end_ms == 0:
+                continue
             try:
                 start_dt = datetime.utcfromtimestamp(start_ms / 1000) + timedelta(hours=offset)
                 end_dt = datetime.utcfromtimestamp(end_ms / 1000) + timedelta(hours=offset)
@@ -341,13 +265,22 @@ def build_xmltv(channels_data):
                     "channel": str(channel_id)
                 })
                 
-                ET.SubElement(programme, "title", lang="es").text = title_text
-                if desc_text:
-                    ET.SubElement(programme, "desc", lang="es").text = desc_text
+                ET.SubElement(programme, "title", lang="es").text = content.get('title', 'Sin título')
+                
+                desc = content.get('description', '')
+                if desc:
+                    ET.SubElement(programme, "desc", lang="es").text = desc
+                
+                # Categories de genres
+                genres = content.get('genres', [])
                 for genre in genres:
                     if genre:
                         ET.SubElement(programme, "category", lang="es").text = genre
-                        
+                
+                # Icon programme si presente
+                prog_img = content.get('programme_image', '')
+                if prog_img:
+                    ET.SubElement(programme, "icon", src=prog_img)
             except (ValueError, TypeError, OSError) as ve:
                 logger.warning(f"Invalid timestamp in {channel_id}: {ve} - skipping")
                 continue
@@ -355,7 +288,7 @@ def build_xmltv(channels_data):
                 logger.warning(f"Programme build error in {channel_id}: {pe}")
                 continue
     
-    # Write XML (indent) – solo si data
+    # Write XML (indent) – solo si channels
     if not channels:
         logger.warning("No channels - skipping XML write.")
         return False
@@ -379,44 +312,38 @@ def main():
     now_local = datetime.utcnow() + timedelta(hours=offset)
     date_from = int(now_local.timestamp() * 1000)
     date_to = int((now_local + timedelta(hours=24)).timestamp() * 1000)
-    logger.info(f"Fetching 24h EPG from {now_local} to {now_local + timedelta(hours=24)} (offset {offset})")
+    logger.info(f"Fetching 24h EPG from {now_local.strftime('%Y-%m-%d %H:%M:%S')} to {(now_local + timedelta(hours=24)).strftime('%Y-%m-%d %H:%M:%S')} (offset {offset})")
     
-    # Channels override
+    # Channels override (env o arg)
     if len(sys.argv) > 1:
-        CHANNEL_IDS = [int(cid.strip()) for cid in sys.argv[1].split(',')]
+        CHANNEL_IDS = [int(cid.strip()) for cid in sys.argv[1].split(',') if cid.strip().isdigit()]
     if 'CHANNEL_IDS' in os.environ:
-        CHANNEL_IDS = [int(cid.strip()) for cid in os.environ['CHANNEL_IDS'].split(',')]
+        CHANNEL_IDS = [int(cid.strip()) for cid in os.environ['CHANNEL_IDS'].split(',') if cid.strip().isdigit()]
     
     if not CHANNEL_IDS:
-        logger.error("No CHANNEL_IDS provided - set env or arg.")
+        logger.error("No CHANNEL_IDS provided - set env (e.g., '222,807') or arg.")
         return False
     
     logger.info(f"Channels to fetch: {CHANNEL_IDS}")
     
-    # Intercept UUID dinámico + cookies/token público
-    result = intercept_uuid_via_selenium()
-    if not result:
-        logger.error("Intercept failed - no UUID/cookies. Check SPA load time.")
-        return False
-    
-    cookies, device_token = result
+    # Intercept UUID fresco + cookies
+    cookies, device_token = intercept_uuid_via_selenium()
     if not UUID:
-        logger.error("No UUID intercepted - cannot proceed.")
+        logger.error("UUID intercept failed - abort.")
         return False
     
     logger.info(f"Setup complete: UUID={UUID}, cookies={len(cookies)}, token validated={'yes' if device_token else 'no'}")
     
-    # Session para EPG (cookies + headers públicos)
+    # Session con cookies frescas
     session = requests.Session()
     for name, value in cookies.items():
         session.cookies.set(name, value)
-    session.headers.update(HEADERS_EPG)
     
-    # Test fetch para 222 (crítico para validar UUID)
-    logger.info("=== TESTING CHANNEL 222 WITH INTERCEPTED UUID ===")
+    # Test fetch para 222 (crítico para validar UUID/cookies)
+    logger.info("=== TESTING CHANNEL 222 WITH FRESH UUID ===")
     test_contents = fetch_channel_contents(222, date_from, date_to, session)
     if not test_contents:
-        logger.error("TEST FAILED: 0 programmes for 222 - UUID invalid or headers mismatch. Check raw_response_222.xml.")
+        logger.error("TEST FAILED: 0 programmes for 222 - UUID/cookies invalid. Check raw_response_222.xml.")
         return False
     logger.info(f"TEST SUCCESS: {len(test_contents)} programmes for 222 - UUID works!")
     
@@ -433,8 +360,8 @@ def main():
     logger.info("=== BUILDING XMLTV ===")
     success = build_xmltv(channels_data)
     if success:
-        logger.info("¡ÉXITO TOTAL! EPG público auto generado con UUID dinámico. Revisa epgmvs.xml y raw_*.xml para datos frescos.")
-        logger.info(f"Total programmes across channels: {sum(len(c) for _, c in channels_data if c)}")
+        logger.info("¡ÉXITO TOTAL! EPG público auto generado con UUID/cookies frescas. Revisa epgmvs.xml y raw_*.xml.")
+        logger.info(f"Total programmes: {sum(len(c) for _, c in channels_data if c)}")
     else:
         logger.warning("Build failed - check data.")
     
