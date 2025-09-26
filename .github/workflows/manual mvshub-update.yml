@@ -34,7 +34,7 @@ jobs:
           echo "USE_SELENIUM: $USE_SELENIUM"
           echo "TIMEZONE_OFFSET: $TIMEZONE_OFFSET"
           echo "BEARER_TOKEN set: $([ -n '$BEARER_TOKEN' ] && echo 'yes' || echo 'no')"
-          python mvshub-epg-generator.py "$CHANNEL_IDS"
+          python manual-mvshub-epg-generator.py "$CHANNEL_IDS"
           # Debug output
           echo "--- EPGMVS.XML HEAD (primeros 20 lines) ---"
           cat epgmvs.xml | head -20 || echo "epgmvs.xml not generated"
