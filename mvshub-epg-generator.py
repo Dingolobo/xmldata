@@ -504,7 +504,7 @@ def main():
     xml_content += '</tv>\n'
     
     # Save XMLTV
-    xml_file = 'mvshub_epg.xml'
+    xml_file = 'epgmvs.xml'
     with open(xml_file, 'w', encoding='utf-8') as f:
         f.write(xml_content)
     logger.info(f"XMLTV saved: {xml_file} ({len(channel_map)} channels, {prog_count} programmes)")
