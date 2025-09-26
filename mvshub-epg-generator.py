@@ -335,8 +335,8 @@ def main():
             p_image = prog.get('programme_image', '')
             rating = prog.get('rating', '')
             
-            xml_content += (f'  <programme start="{start_xml}" stop="{stop_xml}" '
-                  f'channel="c{ch_id}">\n')
+            # F-String corregido: Completo en una línea
+            xml_content += f'  <programme start="{start_xml}" stop="{stop_xml}" channel="c{ch_id}">\n'
             xml_content += f'    <title lang="es">{title}</title>\n'
             if desc:
                 xml_content += f'    <desc lang="es">{desc}</desc>\n'
@@ -351,7 +351,7 @@ def main():
     
     xml_content += '</tv>\n'
     
-    # Save XMLTV
+     # Save XMLTV
     xml_file = 'mvshub_epg.xml'
     with open(xml_file, 'w', encoding='utf-8') as f:
         f.write(xml_content)
