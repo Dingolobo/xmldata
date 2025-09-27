@@ -43,15 +43,17 @@ EPG_HEADERS = {
     'pragma': 'no-cache'
 }
 
-# Headers para /token (basados en tus DevTools)
+# Headers para /token (mejorados con tus DevTools: accept-encoding, priority, etc.)
 TOKEN_HEADERS = {
     'accept': 'application/json, text/plain, */*',
+    'accept-encoding': 'gzip, deflate, br, zstd',  # Agregado de DevTools
     'accept-language': 'es-419,es;q=0.9',
     'authorization': '',  # Se setea dinámicamente con Bearer JWT
     'cache-control': 'no-cache',
     'content-type': 'application/json',
     'origin': 'https://www.mvshub.com.mx',
     'pragma': 'no-cache',
+    'priority': 'u=1, i',  # Agregado de DevTools
     'referer': 'https://www.mvshub.com.mx/',
     'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
     'sec-ch-ua-mobile': '?0',
@@ -73,14 +75,17 @@ FALLBACK_COOKIES = {
 }
 
 def get_session_via_selenium():
-    """Selenium: Visita página → extrae cookies + JWT de localStorage['system.login'].data.deviceToken."""
+    """Selenium: Visita página → extrae cookies + JWT de localStorage['system.login'].data.deviceToken.
+    Fix: Navega a TOKEN_URL para generar JSESSIONID en edge.prod."""
     if not os.environ.get('USE_SELENIUM', 'true').lower() == 'true':
         logger.info("Selenium disabled - using fallback")
         return FALLBACK_COOKIES, FALLBACK_JWT
 
-    logger.info(f"Using Selenium to visit {SITE_URL} for session (cookies + JWT from system.login)...")
+    debug_mode = os.environ.get('DEBUG_SELENIUM', 'false').lower() == 'true'
+    logger.info(f"Using Selenium to visit {SITE_URL} for session (cookies + JWT from system.login)... Debug: {debug_mode}")
     options = Options()
-    options.add_argument("--headless")
+    if not debug_mode:
+        options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36")
@@ -90,18 +95,33 @@ def get_session_via_selenium():
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
+        # Paso 1: Visita mvshub para SPA load + localStorage
         driver.get(SITE_URL)
         wait = WebDriverWait(driver, 20)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(10)  # Espera SPA load + auth implícita (localStorage se setea)
+        time.sleep(12)  # Aumentado para SPA + auth implícita
 
-        # Extrae cookies
+        # Paso 2: Navega a TOKEN_URL para generar JSESSIONID en edge.prod (sin auth, solo para cookies)
+        logger.info("Navigating to TOKEN_URL to generate cross-domain cookies (e.g., JSESSIONID)...")
+        driver.get(TOKEN_URL)
+        time.sleep(3)  # Espera seteo de cookies en edge.prod
+
+        # Extrae cookies (ahora incluye de ambos dominios)
         selenium_cookies = driver.get_cookies()
         cookies_dict = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
         logger.info(f"Extracted {len(cookies_dict)} cookies: {list(cookies_dict.keys())}")
+        
+        # Log cookies por dominio (para debug)
+        domains = {}
+        for cookie in selenium_cookies:
+            domain = cookie.get('domain', 'unknown')
+            if domain not in domains:
+                domains[domain] = []
+            domains[domain].append(cookie['name'])
+        for dom, cks in domains.items():
+            logger.info(f"  Domain {dom}: {cks}")
 
         # Extrae JWT de localStorage['system.login'] → parse JSON → data.deviceToken
-        # Ajusta clave si es exactamente 'sistem.loguin' (cambia 'system.login' aquí)
         login_data_str = driver.execute_script("return localStorage.getItem('system.login');")
         if not login_data_str:
             logger.warning("system.login not found in localStorage - check key or use fallback")
@@ -110,9 +130,8 @@ def get_session_via_selenium():
 
         try:
             login_data = json.loads(login_data_str)
-            # Fix: Navega al objeto 'data' para obtener deviceToken (anidado)
             data_obj = login_data.get('data', {})
-            jwt = data_obj.get('deviceToken')  # ← Ahora busca en el nivel anidado
+            jwt = data_obj.get('deviceToken')
             if not jwt:
                 logger.warning("deviceToken not found in system.login.data - check structure")
                 driver.quit()
@@ -138,9 +157,13 @@ def fetch_uuid(jwt, cookies_dict):
         return FALLBACK_UUID
 
     session = requests.Session()
-    # Setea cookies (todas extraídas, cross-domain)
+    # Setea cookies (todas extraídas, cross-domain con dominios específicos)
     for name, value in cookies_dict.items():
-        session.cookies.set(name, value, domain='.prod.ovp.ses.com')
+        # Ajusta domain basado en nombre (JSESSIONID para edge, AWS para ambos)
+        if 'JSESSIONID' in name:
+            session.cookies.set(name, value, domain='edge.prod.ovp.ses.com')
+        else:
+            session.cookies.set(name, value, domain='.prod.ovp.ses.com')
 
     # Headers con Bearer
     headers = TOKEN_HEADERS.copy()
@@ -152,6 +175,7 @@ def fetch_uuid(jwt, cookies_dict):
         logger.info(f"Token status: {response.status_code}")
         if response.status_code != 200:
             logger.error(f"Token error: {response.status_code} - {response.text[:200]}")
+            logger.error(f"Response headers: {dict(response.headers)}")  # Debug extra
             return FALLBACK_UUID
 
         data = response.json()
@@ -174,6 +198,7 @@ def fetch_channel_contents(channel_id, uuid, date_from, date_to, session):
 
         if response.status_code != 200:
             logger.error(f"EPG error for {channel_id}: {response.status_code} - {response.text[:200]}")
+            logger.error(f"EPG response headers: {dict(response.headers)}")  # Debug extra
             return []
 
         raw_file = f"raw_response_{channel_id}.xml"
@@ -301,7 +326,11 @@ def main():
     # Paso 3: Session para EPG (cookies persistentes)
     session = requests.Session()
     for name, value in cookies_dict.items():
-        session.cookies.set(name, value, domain='.prod.ovp.ses.com')  # Cross-domain para edge.prod
+        # Ajusta domain basado en nombre (JSESSIONID para edge, AWS para ambos)
+        if 'JSESSIONID' in name:
+            session.cookies.set(name, value, domain='edge.prod.ovp.ses.com')
+        else:
+            session.cookies.set(name, value, domain='.prod.ovp.ses.com')  # Cross-domain para edge.prod
 
     # Paso 4: Fetch por canal
     channels_data = []
