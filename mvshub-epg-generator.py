@@ -75,8 +75,7 @@ FALLBACK_COOKIES = {
 }
 
 def get_session_via_selenium():
-    """Selenium: Visita página → extrae cookies + JWT de localStorage['system.login'].data.deviceToken.
-    Fix: Navega a TOKEN_URL para generar JSESSIONID en edge.prod."""
+    """Selenium: Visita SPA → scroll para load → extrae localStorage/cookies de mvshub → navega API para JSESSIONID."""
     if not os.environ.get('USE_SELENIUM', 'true').lower() == 'true':
         logger.info("Selenium disabled - using fallback")
         return FALLBACK_COOKIES, FALLBACK_JWT
@@ -95,39 +94,36 @@ def get_session_via_selenium():
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
-        # Paso 1: Visita mvshub para SPA load + localStorage
+        # Paso 1: Visita mvshub SPA
         driver.get(SITE_URL)
         wait = WebDriverWait(driver, 20)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(12)  # Aumentado para SPA + auth implícita
+        time.sleep(5)  # Inicial para SPA base
 
-        # Paso 2: Navega a TOKEN_URL para generar JSESSIONID en edge.prod (sin auth, solo para cookies)
-        logger.info("Navigating to TOKEN_URL to generate cross-domain cookies (e.g., JSESSIONID)...")
-        driver.get(TOKEN_URL)
-        time.sleep(3)  # Espera seteo de cookies en edge.prod
+        # Paso 2: Scroll para trigger lazy-load/auth (tu sugerencia)
+        logger.info("Scrolling to trigger SPA load/auth...")
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")  # Scroll down
+        time.sleep(3)  # Espera load
+        driver.execute_script("window.scrollTo(0, 0);")  # Scroll up
+        time.sleep(7)  # Total 15s para auth implícita/localStorage
 
-        # Extrae cookies (ahora incluye de ambos dominios)
-        selenium_cookies = driver.get_cookies()
-        cookies_dict = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
-        logger.info(f"Extracted {len(cookies_dict)} cookies: {list(cookies_dict.keys())}")
-        
-        # Log cookies por dominio (para debug)
-        domains = {}
-        for cookie in selenium_cookies:
-            domain = cookie.get('domain', 'unknown')
-            if domain not in domains:
-                domains[domain] = []
-            domains[domain].append(cookie['name'])
-        for dom, cks in domains.items():
-            logger.info(f"  Domain {dom}: {cks}")
+        # Paso 3: Extrae de mvshub PRIMERO (localStorage + cookies iniciales)
+        # Debug: Lista keys de localStorage
+        all_local_keys = driver.execute_script("return Object.keys(localStorage);")
+        logger.info(f"localStorage keys available: {all_local_keys}")
 
-        # Extrae JWT de localStorage['system.login'] → parse JSON → data.deviceToken
         login_data_str = driver.execute_script("return localStorage.getItem('system.login');")
         if not login_data_str:
             logger.warning("system.login not found in localStorage - check key or use fallback")
             driver.quit()
-            return cookies_dict, None
+            return {}, None
 
+        # Extrae cookies iniciales (mvshub)
+        selenium_cookies = driver.get_cookies()
+        cookies_dict = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
+        logger.info(f"Initial cookies from mvshub: {len(cookies_dict)} - {list(cookies_dict.keys())}")
+
+        # Extrae JWT
         try:
             login_data = json.loads(login_data_str)
             data_obj = login_data.get('data', {})
@@ -141,7 +137,38 @@ def get_session_via_selenium():
             driver.quit()
             return cookies_dict, None
 
-        logger.info(f"JWT extracted from system.login.data.deviceToken (length: {len(jwt)} chars) - ready for /token")
+        logger.info(f"JWT extracted from system.login.data.deviceToken (length: {len(jwt)} chars)")
+
+        # Paso 4: Navega a TOKEN_URL para generar JSESSIONID (agrega cookies cross-domain)
+        logger.info("Navigating to TOKEN_URL to generate cross-domain cookies (e.g., JSESSIONID)...")
+        driver.get(TOKEN_URL)
+        time.sleep(3)  # Espera response/set cookies
+
+        # Extrae cookies adicionales (edge.prod) y mergea
+        additional_cookies = driver.get_cookies()
+        for cookie in additional_cookies:
+            name = cookie['name']
+            if name not in cookies_dict:  # Evita sobrescribir
+                cookies_dict[name] = cookie['value']
+                logger.info(f"Added cross-domain cookie: {name}")
+
+        # Log final
+        logger.info(f"Total cookies: {len(cookies_dict)} - {list(cookies_dict.keys())}")
+        if 'JSESSIONID' not in cookies_dict:
+            logger.warning("No JSESSIONID generated - /token may fail")
+
+        # Log domains para debug
+        domains = {}
+        all_cookies = list(selenium_cookies) + additional_cookies
+        for cookie in all_cookies:
+            domain = cookie.get('domain', 'unknown')
+            if domain not in domains:
+                domains[domain] = []
+            if cookie['name'] not in domains[domain]:
+                domains[domain].append(cookie['name'])
+        for dom, cks in domains.items():
+            logger.info(f"  Domain {dom}: {cks}")
+
         driver.quit()
         return cookies_dict, jwt
 
