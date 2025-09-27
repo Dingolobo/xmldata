@@ -8,6 +8,7 @@ import logging
 import time
 import json
 import re
+import base64  # Para decode JWT
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -28,32 +29,35 @@ OUTPUT_FILE = "epgmvs.xml"
 SITE_URL = "https://www.mvshub.com.mx/#spa/epg"  # Página para generar cookies/JWT
 TOKEN_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/login/cache/token"
 
-# Headers para EPG (simplificados)
+# Headers para EPG (mejorados con custom auth del JWT)
 EPG_HEADERS = {
-    'accept': 'application/xml, text/xml, */*',
+    'accept': 'application/xml, text/xml, */*;q=0.01',  # Explícito XML
     'accept-language': 'es-419,es;q=0.9',
+    'origin': 'https://www.mvshub.com.mx',  # Agregado para CORS
+    'x-requested-with': 'XMLHttpRequest',  # Simula AJAX SPA
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
     'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
     'sec-fetch-dest': 'empty',
     'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'none',
+    'sec-fetch-site': 'cross-site',
     'cache-control': 'no-cache',
-    'pragma': 'no-cache'
+    'pragma': 'no-cache',
+    # Custom auth se agregan dinámicamente: x-customer-id, mn-deviceid, etc.
 }
 
-# Headers para /token (mejorados con tus DevTools: accept-encoding, priority, etc.)
+# Headers para /token (sin cambios, funciona)
 TOKEN_HEADERS = {
     'accept': 'application/json, text/plain, */*',
-    'accept-encoding': 'gzip, deflate, br, zstd',  # Agregado de DevTools
+    'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'es-419,es;q=0.9',
-    'authorization': '',  # Se setea dinámicamente con Bearer JWT
+    'authorization': '',  # Bearer JWT
     'cache-control': 'no-cache',
     'content-type': 'application/json',
     'origin': 'https://www.mvshub.com.mx',
     'pragma': 'no-cache',
-    'priority': 'u=1, i',  # Agregado de DevTools
+    'priority': 'u=1, i',
     'referer': 'https://www.mvshub.com.mx/',
     'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
     'sec-ch-ua-mobile': '?0',
@@ -64,24 +68,46 @@ TOKEN_HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
 }
 
-# Fallback (tus valores nuevos - actualiza si cambian)
+# Fallback (actualiza con tus valores frescos si expiran)
 FALLBACK_UUID = "5a150db3-3546-4cb4-a8b4-5e70c7c9e6b1"
-FALLBACK_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsImRldmljZUlkIjoiMTQwMzIiLCJleHAiOjE3NzczODE3NDh9.hTG3ynX388EdbO9XSiKsrVIZHk4UWQockKNeKA7YUMo"  # Tu nuevo deviceToken
+FALLBACK_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsImRldmljZUlkIjoiMTQwMzIiLCJleHAiOjE3NzczODE3NDh9.hTG3ynX388EdbO9XSiKsrVIZHk4UWQockKNeKA7YUMo"
 FALLBACK_COOKIES = {
     'JSESSIONID': 'EuWLhTwlkxrKdMckxulCuKMy0Bvc3p2pGtRgyEhXqCNd3ODR1wHJ!-880225720',
     'AWSALB': '9xOmVVwtdqH7NYML6QRvE4iXOJcxx52rJHdwXSrDalUQnT6iPPOUS0dxQRmXmjNmeFhm0LOwih+IZv42uiExU3zCNpiPe6h4SIR/O8keaokZ0wL8iIzYj4K3sB56',
     'AWSALBCORS': '9xOmVVwtdqH7NYML6QRvE4iXOJcxx52rJHdwXSrDalUQnT6iPPOUS0dxQRmXmjNmeFhm0LOwih+IZv42uiExU3zCNpiPe6h4SIR/O8keaokZ0wL8iIzYj4K3sB56'
-    # Agrega más si ves (e.g., bitmovin_analytics_uuid no es esencial)
 }
 
+def decode_jwt(jwt):
+    """Decodifica JWT payload (base64) para extraer customerId, deviceId, macAddress."""
+    try:
+        # Split: header.payload.signature
+        payload = jwt.split('.')[1]
+        # Pad base64
+        payload += '=' * (4 - len(payload) % 4)
+        decoded = base64.urlsafe_b64decode(payload)
+        data = json.loads(decoded)
+        customer_id = data.get('customerId', '')
+        device_id = data.get('deviceId', '')
+        mac_address = data.get('macAddress', '')
+        logger.info(f"Decoded JWT: customerId={customer_id}, deviceId={device_id}, macAddress={mac_address[:20]}...")
+        return {
+            'x-customer-id': customer_id,
+            'mn-customerid': customer_id,
+            'mn-deviceid': device_id,
+            'mn-mac-address': mac_address  # Si se necesita
+        }
+    except Exception as e:
+        logger.error(f"JWT decode error: {e} - using empty")
+        return {}
+
 def get_session_via_selenium():
-    """Selenium: Visita SPA → scroll para load → extrae localStorage/cookies de mvshub → navega API para JSESSIONID."""
+    """Selenium: Visita SPA → scroll → extrae localStorage/cookies de mvshub + JWT."""
     if not os.environ.get('USE_SELENIUM', 'true').lower() == 'true':
         logger.info("Selenium disabled - using fallback")
         return FALLBACK_COOKIES, FALLBACK_JWT
 
     debug_mode = os.environ.get('DEBUG_SELENIUM', 'false').lower() == 'true'
-    logger.info(f"Using Selenium to visit {SITE_URL} for session (cookies + JWT from system.login)... Debug: {debug_mode}")
+    logger.info(f"Using Selenium to visit {SITE_URL}... Debug: {debug_mode}")
     options = Options()
     if not debug_mode:
         options.add_argument("--headless")
@@ -94,34 +120,32 @@ def get_session_via_selenium():
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
-        # Paso 1: Visita mvshub SPA
         driver.get(SITE_URL)
         wait = WebDriverWait(driver, 20)
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        time.sleep(5)  # Inicial para SPA base
+        time.sleep(5)
 
-        # Paso 2: Scroll para trigger lazy-load/auth (tu sugerencia)
+        # Scroll para trigger load/auth
         logger.info("Scrolling to trigger SPA load/auth...")
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")  # Scroll down
-        time.sleep(3)  # Espera load
-        driver.execute_script("window.scrollTo(0, 0);")  # Scroll up
-        time.sleep(7)  # Total 15s para auth implícita/localStorage
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
+        driver.execute_script("window.scrollTo(0, 0);")
+        time.sleep(7)
 
-        # Paso 3: Extrae de mvshub PRIMERO (localStorage + cookies iniciales)
-        # Debug: Lista keys de localStorage
+        # Debug localStorage
         all_local_keys = driver.execute_script("return Object.keys(localStorage);")
-        logger.info(f"localStorage keys available: {all_local_keys}")
+        logger.info(f"localStorage keys: {all_local_keys}")
 
         login_data_str = driver.execute_script("return localStorage.getItem('system.login');")
         if not login_data_str:
-            logger.warning("system.login not found in localStorage - check key or use fallback")
+            logger.warning("system.login not found - fallback")
             driver.quit()
             return {}, None
 
-        # Extrae cookies iniciales (mvshub)
+        # Cookies iniciales (mvshub)
         selenium_cookies = driver.get_cookies()
         cookies_dict = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
-        logger.info(f"Initial cookies from mvshub: {len(cookies_dict)} - {list(cookies_dict.keys())}")
+        logger.info(f"Cookies from mvshub: {len(cookies_dict)} - {list(cookies_dict.keys())}")
 
         # Extrae JWT
         try:
@@ -129,46 +153,15 @@ def get_session_via_selenium():
             data_obj = login_data.get('data', {})
             jwt = data_obj.get('deviceToken')
             if not jwt:
-                logger.warning("deviceToken not found in system.login.data - check structure")
+                logger.warning("deviceToken not found")
                 driver.quit()
                 return cookies_dict, None
         except json.JSONDecodeError as e:
-            logger.error(f"JSON parse error in system.login: {e}")
+            logger.error(f"JSON error: {e}")
             driver.quit()
             return cookies_dict, None
 
-        logger.info(f"JWT extracted from system.login.data.deviceToken (length: {len(jwt)} chars)")
-
-        # Paso 4: Navega a TOKEN_URL para generar JSESSIONID (agrega cookies cross-domain)
-        logger.info("Navigating to TOKEN_URL to generate cross-domain cookies (e.g., JSESSIONID)...")
-        driver.get(TOKEN_URL)
-        time.sleep(3)  # Espera response/set cookies
-
-        # Extrae cookies adicionales (edge.prod) y mergea
-        additional_cookies = driver.get_cookies()
-        for cookie in additional_cookies:
-            name = cookie['name']
-            if name not in cookies_dict:  # Evita sobrescribir
-                cookies_dict[name] = cookie['value']
-                logger.info(f"Added cross-domain cookie: {name}")
-
-        # Log final
-        logger.info(f"Total cookies: {len(cookies_dict)} - {list(cookies_dict.keys())}")
-        if 'JSESSIONID' not in cookies_dict:
-            logger.warning("No JSESSIONID generated - /token may fail")
-
-        # Log domains para debug
-        domains = {}
-        all_cookies = list(selenium_cookies) + additional_cookies
-        for cookie in all_cookies:
-            domain = cookie.get('domain', 'unknown')
-            if domain not in domains:
-                domains[domain] = []
-            if cookie['name'] not in domains[domain]:
-                domains[domain].append(cookie['name'])
-        for dom, cks in domains.items():
-            logger.info(f"  Domain {dom}: {cks}")
-
+        logger.info(f"JWT extracted (length: {len(jwt)} chars)")
         driver.quit()
         return cookies_dict, jwt
 
@@ -178,54 +171,66 @@ def get_session_via_selenium():
         return {}, None
 
 def fetch_uuid(jwt, cookies_dict):
-    """Usa JWT + cookies para fetch /token y obtener UUID."""
+    """Fetch UUID con JWT + cookies."""
     if not jwt:
-        logger.warning("No JWT - using fallback UUID")
+        logger.warning("No JWT - fallback UUID")
         return FALLBACK_UUID
 
     session = requests.Session()
-    # Setea cookies (todas extraídas, cross-domain con dominios específicos)
     for name, value in cookies_dict.items():
-        # Ajusta domain basado en nombre (JSESSIONID para edge, AWS para ambos)
-        if 'JSESSIONID' in name:
-            session.cookies.set(name, value, domain='edge.prod.ovp.ses.com')
-        else:
-            session.cookies.set(name, value, domain='.prod.ovp.ses.com')
+        session.cookies.set(name, value, domain='.prod.ovp.ses.com')
 
-    # Headers con Bearer
     headers = TOKEN_HEADERS.copy()
     headers['authorization'] = f"Bearer {jwt}"
 
-    logger.info("Fetching UUID from /token...")
+    logger.info("Fetching UUID...")
     try:
         response = session.get(TOKEN_URL, headers=headers, timeout=15, verify=False)
         logger.info(f"Token status: {response.status_code}")
         if response.status_code != 200:
             logger.error(f"Token error: {response.status_code} - {response.text[:200]}")
-            logger.error(f"Response headers: {dict(response.headers)}")  # Debug extra
+            # Update cookies from response
+            for cookie in response.cookies:
+                session.cookies.set(cookie.name, cookie.value, domain='edge.prod.ovp.ses.com')
             return FALLBACK_UUID
 
         data = response.json()
         uuid_new = data['token']['uuid']
         logger.info(f"UUID fetched: {uuid_new} (expires: {data['token']['expiration']})")
+        # Update cookies
+        for cookie in response.cookies:
+            session.cookies.set(cookie.name, cookie.value, domain='edge.prod.ovp.ses.com')
         return uuid_new
 
     except Exception as e:
-        logger.error(f"Token fetch error: {e}")
+        logger.error(f"Token error: {e}")
         return FALLBACK_UUID
 
-def fetch_channel_contents(channel_id, uuid, date_from, date_to, session):
-    """Fetch EPG con UUID fresco."""
+def fetch_channel_contents(channel_id, uuid, date_from, date_to, session, jwt_auth):
+    """Fetch EPG con UUID + headers custom del JWT."""
     url_base = f"https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list/{uuid}/{channel_id}/{LINEUP_ID}?page=0&size=100&dateFrom={date_from}&dateTo={date_to}"
     logger.info(f"Fetching channel {channel_id}: {url_base}")
 
+    # Headers dinámicos del JWT
+    headers = EPG_HEADERS.copy()
+    for key, value in jwt_auth.items():
+        if value:  # Solo si no vacío
+            headers[key] = value
+    # Agrega regionid (default MX para lineup 220)
+    headers['mn-regionid'] = os.environ.get('MN_REGIONID', 'MX')
+    logger.info(f"EPG Headers include: x-customer-id={headers.get('x-customer-id')}, mn-deviceid={headers.get('mn-deviceid')}, mn-regionid={headers['mn-regionid']}")
+
     try:
-        response = session.get(url_base, headers=EPG_HEADERS, timeout=15, verify=False)
+        response = session.get(url_base, headers=headers, timeout=15, verify=False)
         logger.info(f"Status for {channel_id}: {response.status_code}")
+
+        # Update cookies from response (e.g., JSESSIONID, AWSALB)
+        for cookie in response.cookies:
+            session.cookies.set(cookie.name, cookie.value, domain='edge.prod.ovp.ses.com', path='/xtv-ws-client')
 
         if response.status_code != 200:
             logger.error(f"EPG error for {channel_id}: {response.status_code} - {response.text[:200]}")
-            logger.error(f"EPG response headers: {dict(response.headers)}")  # Debug extra
+            logger.error(f"EPG headers sent: {headers}")  # Debug
             return []
 
         raw_file = f"raw_response_{channel_id}.xml"
@@ -243,23 +248,22 @@ def fetch_channel_contents(channel_id, uuid, date_from, date_to, session):
         return []
 
 def build_xmltv(channels_data, uuid):
-    """Build XMLTV mergeado (con indentación completa)."""
+    """Build XMLTV mergeado (con indentación)."""
     tv = ET.Element("tv", attrib={
         "generator-info-name": f"MVS Hub Dynamic 24h (UUID: {uuid[:8]}...)",
         "generator-info-url": "https://www.mvshub.com.mx/"
     })
 
     ns = "{http://ws.minervanetworks.com/}"
-    channels = {}  # Cache para evitar duplicados
+    channels = {}  # Cache
 
     for channel_id, contents in channels_data:
         if not contents:
             continue
 
-        # Channel info (de first content)
         first_content = contents[0]
         tv_channel = first_content.find(f".//{ns}TV_CHANNEL")
-        call_sign = str(channel_id)  # Default
+        call_sign = str(channel_id)
         if tv_channel is not None:
             call_sign_elem = tv_channel.find(f"{ns}callSign")
             call_sign = call_sign_elem.text if call_sign_elem is not None else str(channel_id)
@@ -270,11 +274,7 @@ def build_xmltv(channels_data, uuid):
             if image is not None:
                 url_elem = image.find(f"{ns}url")
                 logo_src = url_elem.text if url_elem is not None else ""
-        else:
-            number = ""
-            logo_src = ""
 
-        # Agrega channel si no existe
         if channel_id not in channels:
             channel = ET.SubElement(tv, "channel", id=str(channel_id))
             ET.SubElement(channel, "display-name").text = call_sign
@@ -308,7 +308,7 @@ def build_xmltv(channels_data, uuid):
                 if genre.text:
                     ET.SubElement(programme, "category", lang="es").text = genre.text
 
-    # Indentación
+    # Indentación completa
     rough_string = ET.tostring(tv, encoding='unicode', method='xml')
     reparsed = ET.fromstring(rough_string)
     ET.indent(reparsed, space="  ", level=0)
@@ -347,32 +347,33 @@ def main():
         logger.warning("No cookies from Selenium - using fallback")
         cookies_dict = FALLBACK_COOKIES
 
-    # Paso 2: Fetch UUID con JWT
+    # Paso 2: Decode JWT para headers auth
+    jwt_auth = decode_jwt(jwt)
+    if not jwt_auth:
+        logger.warning("No JWT auth fields - EPG may fail")
+
+    # Paso 3: Fetch UUID con JWT
     uuid = fetch_uuid(jwt, cookies_dict)
 
-    # Paso 3: Session para EPG (cookies persistentes)
+    # Paso 4: Session para EPG (cookies persistentes)
     session = requests.Session()
     for name, value in cookies_dict.items():
-        # Ajusta domain basado en nombre (JSESSIONID para edge, AWS para ambos)
-        if 'JSESSIONID' in name:
-            session.cookies.set(name, value, domain='edge.prod.ovp.ses.com')
-        else:
-            session.cookies.set(name, value, domain='.prod.ovp.ses.com')  # Cross-domain para edge.prod
+        session.cookies.set(name, value, domain='.prod.ovp.ses.com')  # Cross-domain base
 
-    # Paso 4: Fetch por canal
+    # Paso 5: Fetch por canal (con jwt_auth)
     channels_data = []
     for channel_id in CHANNEL_IDS:
-        contents = fetch_channel_contents(channel_id, uuid, date_from, date_to, session)
+        contents = fetch_channel_contents(channel_id, uuid, date_from, date_to, session, jwt_auth)
         if contents:
             channels_data.append((channel_id, contents))
         else:
             logger.warning(f"No data for channel {channel_id}")
 
     if not channels_data:
-        logger.error("No data for any channel. Check cookies/JWT/UUID or debug.log.")
+        logger.error("No data for any channel. Check JWT decode/headers or debug.")
         return False
 
-    # Paso 5: Build y guarda XMLTV
+    # Paso 6: Build y guarda XMLTV
     success = build_xmltv(channels_data, uuid)
     if success:
         logger.info("¡Prueba exitosa! Revisa epgmvs.xml y raw_response_*.xml")
@@ -382,3 +383,4 @@ if __name__ == "__main__":
     success = main()
     if not success:
         logger.error("Prueba fallida. Revisa logs y actualiza fallback si es necesario.")
+    sys.exit(0 if success else 1)
