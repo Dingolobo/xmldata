@@ -108,7 +108,7 @@ def get_session_via_selenium():
             driver.quit()
             return cookies_dict, None
 
-        try:
+try:
     login_data = json.loads(login_data_str)
     # Fix: Navega al objeto 'data' para obtener deviceToken
     data_obj = login_data.get('data', {})
@@ -117,7 +117,7 @@ def get_session_via_selenium():
         logger.warning("deviceToken not found in system.login.data - check structure")
         driver.quit()
         return cookies_dict, None
-    except json.JSONDecodeError as e:
+except json.JSONDecodeError as e:
     logger.error(f"JSON parse error in system.login: {e}")
     driver.quit()
     return cookies_dict, None
