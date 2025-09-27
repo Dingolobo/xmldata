@@ -220,26 +220,26 @@ def fetch_uuid(jwt, cookies_dict, api_headers):
             data = response.json()
             uuid_new = data['token']['uuid']
             logger.info(f"UUID fetched (fresh): {uuid_new}")
-            # Log cacheUrl si presente
             if 'cacheUrl' in data['token']:
                 logger.info(f"Cache URL: {data['token']['cacheUrl']}")
+            # Update session cookies from response
             for cookie in response.cookies:
                 session.cookies.set(cookie.name, cookie.value, domain='.prod.ovp.ses.com', path=cookie.path or '/')
             return uuid_new, session
         else:
-            logger.warning(f"Token failed ({response.status_code}) - using fallback UUID")
+            logger.warning(f"Token failed ({response.status_code}) - forcing fallback")
     except Exception as e:
         logger.error(f"Token error: {e}")
 
+    # Fallback si falla
     logger.info(f"Using fallback UUID: {FALLBACK_UUID}")
     session = requests.Session()
-    # Set cookies para fallback
     for name, value in FALLBACK_COOKIES.items():
         session.cookies.set(name, value, domain='.prod.ovp.ses.com')
     return FALLBACK_UUID, session
 
 def initialize_session(jwt, session, api_headers):
-    """Llama /customer y /account."""
+    """Llama /customer y /account para warm up session."""
     if not jwt:
         logger.warning("No JWT - skip init")
         return False
@@ -253,34 +253,41 @@ def initialize_session(jwt, session, api_headers):
         try:
             response = session.get(url, headers=headers, timeout=15, verify=False)
             logger.info(f"{name} status: {response.status_code}")
-            if response.status_code != 200:
-                logger.error(f"{name} error: {response.status_code}")
+            if response.status_code == 200:
+                # Log key info from responses para debug
+                if name == '/customer':
+                    data = response.json()
+                    logger.info(f"Customer: id={data.get('id')}, mainAccountId={data.get('mainAccountId')}, EPG subscribed: {any(s.get('name') == 'EPG' for s in data.get('subscribedServices', []))}")
+                elif name == '/account':
+                    data = response.json()
+                    if data:
+                        acc = data[0] if isinstance(data, list) else data
+                        logger.info(f"Account: accountId={acc.get('accountId')}")
+            else:
+                logger.error(f"{name} error: {response.status_code} - {response.text[:100]}")
                 success = False
+            # Update cookies
+            for cookie in response.cookies:
+                session.cookies.set(cookie.name, cookie.value, domain='.prod.ovp.ses.com', path=cookie.path or '/')
         except Exception as e:
             logger.error(f"{name} error: {e}")
             success = False
     return success
 
 def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_headers, jwt=None):
-    """Fetch EPG con auth headers y optional Authorization."""
-    date_from_ms = int((start_date.replace(minute=0, second=0, microsecond=0)).timestamp() * 1000)
-    date_to_ms = int((end_date.replace(minute=0, second=0, microsecond=0)).timestamp() * 1000)
+    """Fetch EPG con headers completos."""
+    date_from_ms = int(start_date.replace(minute=0, second=0, microsecond=0).timestamp() * 1000)
+    date_to_ms = int(end_date.replace(minute=0, second=0, microsecond=0).timestamp() * 1000)
     epg_url = f"{EPG_BASE_URL}/{uuid_val}/{channel_id}/{LINEUP_ID}"
-    params = {
-        'page': 0,
-        'size': 100,
-        'dateFrom': date_from_ms,
-        'dateTo': date_to_ms
-    }
+    params = {'page': 0, 'size': 100, 'dateFrom': date_from_ms, 'dateTo': date_to_ms}
     full_url = requests.Request('GET', epg_url, params=params).prepare().url
     logger.info(f"Fetching EPG for channel {channel_id}: {full_url}")
 
-    # Headers: Base EPG + auth dinámicos + optional Authorization
     headers = EPG_HEADERS.copy()
     headers.update(auth_headers)
     if jwt:
         headers['authorization'] = f"Bearer {jwt}"
-    logger.info(f"EPG headers sent: {dict(list(headers.items())[-5:])}...")
+    logger.info(f"EPG headers (last 5): {dict(list(headers.items())[-5:])}")
 
     try:
         response = session.get(epg_url, params=params, headers=headers, timeout=30, verify=False)
@@ -296,7 +303,7 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_
                 logger.error(f"EPG error for {channel_id}: {response.status_code} - {response.text[:200]}")
                 return None
 
-        # Parse JSON
+        # Parse response (JSON first, fallback XML)
         events = []
         try:
             data = response.json()
@@ -304,7 +311,7 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_
             events = contents.get('content', []) if isinstance(contents, dict) else contents
             logger.info(f"JSON parsed: {len(events)} events for {channel_id}")
         except json.JSONDecodeError:
-            logger.warning("JSON failed - parsing XML")
+            logger.warning("JSON failed - trying XML parse")
             ns = {'minerva': 'http://ws.minervanetworks.com/'}
             try:
                 root = ET.fromstring(response.text)
@@ -319,7 +326,7 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_
                 logger.error(f"XML parse error: {e}")
                 return None
 
-        # Filtrar eventos futuros
+        # Filter future events
         now_ms = int(datetime.now().timestamp() * 1000)
         future_events = [e for e in events if int(e.get('startDateTime', 0)) > now_ms]
         logger.info(f"Future events for {channel_id}: {len(future_events)}")
@@ -331,12 +338,12 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_
         return None
 
 def build_xml_epg(epg_data_list, output_file):
-    """Build XMLTV desde lista de epg_data (por canal)."""
+    """Genera XMLTV desde datos EPG."""
     root = ET.Element("tv")
     root.set("source-info-url", "https://www.mvshub.com.mx")
     root.set("source-info-name", "MVS Hub EPG")
 
-    # Add channels (hardcoded)
+    # Channels hardcoded
     for chan_id in CHANNEL_IDS:
         chan_info = HARDCODED_CHANNELS.get(chan_id, {'name': f'Canal {chan_id}', 'logo': ''})
         chan_elem = ET.SubElement(root, "channel")
@@ -347,7 +354,7 @@ def build_xml_epg(epg_data_list, output_file):
             icon = ET.SubElement(chan_elem, "icon")
             icon.set("src", chan_info['logo'])
 
-    # Add programmes
+    # Programmes
     now = datetime.now()
     total_programmes = 0
     for epg_data in epg_data_list or []:
@@ -359,16 +366,16 @@ def build_xml_epg(epg_data_list, output_file):
             start_ms = int(event.get('startDateTime', 0))
             end_ms = int(event.get('endDateTime', 0))
             if start_ms == 0 or end_ms == 0:
-                continue  # Skip invalid events
+                continue
 
             prog_start = datetime.fromtimestamp(start_ms / 1000)
             prog_stop = datetime.fromtimestamp(end_ms / 1000)
 
-            # Skip old events (older than now -1 hour)
+            # Skip past events
             if prog_start < now - timedelta(hours=1):
                 continue
 
-            # Format times for XMLTV: YYYYMMDDHHMMSS +0000 (UTC assumed)
+            # XMLTV times (UTC assumed)
             start_str = prog_start.strftime("%Y%m%d%H%M%S") + " +0000"
             stop_str = prog_stop.strftime("%Y%m%d%H%M%S") + " +0000"
 
@@ -378,92 +385,108 @@ def build_xml_epg(epg_data_list, output_file):
             prog_elem.set("channel", f"MVS.{channel_id}")
 
             # Title
+            title_text = event.get('title', 'Unknown')
             title = ET.SubElement(prog_elem, "title")
             title.set("lang", "es")
-            title.text = event.get('title', 'Unknown')
+            title.text = title_text
 
-            # Description
+            # Desc
             desc = event.get('description', '')
             if desc:
                 desc_elem = ET.SubElement(prog_elem, "desc")
                 desc_elem.set("lang", "es")
                 desc_elem.text = desc
 
-            # Category (maneja genre como string o dict con array)
+            # Category from genre
             genre = event.get('genre', '')
             if genre:
+                category_text = ''
                 if isinstance(genre, str):
                     category_text = genre.split(',')[0].strip()
                 elif isinstance(genre, dict) and 'genres' in genre:
                     genres_list = genre['genres'].get('genre', [])
                     category_text = genres_list[0].get('name', '') if genres_list else ''
                 else:
-                    category_text = str(genre).split(',')[0].strip() if genre else ''
+                    category_text = str(genre).split(',')[0].strip()
                 if category_text:
                     cat_elem = ET.SubElement(prog_elem, "category")
                     cat_elem.set("lang", "es")
                     cat_elem.text = category_text
 
-            # Episode num (si seasonNumber >=0)
+            # Episode (season)
             season_num = event.get('seasonNumber')
             if season_num is not None and season_num >= 0:
                 ep_elem = ET.SubElement(prog_elem, "episode-num")
                 ep_elem.set("system", "xmltv_ns")
-                ep_elem.text = f"0/{season_num + 1}/0"  # Basic season/episode
+                ep_elem.text = f"0/{season_num + 1}/0"
 
             total_programmes += 1
 
     # Write XML
     tree = ET.ElementTree(root)
     try:
-        ET.indent(tree, space="  ", level=0)  # Pretty print (Python 3.9+)
+        ET.indent(tree, space="  ", level=0)
     except AttributeError:
-        # Fallback para Python <3.9
-        pass
+        pass  # Python <3.9
     tree.write(output_file, encoding='utf-8', xml_declaration=True)
-    logger.info(f"EPG XML written to {output_file} with {total_programmes} programmes and {len(CHANNEL_IDS)} channels")
+    logger.info(f"XML written to {output_file}: {total_programmes} programmes, {len(CHANNEL_IDS)} channels")
 
 def main():
-    """Main execution flow con retry fresco → fallback."""
-    # Get session via Selenium
+    """Flujo principal: Init session primero, luego UUID fresco, retry con fallback si 406."""
+    # Selenium para cookies y JWT
     cookies_dict, jwt = get_session_via_selenium()
     if jwt:
         auth_headers = decode_jwt(jwt)
+        logger.info(f"Auth headers from JWT: {list(auth_headers.keys())}")
     else:
         auth_headers = {}
+        logger.warning("No JWT - using basic auth headers")
 
-    # Fetch UUID and session (fresco primero)
+    # Crea session inicial
+    session = requests.Session()
+    for name, value in cookies_dict.items():
+        session.cookies.set(name, value, domain='.prod.ovp.ses.com')
+    for name, value in FALLBACK_COOKIES.items():
+        if name not in session.cookies:
+            session.cookies.set(name, value, domain='.prod.ovp.ses.com')
+
+    # PRIMERO: Initialize session (/customer y /account) para warm up y obtener accountId etc.
+    logger.info("Warming up session with /customer and /account...")
+    init_success = initialize_session(jwt, session, API_HEADERS)
+    if not init_success:
+        logger.warning("Init failed - proceeding with basic session")
+
+    # AHORA: Fetch UUID fresco (después de init, debería ser cacheado)
     uuid_fresh, session = fetch_uuid(jwt, cookies_dict, API_HEADERS)
-    logger.info(f"Using UUID: {uuid_fresh[:8]}... (fresh attempt)")
+    logger.info(f"Using UUID after init: {uuid_fresh[:8]}...")
 
-    # Initialize session
-    if not initialize_session(jwt, session, API_HEADERS):
-        logger.warning("Session init failed - proceeding anyway")
-
-    # Fetch EPG for each channel (7 days) con retry si fresco falla
+    # Fetch EPG (7 days)
     epg_list = []
     end_date = datetime.now() + timedelta(days=7)
     start_date = datetime.now()
     for chan_id in CHANNEL_IDS:
-        # Intenta con UUID fresco
         epg_data = fetch_channel_epg(session, uuid_fresh, chan_id, start_date, end_date, auth_headers, jwt)
         if epg_data is None:
             logger.warning(f"EPG failed with fresh UUID for {chan_id} - retrying with fallback")
-            # Re-fetch session para fallback si needed
-            uuid_fallback, session_fallback = fetch_uuid(None, {}, API_HEADERS)  # Usa fallback
-            epg_data = fetch_channel_epg(session_fallback, uuid_fallback, chan_id, start_date, end_date, auth_headers, jwt)
+            # Fallback: Nueva session con UUID hardcodeado y cookies fallback
+            session_fallback = requests.Session()
+            for name, value in FALLBACK_COOKIES.items():
+                session_fallback.cookies.set(name, value, domain='.prod.ovp.ses.com')
+            # Usa auth_headers existentes + optional FALLBACK_JWT
+            epg_data = fetch_channel_epg(session_fallback, FALLBACK_UUID, chan_id, start_date, end_date, auth_headers, FALLBACK_JWT)
             if epg_data:
-                logger.info(f"Success with fallback UUID for {chan_id}")
+                logger.info(f"Success with fallback UUID for {chan_id}: {len(epg_data['events'])} events")
+            else:
+                logger.error(f"Fallback also failed for {chan_id}")
         if epg_data:
             epg_list.append(epg_data)
         else:
-            logger.warning(f"No EPG data for channel {chan_id} - skipping")
+            logger.warning(f"No data for {chan_id} - skipping")
         time.sleep(1)  # Rate limit
 
-    # Build and save XML
+    # Build XML
     build_xml_epg(epg_list, OUTPUT_FILE)
-
-    logger.info("EPG generation completed! Check epgmvs.xml for results.")
+    logger.info("EPG generation completed! Check epgmvs.xml")
 
 if __name__ == "__main__":
     main()
