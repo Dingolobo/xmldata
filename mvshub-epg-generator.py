@@ -27,18 +27,18 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Configuration
-CHANNEL_IDS = [967]  # TEMPORAL: Usa tu ejemplo para test; cambia a [222, 807] después si funciona
+CHANNEL_IDS = [967]  # TEMPORAL: Test con tu ejemplo; cambia a [222, 807] después
 LINEUP_ID = "220"
 OUTPUT_FILE = "epgmvs.xml"
 SITE_URL = "https://www.mvshub.com.mx/#spa/epg"
 TOKEN_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/login/cache/token"
 CUSTOMER_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/customer"
 ACCOUNT_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/account"
-EPG_BASE_URL = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list"  # Endpoint + puerto
+EPG_BASE_URL = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list"
 
-# Headers para EPG (EXACTOS de tu DevTools)
+# Headers para EPG (base exactos de DevTools)
 EPG_HEADERS = {
-    'accept': 'application/json, text/plain, */*',  # Exacto como en DevTools
+    'accept': 'application/json, text/plain, */*',
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'es-419,es;q=0.9',
     'cache-control': 'no-cache',
@@ -46,7 +46,7 @@ EPG_HEADERS = {
     'pragma': 'no-cache',
     'priority': 'u=1, i',
     'referer': 'https://www.mvshub.com.mx/',
-    'x-requested-with': 'XMLHttpRequest',  # Agregado: Común en SPA requests
+    'x-requested-with': 'XMLHttpRequest',
     'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
@@ -54,14 +54,13 @@ EPG_HEADERS = {
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'cross-site',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
-    # NO content-type: Innecesario en GET
 }
 
-# Headers para API (similar, con auth)
+# Headers para API
 API_HEADERS = EPG_HEADERS.copy()
-API_HEADERS['content-type'] = 'application/json'  # Solo para API si needed
+API_HEADERS['content-type'] = 'application/json'
 
-# Fallback
+# Fallback (este UUID funcionaba en tu DevTools)
 FALLBACK_UUID = "5a150db3-3546-4cb4-a8b4-5e70c7c9e6b1"
 FALLBACK_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsImRldmljZUlkIjoiMTQwMzIiLCJleHAiOjE3NzczODE3NDh9.hTG3ynX388EdbO9XSiKsrVIZHk4UWQockKNeKA7YUMo"
 FALLBACK_COOKIES = {
@@ -70,15 +69,15 @@ FALLBACK_COOKIES = {
     'AWSALBCORS': '9xOmVVwtdqH7NYML6QRvE4iXOJcxx52rJHdwXSrDalUQnT6iPPOUS0dxQRmXmjNmeFhm0LOwih+IZv42uiExU3zCNpiPe6h4SIR/O8keaokZ0wL8iIzYj4K3sB56'
 }
 
-# Hardcoded channels info
+# Hardcoded channels
 HARDCODED_CHANNELS = {
-    967: {'name': 'ADN Noticias', 'logo': ''},  # Basado en tu ejemplo
+    967: {'name': 'ADN Noticias', 'logo': ''},
     # 222: {'name': 'Canal 222', 'logo': ''},
     # 807: {'name': 'Canal 807', 'logo': ''},
 }
 
 def decode_jwt(jwt):
-    """Decodifica JWT para logs/info."""
+    """Decodifica JWT y retorna auth headers."""
     if not jwt:
         return {}
     try:
@@ -90,7 +89,15 @@ def decode_jwt(jwt):
         device_id = data.get('deviceId', '')
         mac_address = data.get('macAddress', '')
         logger.info(f"Decoded JWT: customerId={customer_id}, deviceId={device_id}, macAddress={mac_address[:20]}...")
-        return {'customerId': customer_id, 'deviceId': device_id, 'macAddress': mac_address}
+        # Retorna como headers para EPG
+        return {
+            'x-customer-id': customer_id,
+            'mn-customerid': customer_id,
+            'mn-deviceid': device_id,
+            'mn-mac-address': mac_address,
+            'x-device-id': device_id,
+            'mn-regionid': 'MX',  # Asumido para Mexico; ajusta si sabes
+        }
     except Exception as e:
         logger.error(f"JWT decode error: {e}")
         return {}
@@ -166,6 +173,7 @@ def fetch_uuid(jwt, cookies_dict, api_headers):
     session = requests.Session()
     for name, value in cookies_dict.items():
         session.cookies.set(name, value, domain='.prod.ovp.ses.com')
+    # Agregar fallback cookies para EPG (incluyendo JSESSIONID)
     for name, value in FALLBACK_COOKIES.items():
         if name not in session.cookies:
             session.cookies.set(name, value, domain='.prod.ovp.ses.com')
@@ -182,8 +190,9 @@ def fetch_uuid(jwt, cookies_dict, api_headers):
             data = response.json()
             uuid_new = data['token']['uuid']
             logger.info(f"UUID fetched: {uuid_new}")
+            # Update cookies, incluyendo para puerto 9443 si posible
             for cookie in response.cookies:
-                domain = 'edge.prod.ovp.ses.com' if 'JSESSIONID' in cookie.name else '.prod.ovp.ses.com'
+                domain = '.prod.ovp.ses.com'  # General para todos puertos
                 session.cookies.set(cookie.name, cookie.value, domain=domain, path=cookie.path or '/')
             return uuid_new, session
         else:
@@ -216,32 +225,34 @@ def initialize_session(jwt, session, api_headers):
             success = False
     return success
 
-def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date):
-    """Fetch EPG para un canal específico usando endpoint exacto."""
-    # Timestamps en ms Unix (ajustados a hora redonda para match ejemplo)
+def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_headers):
+    """Fetch EPG con auth headers agregados."""
+    # Timestamps en ms (hora redonda)
     date_from_ms = int((start_date.replace(minute=0, second=0, microsecond=0)).timestamp() * 1000)
     date_to_ms = int((end_date.replace(minute=0, second=0, microsecond=0)).timestamp() * 1000)
     epg_url = f"{EPG_BASE_URL}/{uuid_val}/{channel_id}/{LINEUP_ID}"
     params = {
         'page': 0,
-        'size': 100,  # Match exacto de tu ejemplo
+        'size': 100,
         'dateFrom': date_from_ms,
         'dateTo': date_to_ms
     }
-    # Generar full URL para log (como en tu ejemplo)
     full_url = requests.Request('GET', epg_url, params=params).prepare().url
     logger.info(f"Fetching EPG for channel {channel_id}: {full_url}")
 
+    # Headers: Base + auth dinámicos
     headers = EPG_HEADERS.copy()
+    headers.update(auth_headers)  # Agrega x-customer-id, etc.
+    logger.info(f"EPG headers sent: {dict(list(headers.items())[-5:])}...")  # Log parcial de auth headers
 
     try:
         response = session.get(epg_url, params=params, headers=headers, timeout=30, verify=False)
         logger.info(f"EPG status for {channel_id}: {response.status_code}")
-        logger.info(f"Response headers: {dict(response.headers)}")  # Debug
+        logger.info(f"Response headers: {dict(response.headers)}")
 
         if response.status_code != 200:
             if response.status_code == 406:
-                logger.warning("406 - retrying with Accept: */* for XML")
+                logger.warning("406 - retrying with Accept: */*")
                 headers['accept'] = '*/*'
                 response = session.get(epg_url, params=params, headers=headers, timeout=30, verify=False)
                 logger.info(f"Retry status for {channel_id}: {response.status_code}")
@@ -249,7 +260,7 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date):
                 logger.error(f"EPG error for {channel_id}: {response.status_code} - {response.text[:200]}")
                 return None
 
-        # Parse JSON (match tu ejemplo)
+        # Parse JSON
         events = []
         try:
             data = response.json()
@@ -257,7 +268,6 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date):
             events = contents.get('content', []) if isinstance(contents, dict) else contents
             logger.info(f"JSON parsed: {len(events)} events for {channel_id}")
         except json.JSONDecodeError:
-            # Fallback XML con namespace
             logger.warning("JSON failed - parsing XML")
             ns = {'minerva': 'http://ws.minervanetworks.com/'}
             try:
@@ -273,7 +283,7 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date):
                 logger.error(f"XML parse error: {e}")
                 return None
 
-        # Filtrar futuros
+        # Filtrar eventos futuros
         now_ms = int(datetime.now().timestamp() * 1000)
         future_events = [e for e in events if int(e.get('startDateTime', 0)) > now_ms]
         logger.info(f"Future events for {channel_id}: {len(future_events)}")
@@ -383,12 +393,15 @@ def main():
     # Get session via Selenium
     cookies_dict, jwt = get_session_via_selenium()
     if jwt:
-        decode_jwt(jwt)  # Log info
+        auth_headers = decode_jwt(jwt)  # Extrae auth headers para EPG
+    else:
+        auth_headers = {}  # Fallback vacío
 
     # Fetch UUID and session
     uuid_val, session = fetch_uuid(jwt, cookies_dict, API_HEADERS)
-
-    logger.info(f"Using UUID: {uuid_val[:8]}...")
+    # TEMPORAL: Forzar fallback UUID para test (comenta esta línea después si funciona con real)
+    uuid_val = FALLBACK_UUID
+    logger.info(f"Using UUID: {uuid_val[:8]}... (fallback for test)")
 
     # Initialize session (mimic SPA)
     if not initialize_session(jwt, session, API_HEADERS):
@@ -399,7 +412,7 @@ def main():
     end_date = datetime.now() + timedelta(days=7)
     start_date = datetime.now()
     for chan_id in CHANNEL_IDS:
-        epg_data = fetch_channel_epg(session, uuid_val, chan_id, start_date, end_date)
+        epg_data = fetch_channel_epg(session, uuid_val, chan_id, start_date, end_date, auth_headers)
         if epg_data:
             epg_list.append(epg_data)
         else:
