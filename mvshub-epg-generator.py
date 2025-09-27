@@ -27,26 +27,26 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Configuration
-CHANNEL_IDS = [222, 807]  # Ajusta según tus canales; ejemplo usaba 967
+CHANNEL_IDS = [967]  # TEMPORAL: Usa tu ejemplo para test; cambia a [222, 807] después si funciona
 LINEUP_ID = "220"
 OUTPUT_FILE = "epgmvs.xml"
 SITE_URL = "https://www.mvshub.com.mx/#spa/epg"
 TOKEN_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/login/cache/token"
 CUSTOMER_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/customer"
 ACCOUNT_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/account"
-EPG_BASE_URL = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list"  # Nuevo endpoint + puerto
+EPG_BASE_URL = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list"  # Endpoint + puerto
 
-# Headers para EPG (exactos de tu DevTools, sin auth extra)
+# Headers para EPG (EXACTOS de tu DevTools)
 EPG_HEADERS = {
-    'accept': 'application/json, text/plain, */*',
+    'accept': 'application/json, text/plain, */*',  # Exacto como en DevTools
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'es-419,es;q=0.9',
     'cache-control': 'no-cache',
-    'content-type': 'application/json',
     'origin': 'https://www.mvshub.com.mx',
     'pragma': 'no-cache',
     'priority': 'u=1, i',
     'referer': 'https://www.mvshub.com.mx/',
+    'x-requested-with': 'XMLHttpRequest',  # Agregado: Común en SPA requests
     'sec-ch-ua': '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Windows"',
@@ -54,11 +54,12 @@ EPG_HEADERS = {
     'sec-fetch-mode': 'cors',
     'sec-fetch-site': 'cross-site',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
+    # NO content-type: Innecesario en GET
 }
 
-# Headers para API (con auth para /token, etc.)
-API_HEADERS = EPG_HEADERS.copy()  # Base similar
-API_HEADERS['x-requested-with'] = 'XMLHttpRequest'  # Solo para API calls
+# Headers para API (similar, con auth)
+API_HEADERS = EPG_HEADERS.copy()
+API_HEADERS['content-type'] = 'application/json'  # Solo para API si needed
 
 # Fallback
 FALLBACK_UUID = "5a150db3-3546-4cb4-a8b4-5e70c7c9e6b1"
@@ -69,10 +70,11 @@ FALLBACK_COOKIES = {
     'AWSALBCORS': '9xOmVVwtdqH7NYML6QRvE4iXOJcxx52rJHdwXSrDalUQnT6iPPOUS0dxQRmXmjNmeFhm0LOwih+IZv42uiExU3zCNpiPe6h4SIR/O8keaokZ0wL8iIzYj4K3sB56'
 }
 
-# Hardcoded channels info (ajusta nombres/logos si los conoces)
+# Hardcoded channels info
 HARDCODED_CHANNELS = {
-    222: {'name': 'Canal 222', 'logo': ''},
-    807: {'name': 'Canal 807', 'logo': ''},
+    967: {'name': 'ADN Noticias', 'logo': ''},  # Basado en tu ejemplo
+    # 222: {'name': 'Canal 222', 'logo': ''},
+    # 807: {'name': 'Canal 807', 'logo': ''},
 }
 
 def decode_jwt(jwt):
@@ -216,40 +218,62 @@ def initialize_session(jwt, session, api_headers):
 
 def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date):
     """Fetch EPG para un canal específico usando endpoint exacto."""
-    # Timestamps en ms Unix
-    date_from_ms = int(start_date.timestamp() * 1000)
-    date_to_ms = int(end_date.timestamp() * 1000)
+    # Timestamps en ms Unix (ajustados a hora redonda para match ejemplo)
+    date_from_ms = int((start_date.replace(minute=0, second=0, microsecond=0)).timestamp() * 1000)
+    date_to_ms = int((end_date.replace(minute=0, second=0, microsecond=0)).timestamp() * 1000)
     epg_url = f"{EPG_BASE_URL}/{uuid_val}/{channel_id}/{LINEUP_ID}"
     params = {
         'page': 0,
-        'size': 500,  # Aumentado para cubrir 7 días; ajusta si paginación needed
+        'size': 100,  # Match exacto de tu ejemplo
         'dateFrom': date_from_ms,
         'dateTo': date_to_ms
     }
-    logger.info(f"Fetching EPG for channel {channel_id}: {epg_url} with params {params}")
-    try:
-        response = session.get(epg_url, params=params, headers=EPG_HEADERS, timeout=30, verify=False)
-        logger.info(f"EPG status for {channel_id}: {response.status_code}")
-        if response.status_code != 200:
-            logger.error(f"EPG error for {channel_id}: {response.status_code} - {response.text[:200]}")
-            return None
+    # Generar full URL para log (como en tu ejemplo)
+    full_url = requests.Request('GET', epg_url, params=params).prepare().url
+    logger.info(f"Fetching EPG for channel {channel_id}: {full_url}")
 
-        # Intentar parse JSON (DevTools style)
+    headers = EPG_HEADERS.copy()
+
+    try:
+        response = session.get(epg_url, params=params, headers=headers, timeout=30, verify=False)
+        logger.info(f"EPG status for {channel_id}: {response.status_code}")
+        logger.info(f"Response headers: {dict(response.headers)}")  # Debug
+
+        if response.status_code != 200:
+            if response.status_code == 406:
+                logger.warning("406 - retrying with Accept: */* for XML")
+                headers['accept'] = '*/*'
+                response = session.get(epg_url, params=params, headers=headers, timeout=30, verify=False)
+                logger.info(f"Retry status for {channel_id}: {response.status_code}")
+            if response.status_code != 200:
+                logger.error(f"EPG error for {channel_id}: {response.status_code} - {response.text[:200]}")
+                return None
+
+        # Parse JSON (match tu ejemplo)
+        events = []
         try:
             data = response.json()
-            events = data.get('contents', {}).get('content', [])
+            contents = data.get('contents', {})
+            events = contents.get('content', []) if isinstance(contents, dict) else contents
             logger.info(f"JSON parsed: {len(events)} events for {channel_id}")
         except json.JSONDecodeError:
-            # Fallback a XML parse si es XML directo
-            logger.warning("JSON failed - trying XML parse")
-            root = ET.fromstring(response.text)
-            events = []  # Parsea <content> elements; ajusta si needed
-            for content in root.findall('.//{http://ws.minervanetworks.com/}content'):
-                event = {child.tag.split('}')[-1]: child.text for child in content}
-                events.append(event)
-            logger.info(f"XML parsed: {len(events)} events for {channel_id}")
+            # Fallback XML con namespace
+            logger.warning("JSON failed - parsing XML")
+            ns = {'minerva': 'http://ws.minervanetworks.com/'}
+            try:
+                root = ET.fromstring(response.text)
+                for content in root.findall('.//minerva:content', ns):
+                    event = {}
+                    for child in content:
+                        tag = child.tag.split('}')[-1]
+                        event[tag] = child.text if child.text else str(dict(child.attrib))
+                    events.append(event)
+                logger.info(f"XML parsed: {len(events)} events for {channel_id}")
+            except ET.ParseError as e:
+                logger.error(f"XML parse error: {e}")
+                return None
 
-        # Filtrar eventos futuros
+        # Filtrar futuros
         now_ms = int(datetime.now().timestamp() * 1000)
         future_events = [e for e in events if int(e.get('startDateTime', 0)) > now_ms]
         logger.info(f"Future events for {channel_id}: {len(future_events)}")
@@ -285,7 +309,7 @@ def build_xml_epg(epg_data_list, output_file):
         if channel_id not in CHANNEL_IDS:
             continue
 
-        for event in epg_data.get('events', []):
+            for event in epg_data.get('events', []):
             start_ms = int(event.get('startDateTime', 0))
             end_ms = int(event.get('endDateTime', 0))
             if start_ms == 0 or end_ms == 0:
@@ -319,32 +343,28 @@ def build_xml_epg(epg_data_list, output_file):
                 desc_elem.set("lang", "es")
                 desc_elem.text = desc
 
-            # Category (from genre)
+            # Category (maneja genre como string o dict con array)
             genre = event.get('genre', '')
             if genre:
-                # Si es string, usa directo; si array, toma el primero
                 if isinstance(genre, str):
                     category_text = genre
+                elif isinstance(genre, dict) and 'genres' in genre:
+                    # Como en tu ejemplo: {'genres': {'genre': [{'name': 'News'}, ...]}}
+                    genres_list = genre['genres'].get('genre', [])
+                    category_text = genres_list[0].get('name', '') if genres_list else ''
                 else:
-                    category_text = genre.get('genre', [{}])[0].get('name', '') if isinstance(genre, dict) else str(genre)[0] if genre else ''
+                    category_text = str(genre).split(',')[0].strip() if genre else ''
                 if category_text:
                     cat_elem = ET.SubElement(prog_elem, "category")
                     cat_elem.set("lang", "es")
                     cat_elem.text = category_text
 
-            # Episode num (si disponible, e.g., de seasonNumber)
+            # Episode num (si seasonNumber >=0)
             season_num = event.get('seasonNumber')
             if season_num is not None and season_num >= 0:
                 ep_elem = ET.SubElement(prog_elem, "episode-num")
                 ep_elem.set("system", "xmltv_ns")
-                ep_elem.text = f"0/{season_num + 1}/0"  # Basic: season/episode (ajusta si hay episode num)
-
-            # Opcional: Duration (en segundos, pero XMLTV usa stop time)
-            # duration = event.get('duration', 0)
-            # if duration:
-            #     dur_elem = ET.SubElement(prog_elem, "length")
-            #     dur_elem.set("units", "seconds")
-            #     dur_elem.text = str(duration)
+                ep_elem.text = f"0/{season_num + 1}/0"  # Basic season/episode
 
             total_programmes += 1
 
@@ -353,7 +373,7 @@ def build_xml_epg(epg_data_list, output_file):
     try:
         ET.indent(tree, space="  ", level=0)  # Pretty print (Python 3.9+)
     except AttributeError:
-        # Fallback para Python <3.9: no indent
+        # Fallback para Python <3.9
         pass
     tree.write(output_file, encoding='utf-8', xml_declaration=True)
     logger.info(f"EPG XML written to {output_file} with {total_programmes} programmes and {len(CHANNEL_IDS)} channels")
