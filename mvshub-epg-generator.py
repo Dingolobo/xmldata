@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Configuration
-CHANNEL_IDS = [967]  # Cambia a [222, 807] después
+CHANNEL_IDS = [967]  # Cambia a [222, 807] para tus canales
 LINEUP_ID = "220"
 OUTPUT_FILE = "epgmvs.xml"
 SITE_URL = "https://www.mvshub.com.mx/#spa/epg"
@@ -36,14 +36,14 @@ CUSTOMER_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/customer
 ACCOUNT_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/account"
 EPG_BASE_URL = "https://edge.prod.ovp.ses.com:9443/xtv-ws-client/api/epgcache/list"
 
-# Headers para API (EXACTOS de tu DevTools para /token)
+# Headers para API (exactos de DevTools)
 API_HEADERS = {
     'accept': 'application/json, text/plain, */*',
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'es-419,es;q=0.9',
-    'authorization': '',  # Se setea dinámicamente con JWT full
+    'authorization': '',  # Dinámico
     'cache-control': 'no-cache',
-    'content-type': 'application/json',  # Incluso en GET, como en DevTools
+    'content-type': 'application/json',  # Como en DevTools
     'origin': 'https://www.mvshub.com.mx',
     'pragma': 'no-cache',
     'priority': 'u=1, i',
@@ -57,13 +57,19 @@ API_HEADERS = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
 }
 
-# Headers para EPG (sin content-type)
+# Headers para EPG
 EPG_HEADERS = API_HEADERS.copy()
-EPG_HEADERS.pop('content-type', None)  # Remover para GET EPG
+EPG_HEADERS.pop('content-type', None)
 
-# Fallback
+# Fallback (UUID de DevTools)
 FALLBACK_UUID = "5a150db3-3546-4cb4-a8b4-5e70c7c9e6b1"
-FALLBACK_JWT_EXAMPLE = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwiZXhwIjoxNzU5MDY4NzEzLCJhY2NvdW50SWQiOiI3MDM1IiwicmVnaW9uSWQiOiIxOCIsImRldmljZSI6eyJkZXZpY2VJZCI6IjE0MDMyIiwiZGV2aWNlVHlwZSI6ImNsb3VkX2NsaWVudCIsImlwQWRkcmVzcyI6IiIsImRldmljZU5hbWUiOiJTVEIxIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsInNlcmlhbE51bWJlciI6IiIsInN0YXR1cyI6IkEiLCJ1dWlkIjoiQUFBQUFBRDhERDQ0In0sImRldmljZVRhZ3MiOltdfQ.GpNsrjhhot0FDz0CbRuFaJgH5VF_-nWDYJx7_0EOfPw"  # Del ejemplo
+
+# FALLBACK_JWT básico de settings.json (exp 2026)
+FALLBACK_JWT = "eyJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsImRldmljZUlkIjoiMTQwMzIiLCJleHAiOjE3NzczODE3NDh9.hTG3ynX388EdbO9XSiKsrVIZHk4UWQockKNeKA7YUMo"
+
+# FALLBACK_JWT_FULL (con accountId=7035, regionId=18; ajusta exp si needed)
+FALLBACK_JWT_FULL = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjdXN0b21lcklkIjoiNTAwMDAwMzExIiwiZXhwIjoxNzU5MDY4NzEzLCJhY2NvdW50SWQiOiI3MDM1IiwicmVnaW9uSWQiOiIxOCIsImRldmljZSI6eyJkZXZpY2VJZCI6IjE0MDMyIiwiZGV2aWNlVHlwZSI6ImNsb3VkX2NsaWVudCIsImlwQWRkcmVzcyI6IiIsImRldmljZU5hbWUiOiJTVEIxIiwibWFjQWRkcmVzcyI6IkFBQUFBQUQ4REQ0NCIsInNlcmlhbE51bWJlciI6IiIsInN0YXR1cyI6IkEiLCJ1dWlkIjoiQUFBQUFBRDhERDQ0In0sImRldmljZVRhZ3MiOltdfQ.GpNsrjhhot0FDz0CbRuFaJgH5VF_-nWDYJx7_0EOfPw"
+
 FALLBACK_COOKIES = {
     'JSESSIONID': 'EuWLhTwlkxrKdMckxulCuKMy0Bvc3p2pGtRgyEhXqCNd3ODR1wHJ!-880225720',
     'AWSALB': '9xOmVVwtdqH7NYML6QRvE4iXOJcxx52rJHdwXSrDalUQnT6iPPOUS0dxQRmXmjNmeFhm0LOwih+IZv42uiExU3zCNpiPe6h4SIR/O8keaokZ0wL8iIzYj4K3sB56',
@@ -76,8 +82,8 @@ HARDCODED_CHANNELS = {
     807: {'name': 'Canal 807', 'logo': ''},
 }
 
-def decode_jwt(jwt):
-    """Decodifica JWT y retorna auth headers."""
+def decode_jwt(jwt, account_id=None, region_id='18'):
+    """Decodifica JWT y retorna auth headers. Usa region_id=18 por default."""
     if not jwt:
         return {}
     try:
@@ -86,26 +92,32 @@ def decode_jwt(jwt):
         decoded = base64.urlsafe_b64decode(payload)
         data = json.loads(decoded)
         customer_id = data.get('customerId', '')
-        device_id = data.get('deviceId', '')
-        mac_address = data.get('macAddress', '')
-        logger.info(f"Decoded JWT: customerId={customer_id}, deviceId={device_id}, macAddress={mac_address[:20]}...")
-        return {
+        device_id = data.get('deviceId', data.get('device', {}).get('deviceId', ''))
+        mac_address = data.get('macAddress', data.get('device', {}).get('macAddress', ''))
+        # RegionId: Prioriza param, sino JWT, sino '18'
+        region_id = region_id or data.get('regionId', '18')
+        logger.info(f"Decoded JWT: customerId={customer_id}, deviceId={device_id}, macAddress={mac_address[:20]}..., regionId={region_id}")
+        auth = {
             'x-customer-id': customer_id,
             'mn-customerid': customer_id,
             'mn-deviceid': device_id,
             'mn-mac-address': mac_address,
             'x-device-id': device_id,
-            'mn-regionid': data.get('regionId', 'MX'),
+            'mn-regionid': region_id,  # FIX: '18' numérico
         }
+        if account_id:
+            auth['x-account-id'] = account_id  # Opcional
+            logger.info(f"Added accountId={account_id} to headers")
+        return auth
     except Exception as e:
         logger.error(f"JWT decode error: {e}")
         return {}
 
 def get_session_via_selenium():
-    """Selenium: Extrae cookies + JWT full, intercepta /token si posible."""
+    """Selenium: Extrae cookies + JWT, fetch settings.json para deviceToken fresco."""
     if not os.environ.get('USE_SELENIUM', 'true').lower() == 'true':
         logger.info("Selenium disabled - fallback")
-        return FALLBACK_COOKIES, FALLBACK_JWT_EXAMPLE  # Usa JWT del ejemplo
+        return FALLBACK_COOKIES, FALLBACK_JWT
 
     debug_mode = os.environ.get('DEBUG_SELENIUM', 'false').lower() == 'true'
     logger.info(f"Using Selenium... Debug: {debug_mode}")
@@ -126,15 +138,44 @@ def get_session_via_selenium():
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         time.sleep(5)
 
-        logger.info("Triggering EPG load...")
+        # Fetch settings.json para deviceToken fresco
+        timestamp = int(time.time() * 1000)
+        settings_data = driver.execute_script(f"""
+            return fetch('https://www.mvshub.com.mx/settings.json?timestamp={timestamp}')
+                .then(r => r.json()).then(data => data).catch(() => null);
+        """)
+        if settings_data:
+            device_token = settings_data.get('anonymous-browsing', {}).get('deviceToken')
+            if device_token:
+                logger.info(f"DeviceToken from settings.json: {device_token[:20]}... (length: {len(device_token)})")
+                global FALLBACK_JWT
+                FALLBACK_JWT = device_token  # Actualiza
+
+        logger.info("Triggering EPG load and auth refresh...")
         driver.execute_script("window.location.hash = '#spa/epg';")
         time.sleep(3)
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        driver.execute_script("""
+            if (window.dispatchEvent) {
+                window.dispatchEvent(new CustomEvent('login-ready'));
+                window.dispatchEvent(new Event('epg-load'));
+            }
+            window.scrollTo(0, document.body.scrollHeight);
+        """)
         time.sleep(5)
         driver.execute_script("window.scrollTo(0, 0);")
         time.sleep(10)
 
-        # Hook para interceptar fetch de /token (captura UUID del JS)
+        # Wait for EPG
+        try:
+            wait.until(EC.any_of(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "[data-epg], .programme, [class*='epg']")),
+                EC.presence_of_element_located((By.TAG_NAME, "body"))
+            ))
+            logger.info("EPG content loaded")
+        except TimeoutException:
+            logger.warning("No EPG element - proceeding")
+
+        # Intercept /token
         intercepted_uuid = driver.execute_script("""
             let intercepted = null;
             const originalFetch = window.fetch;
@@ -154,17 +195,27 @@ def get_session_via_selenium():
                 }
                 return originalFetch.apply(this, args);
             };
-            // Trigger cualquier fetch pendiente (simula load)
-            window.dispatchEvent(new Event('load'));
+            window.location.reload(false);
             return intercepted;
         """)
         if intercepted_uuid:
-            logger.info(f"Intercepted UUID from browser fetch: {intercepted_uuid}")
+            logger.info(f"Intercepted UUID: {intercepted_uuid}")
             global FALLBACK_UUID
             FALLBACK_UUID = intercepted_uuid
 
         local_storage = driver.execute_script("return localStorage;")
         logger.info(f"Full localStorage: {json.dumps(local_storage, indent=2) if local_storage else 'Empty'}")
+
+        # Device UUID from localStorage
+        device_uuid = None
+        for key, value in (local_storage or {}).items():
+            if 'deviceUuid' in key or 'uuid' in key.lower():
+                try:
+                    data = json.loads(value)
+                    device_uuid = data.get('deviceUuid') or data.get('uuid')
+                    logger.info(f"Device UUID from '{key}': {device_uuid}")
+                except:
+                    pass
 
         login_data_str = driver.execute_script("return localStorage.getItem('system.login');")
         if not login_data_str:
@@ -179,17 +230,20 @@ def get_session_via_selenium():
         try:
             login_data = json.loads(login_data_str)
             data_obj = login_data.get('data', {})
-            # Busca JWT full (deviceToken o token con accountId/regionId)
-            jwt = data_obj.get('deviceToken') or data_obj.get('token') or data_obj.get('authToken')
+            # Prefiere full JWT si disponible, sino básico o fallback full
+            jwt_candidates = [data_obj.get('deviceToken'), FALLBACK_JWT_FULL, FALLBACK_JWT]
+            jwt = next((j for j in jwt_candidates if j and len(j) > 200),  # Full >200 chars
+                       next((j for j in jwt_candidates if j), None))
             if not jwt:
-                logger.warning("JWT not found - using example")
-                jwt = FALLBACK_JWT_EXAMPLE
+                jwt = FALLBACK_JWT_FULL
+                logger.warning("No JWT - using full fallback")
         except json.JSONDecodeError as e:
             logger.error(f"JSON error: {e}")
             driver.quit()
             return cookies_dict, None
 
-        logger.info(f"JWT extracted (length: {len(jwt)} chars, type: {'full' if 'accountId' in jwt else 'basic'})")
+        jwt_type = 'full' if len(jwt) > 200 else 'basic'
+        logger.info(f"JWT extracted (length: {len(jwt)} chars, type: {jwt_type})")
         driver.quit()
         return cookies_dict, jwt
 
@@ -198,8 +252,16 @@ def get_session_via_selenium():
         driver.quit()
         return {}, None
 
-def fetch_uuid(jwt, cookies_dict, api_headers):
-    """Fetch UUID con headers exactos; fallback si falla."""
+def fetch_uuid(jwt, cookies_dict, api_headers, account_id=None, region_id='18'):
+    """Fetch UUID; usa region_id=18. Si falla o UUID malo, fallback."""
+    if not jwt:
+        logger.info("No JWT - forcing fallback")
+        session = requests.Session()
+        for name, value in FALLBACK_COOKIES.items():
+            session.cookies.set(name, value, domain='.prod.ovp.ses.com')
+        logger.info(f"Fallback forced: UUID {FALLBACK_UUID}")
+        return FALLBACK_UUID, session
+
     session = requests.Session()
     for name, value in cookies_dict.items():
         session.cookies.set(name, value, domain='.prod.ovp.ses.com')
@@ -208,11 +270,9 @@ def fetch_uuid(jwt, cookies_dict, api_headers):
             session.cookies.set(name, value, domain='.prod.ovp.ses.com')
 
     headers = api_headers.copy()
-    if jwt:
-        headers['authorization'] = f"Bearer {jwt}"
-        logger.info(f"JWT used for /token: {jwt[:20]}...")
+    headers['authorization'] = f"Bearer {jwt}"
+    logger.info(f"JWT used for /token: {jwt[:20]}... (type: {'full' if len(jwt)>200 else 'basic'})")
 
-    logger.info("Fetching UUID from /token...")
     try:
         response = session.get(TOKEN_URL, headers=headers, timeout=15, verify=False)
         logger.info(f"Token status: {response.status_code}")
@@ -222,60 +282,73 @@ def fetch_uuid(jwt, cookies_dict, api_headers):
             logger.info(f"UUID fetched (fresh): {uuid_new}")
             if 'cacheUrl' in data['token']:
                 logger.info(f"Cache URL: {data['token']['cacheUrl']}")
-            # Update session cookies from response
+            # Update cookies from response
             for cookie in response.cookies:
                 session.cookies.set(cookie.name, cookie.value, domain='.prod.ovp.ses.com', path=cookie.path or '/')
+            # Check si UUID es "bueno" (matcha fallback o parece cacheado)
+            if uuid_new != FALLBACK_UUID:
+                logger.warning(f"UUID fresh ({uuid_new[:8]}...) differs from fallback ({FALLBACK_UUID[:8]}...) - may cause 406")
             return uuid_new, session
         else:
             logger.warning(f"Token failed ({response.status_code}) - forcing fallback")
     except Exception as e:
         logger.error(f"Token error: {e}")
 
-    # Fallback si falla
+    # Fallback si falla o UUID malo
     logger.info(f"Using fallback UUID: {FALLBACK_UUID}")
     session = requests.Session()
     for name, value in FALLBACK_COOKIES.items():
         session.cookies.set(name, value, domain='.prod.ovp.ses.com')
     return FALLBACK_UUID, session
 
+# Línea ~280: Función initialize_session (continuación/completada)
 def initialize_session(jwt, session, api_headers):
-    """Llama /customer y /account para warm up session."""
+    """Llama /customer y /account para warm up y capturar accountId/regionId."""
     if not jwt:
         logger.warning("No JWT - skip init")
-        return False
+        return False, None, None
 
     headers = api_headers.copy()
     headers['authorization'] = f"Bearer {jwt}"
 
     success = True
+    account_id = None
+    region_id = '18'  # Default de DevTools/tus fetches
     for url, name in [(CUSTOMER_URL, '/customer'), (ACCOUNT_URL, '/account')]:
         logger.info(f"Initializing: {name}...")
         try:
             response = session.get(url, headers=headers, timeout=15, verify=False)
             logger.info(f"{name} status: {response.status_code}")
             if response.status_code == 200:
-                # Log key info from responses para debug
                 if name == '/customer':
                     data = response.json()
                     logger.info(f"Customer: id={data.get('id')}, mainAccountId={data.get('mainAccountId')}, EPG subscribed: {any(s.get('name') == 'EPG' for s in data.get('subscribedServices', []))}")
+                    account_id = data.get('mainAccountId')  # 7035 de tus fetches
+                    # Si customer tiene regionId (no en tu ejemplo, pero chequea)
+                    if 'regionId' in data:
+                        region_id = data.get('regionId', '18')
+                        logger.info(f"RegionId from customer: {region_id}")
                 elif name == '/account':
                     data = response.json()
                     if data:
                         acc = data[0] if isinstance(data, list) else data
-                        logger.info(f"Account: accountId={acc.get('accountId')}")
+                        account_id = acc.get('accountId', account_id)
+                        logger.info(f"Account: accountId={account_id}")
+                # Update cookies
+                for cookie in response.cookies:
+                    session.cookies.set(cookie.name, cookie.value, domain='.prod.ovp.ses.com', path=cookie.path or '/')
             else:
                 logger.error(f"{name} error: {response.status_code} - {response.text[:100]}")
                 success = False
-            # Update cookies
-            for cookie in response.cookies:
-                session.cookies.set(cookie.name, cookie.value, domain='.prod.ovp.ses.com', path=cookie.path or '/')
         except Exception as e:
             logger.error(f"{name} error: {e}")
             success = False
-    return success
+    logger.info(f"Init complete: accountId={account_id}, regionId={region_id}")
+    return success, account_id, region_id
 
+# Línea ~320: Función fetch_channel_epg (completada)
 def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_headers, jwt=None):
-    """Fetch EPG con headers completos."""
+    """Fetch EPG con headers completos, regionId=18 y retry."""
     date_from_ms = int(start_date.replace(minute=0, second=0, microsecond=0).timestamp() * 1000)
     date_to_ms = int(end_date.replace(minute=0, second=0, microsecond=0).timestamp() * 1000)
     epg_url = f"{EPG_BASE_URL}/{uuid_val}/{channel_id}/{LINEUP_ID}"
@@ -287,7 +360,7 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_
     headers.update(auth_headers)
     if jwt:
         headers['authorization'] = f"Bearer {jwt}"
-    logger.info(f"EPG headers (last 5): {dict(list(headers.items())[-5:])}")
+    logger.info(f"EPG headers (last 5): {dict(list(headers.items())[-5:])}")  # Incluye mn-regionid=18
 
     try:
         response = session.get(epg_url, params=params, headers=headers, timeout=30, verify=False)
@@ -337,6 +410,7 @@ def fetch_channel_epg(session, uuid_val, channel_id, start_date, end_date, auth_
         logger.error(f"EPG fetch error for {channel_id}: {e}")
         return None
 
+# Línea ~380: Función build_xml_epg (sin cambios)
 def build_xml_epg(epg_data_list, output_file):
     """Genera XMLTV desde datos EPG."""
     root = ET.Element("tv")
@@ -431,8 +505,9 @@ def build_xml_epg(epg_data_list, output_file):
     tree.write(output_file, encoding='utf-8', xml_declaration=True)
     logger.info(f"XML written to {output_file}: {total_programmes} programmes, {len(CHANNEL_IDS)} channels")
 
+# Línea ~460: Función main (completada)
 def main():
-    """Flujo principal: Init session primero, luego UUID fresco, retry con fallback si 406."""
+    """Flujo principal: Selenium → init session (accountId/regionId) → UUID fresco → EPG con retry fallback."""
     # Selenium para cookies y JWT
     cookies_dict, jwt = get_session_via_selenium()
     if jwt:
@@ -450,14 +525,23 @@ def main():
         if name not in session.cookies:
             session.cookies.set(name, value, domain='.prod.ovp.ses.com')
 
-    # PRIMERO: Initialize session (/customer y /account) para warm up y obtener accountId etc.
+    # PRIMERO: Initialize session (/customer y /account) para warm up y obtener accountId/regionId
     logger.info("Warming up session with /customer and /account...")
-    init_success = initialize_session(jwt, session, API_HEADERS)
+    init_success, account_id, region_id = initialize_session(jwt, session, API_HEADERS)
     if not init_success:
         logger.warning("Init failed - proceeding with basic session")
+        account_id = "7035"  # Hardcode de tus fetches
+        region_id = "18"
+    else:
+        logger.info(f"Using regionId={region_id} from init")
 
-    # AHORA: Fetch UUID fresco (después de init, debería ser cacheado)
-    uuid_fresh, session = fetch_uuid(jwt, cookies_dict, API_HEADERS)
+    # Actualiza auth_headers con accountId y regionId de init
+    if account_id:
+        auth_headers = decode_jwt(jwt, account_id=account_id, region_id=region_id)
+        logger.info(f"Updated auth headers with accountId={account_id}, regionId={region_id}")
+
+    # AHORA: Fetch UUID fresco (post-init, con regionId=18)
+    uuid_fresh, session = fetch_uuid(jwt, cookies_dict, API_HEADERS, account_id=account_id, region_id=region_id)
     logger.info(f"Using UUID after init: {uuid_fresh[:8]}...")
 
     # Fetch EPG (7 days)
@@ -468,14 +552,15 @@ def main():
         epg_data = fetch_channel_epg(session, uuid_fresh, chan_id, start_date, end_date, auth_headers, jwt)
         if epg_data is None:
             logger.warning(f"EPG failed with fresh UUID for {chan_id} - retrying with fallback")
-            # Fallback: Nueva session con UUID hardcodeado y cookies fallback
+            # Fallback: Nueva session con UUID hardcodeado, cookies fallback, JWT full y auth actualizado
             session_fallback = requests.Session()
             for name, value in FALLBACK_COOKIES.items():
                 session_fallback.cookies.set(name, value, domain='.prod.ovp.ses.com')
-            # Usa auth_headers existentes + optional FALLBACK_JWT
-            epg_data = fetch_channel_epg(session_fallback, FALLBACK_UUID, chan_id, start_date, end_date, auth_headers, FALLBACK_JWT)
+            # Auth headers con accountId/regionId de init + JWT full
+            fallback_auth = decode_jwt(FALLBACK_JWT_FULL, account_id=account_id, region_id=region_id)
+            epg_data = fetch_channel_epg(session_fallback, FALLBACK_UUID, chan_id, start_date, end_date, fallback_auth, FALLBACK_JWT_FULL)
             if epg_data:
-                logger.info(f"Success with fallback UUID for {chan_id}: {len(epg_data['events'])} events")
+                logger.info(f"Success with fallback UUID + FULL JWT for {chan_id}: {len(epg_data['events'])} events")
             else:
                 logger.error(f"Fallback also failed for {chan_id}")
         if epg_data:
@@ -488,5 +573,6 @@ def main():
     build_xml_epg(epg_list, OUTPUT_FILE)
     logger.info("EPG generation completed! Check epgmvs.xml")
 
+# Línea ~510: Entry point
 if __name__ == "__main__":
     main()
