@@ -24,199 +24,21 @@
   <channel id="72828">
     <display-name lang="en">MLB 8</display-name>
   </channel>
-  <programme start="20250926020000Z" stop="20250926100000Z" channel="55596">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926100000Z" stop="20250926170000Z" channel="55596">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926170000Z" stop="20250926180000Z" channel="55596">
-    <title lang="en">MLB Pregame</title>
-    <category lang="en">Sports Filler</category>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926180000Z" stop="20250926210000Z" channel="55596">
-    <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">St. Louis Cardinals at Chicago Cubs</sub-title>
-    <category lang="en">Sports</category>
-    <desc lang="en">St. Louis Cardinals at Chicago Cubs</desc>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926210000Z" stop="20250926213000Z" channel="55596">
+  <programme start="20250927050000Z" stop="20250927053000Z" channel="55596">
     <title lang="en">MLB Postgame</title>
     <category lang="en">Sports Filler</category>
     <premiere/>
     <subtitles type="teletext"/>
   </programme>
-  <programme start="20250926213000Z" stop="20250927013000Z" channel="55596">
+  <programme start="20250927053000Z" stop="20250927100000Z" channel="55596">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250927013000Z" stop="20250927020000Z" channel="55596">
-    <title lang="en">MLB Pregame</title>
-    <category lang="en">Sports Filler</category>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250927020000Z" stop="20250927050000Z" channel="55596">
-    <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">Kansas City Royals at Athletics</sub-title>
-    <category lang="en">Sports</category>
-    <desc lang="en">Kansas City Royals at Athletics</desc>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926020000Z" stop="20250926100000Z" channel="66112">
+  <programme start="20250927100000Z" stop="20250927170000Z" channel="55596">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926100000Z" stop="20250926173000Z" channel="66112">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926173000Z" stop="20250926180000Z" channel="66112">
-    <title lang="en">MLB Pregame</title>
-    <category lang="en">Sports Filler</category>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926180000Z" stop="20250926210000Z" channel="66112">
-    <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">St. Louis Cardinals at Chicago Cubs</sub-title>
-    <category lang="en">Sports</category>
-    <desc lang="en">St. Louis Cardinals at Chicago Cubs</desc>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926210000Z" stop="20250926213000Z" channel="66112">
-    <title lang="en">MLB Postgame</title>
-    <category lang="en">Sports Filler</category>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926213000Z" stop="20250927013000Z" channel="66112">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250927013000Z" stop="20250927020000Z" channel="66112">
-    <title lang="en">MLB Pregame</title>
-    <category lang="en">Sports Filler</category>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250927020000Z" stop="20250927050000Z" channel="66112">
-    <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">Kansas City Royals at Athletics</sub-title>
-    <category lang="en">Sports</category>
-    <desc lang="en">Kansas City Royals at Athletics</desc>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926023000Z" stop="20250926090000Z" channel="72810">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926090000Z" stop="20250926100000Z" channel="72810">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926100000Z" stop="20250926180000Z" channel="72810">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926180000Z" stop="20250926220000Z" channel="72810">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926220000Z" stop="20250926223000Z" channel="72810">
-    <title lang="en">MLB Pregame</title>
-    <category lang="en">Sports Filler</category>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926223000Z" stop="20250927013000Z" channel="72810">
-    <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">Chicago White Sox at Washington Nationals</sub-title>
-    <category lang="en">Sports</category>
-    <desc lang="en">Chicago White Sox at Washington Nationals</desc>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250927013000Z" stop="20250927020000Z" channel="72810">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250927020000Z" stop="20250927050000Z" channel="72810">
-    <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">Colorado Rockies at San Francisco Giants</sub-title>
-    <category lang="en">Sports</category>
-    <desc lang="en">Colorado Rockies at San Francisco Giants</desc>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926023000Z" stop="20250926090000Z" channel="72824">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926090000Z" stop="20250926100000Z" channel="72824">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926100000Z" stop="20250926180000Z" channel="72824">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926180000Z" stop="20250926220000Z" channel="72824">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926220000Z" stop="20250926223000Z" channel="72824">
-    <title lang="en">MLB Pregame</title>
-    <category lang="en">Sports Filler</category>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926223000Z" stop="20250927013000Z" channel="72824">
-    <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">Minnesota Twins at Philadelphia Phillies</sub-title>
-    <category lang="en">Sports</category>
-    <desc lang="en">Minnesota Twins at Philadelphia Phillies</desc>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250927013000Z" stop="20250927020000Z" channel="72824">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250927020000Z" stop="20250927050000Z" channel="72824">
-    <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">Colorado Rockies at San Francisco Giants</sub-title>
-    <category lang="en">Sports</category>
-    <desc lang="en">Colorado Rockies at San Francisco Giants</desc>
-    <premiere/>
-    <subtitles type="teletext"/>
-  </programme>
-  <programme start="20250926033000Z" stop="20250926093000Z" channel="72825">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926093000Z" stop="20250926100000Z" channel="72825">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926100000Z" stop="20250926180000Z" channel="72825">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926180000Z" stop="20250926230000Z" channel="72825">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926230000Z" stop="20250927020000Z" channel="72825">
+  <programme start="20250927170000Z" stop="20250927200000Z" channel="55596">
     <title lang="en">MLB Baseball</title>
     <sub-title lang="en">Baltimore Orioles at New York Yankees</sub-title>
     <category lang="en">Sports</category>
@@ -224,33 +46,227 @@
     <premiere/>
     <subtitles type="teletext"/>
   </programme>
-  <programme start="20250927020000Z" stop="20250927100000Z" channel="72825">
+  <programme start="20250927200000Z" stop="20250927223000Z" channel="55596">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926030000Z" stop="20250926093000Z" channel="72826">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926093000Z" stop="20250926100000Z" channel="72826">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926100000Z" stop="20250926180000Z" channel="72826">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926180000Z" stop="20250926223000Z" channel="72826">
-    <title lang="en">MLB Extra Innings</title>
-    <category lang="en">Sports Filler</category>
-  </programme>
-  <programme start="20250926223000Z" stop="20250926230000Z" channel="72826">
+  <programme start="20250927223000Z" stop="20250927230000Z" channel="55596">
     <title lang="en">MLB Pregame</title>
     <category lang="en">Sports Filler</category>
     <premiere/>
     <subtitles type="teletext"/>
   </programme>
-  <programme start="20250926230000Z" stop="20250927020000Z" channel="72826">
+  <programme start="20250927230000Z" stop="20250928020000Z" channel="55596">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Pittsburgh Pirates at Atlanta Braves</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Pittsburgh Pirates at Atlanta Braves</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928020000Z" stop="20250928023000Z" channel="55596">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928023000Z" stop="20250928090000Z" channel="55596">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927050000Z" stop="20250927053000Z" channel="66112">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927053000Z" stop="20250927100000Z" channel="66112">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927100000Z" stop="20250927163000Z" channel="66112">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927163000Z" stop="20250927170000Z" channel="66112">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927170000Z" stop="20250927200000Z" channel="66112">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Baltimore Orioles at New York Yankees</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Baltimore Orioles at New York Yankees</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927200000Z" stop="20250927203000Z" channel="66112">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927203000Z" stop="20250928001500Z" channel="66112">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250928001500Z" stop="20250928003000Z" channel="66112">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928003000Z" stop="20250928033000Z" channel="66112">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Arizona Diamondbacks at San Diego Padres</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Arizona Diamondbacks at San Diego Padres</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928033000Z" stop="20250928040000Z" channel="66112">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928040000Z" stop="20250928100000Z" channel="66112">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927050000Z" stop="20250927053000Z" channel="72810">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927053000Z" stop="20250927100000Z" channel="72810">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927100000Z" stop="20250927170000Z" channel="72810">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927170000Z" stop="20250927180000Z" channel="72810">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927180000Z" stop="20250927210000Z" channel="72810">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">St. Louis Cardinals at Chicago Cubs</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">St. Louis Cardinals at Chicago Cubs</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927210000Z" stop="20250927213000Z" channel="72810">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927213000Z" stop="20250928003000Z" channel="72810">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250928003000Z" stop="20250928033000Z" channel="72810">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Arizona Diamondbacks at San Diego Padres</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Arizona Diamondbacks at San Diego Padres</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928033000Z" stop="20250928040000Z" channel="72810">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250928040000Z" stop="20250928100000Z" channel="72810">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927050000Z" stop="20250927053000Z" channel="72824">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927053000Z" stop="20250927100000Z" channel="72824">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927100000Z" stop="20250927173000Z" channel="72824">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927173000Z" stop="20250927180000Z" channel="72824">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927180000Z" stop="20250927210000Z" channel="72824">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">St. Louis Cardinals at Chicago Cubs</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">St. Louis Cardinals at Chicago Cubs</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927210000Z" stop="20250927213000Z" channel="72824">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927213000Z" stop="20250928010000Z" channel="72824">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250928010000Z" stop="20250928013000Z" channel="72824">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928013000Z" stop="20250928043000Z" channel="72824">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Houston Astros at Los Angeles Angels</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Houston Astros at Los Angeles Angels</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928043000Z" stop="20250928050000Z" channel="72824">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927020000Z" stop="20250927100000Z" channel="72825">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927100000Z" stop="20250927180000Z" channel="72825">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927180000Z" stop="20250927183000Z" channel="72825">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927183000Z" stop="20250927190000Z" channel="72825">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927190000Z" stop="20250927220000Z" channel="72825">
     <title lang="en">MLB Baseball</title>
     <sub-title lang="en">Tampa Bay Rays at Toronto Blue Jays</sub-title>
     <category lang="en">Sports</category>
@@ -258,7 +274,31 @@
     <premiere/>
     <subtitles type="teletext"/>
   </programme>
-  <programme start="20250927020000Z" stop="20250927023000Z" channel="72826">
+  <programme start="20250927220000Z" stop="20250927223000Z" channel="72825">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927223000Z" stop="20250928010000Z" channel="72825">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250928010000Z" stop="20250928013000Z" channel="72825">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928013000Z" stop="20250928043000Z" channel="72825">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Houston Astros at Los Angeles Angels</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Houston Astros at Los Angeles Angels</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928043000Z" stop="20250928050000Z" channel="72825">
     <title lang="en">MLB Postgame</title>
     <category lang="en">Sports Filler</category>
     <premiere/>
@@ -268,33 +308,57 @@
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926050000Z" stop="20250926100000Z" channel="72827">
+  <programme start="20250927090000Z" stop="20250927100000Z" channel="72826">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926100000Z" stop="20250926180000Z" channel="72827">
+  <programme start="20250927100000Z" stop="20250927180000Z" channel="72826">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926180000Z" stop="20250926223000Z" channel="72827">
+  <programme start="20250927180000Z" stop="20250927183000Z" channel="72826">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926223000Z" stop="20250926230000Z" channel="72827">
+  <programme start="20250927183000Z" stop="20250927190000Z" channel="72826">
     <title lang="en">MLB Pregame</title>
     <category lang="en">Sports Filler</category>
     <premiere/>
     <subtitles type="teletext"/>
   </programme>
-  <programme start="20250926230000Z" stop="20250927020000Z" channel="72827">
+  <programme start="20250927190000Z" stop="20250927220000Z" channel="72826">
     <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">New York Mets at Miami Marlins</sub-title>
+    <sub-title lang="en">Tampa Bay Rays at Toronto Blue Jays</sub-title>
     <category lang="en">Sports</category>
-    <desc lang="en">New York Mets at Miami Marlins</desc>
+    <desc lang="en">Tampa Bay Rays at Toronto Blue Jays</desc>
     <premiere/>
     <subtitles type="teletext"/>
   </programme>
-  <programme start="20250927020000Z" stop="20250927023000Z" channel="72827">
+  <programme start="20250927220000Z" stop="20250927223000Z" channel="72826">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927223000Z" stop="20250928010000Z" channel="72826">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250928010000Z" stop="20250928013000Z" channel="72826">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928013000Z" stop="20250928043000Z" channel="72826">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Los Angeles Dodgers at Seattle Mariners</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Los Angeles Dodgers at Seattle Mariners</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928043000Z" stop="20250928050000Z" channel="72826">
     <title lang="en">MLB Postgame</title>
     <category lang="en">Sports Filler</category>
     <premiere/>
@@ -304,33 +368,45 @@
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926050000Z" stop="20250926100000Z" channel="72828">
+  <programme start="20250927090000Z" stop="20250927100000Z" channel="72827">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926100000Z" stop="20250926180000Z" channel="72828">
+  <programme start="20250927100000Z" stop="20250927180000Z" channel="72827">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926180000Z" stop="20250926223000Z" channel="72828">
+  <programme start="20250927180000Z" stop="20250927193000Z" channel="72827">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
   </programme>
-  <programme start="20250926223000Z" stop="20250926230000Z" channel="72828">
+  <programme start="20250927193000Z" stop="20250927200000Z" channel="72827">
     <title lang="en">MLB Pregame</title>
     <category lang="en">Sports Filler</category>
     <premiere/>
     <subtitles type="teletext"/>
   </programme>
-  <programme start="20250926230000Z" stop="20250927020000Z" channel="72828">
+  <programme start="20250927200000Z" stop="20250927230000Z" channel="72827">
     <title lang="en">MLB Baseball</title>
-    <sub-title lang="en">Texas Rangers at Cleveland Guardians</sub-title>
+    <sub-title lang="en">Colorado Rockies at San Francisco Giants</sub-title>
     <category lang="en">Sports</category>
-    <desc lang="en">Texas Rangers at Cleveland Guardians</desc>
+    <desc lang="en">Colorado Rockies at San Francisco Giants</desc>
     <premiere/>
     <subtitles type="teletext"/>
   </programme>
-  <programme start="20250927020000Z" stop="20250927023000Z" channel="72828">
+  <programme start="20250927230000Z" stop="20250928013000Z" channel="72827">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250928013000Z" stop="20250928043000Z" channel="72827">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Los Angeles Dodgers at Seattle Mariners</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Los Angeles Dodgers at Seattle Mariners</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928043000Z" stop="20250928053000Z" channel="72827">
     <title lang="en">MLB Postgame</title>
     <category lang="en">Sports Filler</category>
     <premiere/>
@@ -339,5 +415,55 @@
   <programme start="20250927023000Z" stop="20250927090000Z" channel="72828">
     <title lang="en">MLB Extra Innings</title>
     <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927090000Z" stop="20250927100000Z" channel="72828">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927100000Z" stop="20250927180000Z" channel="72828">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927180000Z" stop="20250927193000Z" channel="72828">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250927193000Z" stop="20250927200000Z" channel="72828">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927200000Z" stop="20250927230000Z" channel="72828">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Chicago White Sox at Washington Nationals</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Chicago White Sox at Washington Nationals</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927230000Z" stop="20250927233000Z" channel="72828">
+    <title lang="en">MLB Postgame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250927233000Z" stop="20250928013000Z" channel="72828">
+    <title lang="en">MLB Extra Innings</title>
+    <category lang="en">Sports Filler</category>
+  </programme>
+  <programme start="20250928013000Z" stop="20250928020000Z" channel="72828">
+    <title lang="en">MLB Pregame</title>
+    <category lang="en">Sports Filler</category>
+    <premiere/>
+    <subtitles type="teletext"/>
+  </programme>
+  <programme start="20250928020000Z" stop="20250928050000Z" channel="72828">
+    <title lang="en">MLB Baseball</title>
+    <sub-title lang="en">Kansas City Royals at Athletics</sub-title>
+    <category lang="en">Sports</category>
+    <desc lang="en">Kansas City Royals at Athletics</desc>
+    <premiere/>
+    <subtitles type="teletext"/>
   </programme>
 </tv>
