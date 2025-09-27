@@ -73,7 +73,7 @@ FALLBACK_COOKIES = {
 }
 
 def get_session_via_selenium():
-    """Selenium: Visita página → extrae cookies + JWT de localStorage['system.login'].deviceToken."""
+    """Selenium: Visita página → extrae cookies + JWT de localStorage['system.login'].data.deviceToken."""
     if not os.environ.get('USE_SELENIUM', 'true').lower() == 'true':
         logger.info("Selenium disabled - using fallback")
         return FALLBACK_COOKIES, FALLBACK_JWT
@@ -100,7 +100,7 @@ def get_session_via_selenium():
         cookies_dict = {cookie['name']: cookie['value'] for cookie in selenium_cookies}
         logger.info(f"Extracted {len(cookies_dict)} cookies: {list(cookies_dict.keys())}")
 
-        # Extrae JWT de localStorage['system.login'] → parse JSON → deviceToken
+        # Extrae JWT de localStorage['system.login'] → parse JSON → data.deviceToken
         # Ajusta clave si es exactamente 'sistem.loguin' (cambia 'system.login' aquí)
         login_data_str = driver.execute_script("return localStorage.getItem('system.login');")
         if not login_data_str:
@@ -108,21 +108,21 @@ def get_session_via_selenium():
             driver.quit()
             return cookies_dict, None
 
-try:
-    login_data = json.loads(login_data_str)
-    # Fix: Navega al objeto 'data' para obtener deviceToken
-    data_obj = login_data.get('data', {})
-    jwt = data_obj.get('deviceToken')  # ← Ahora busca en el nivel anidado
-    if not jwt:
-        logger.warning("deviceToken not found in system.login.data - check structure")
-        driver.quit()
-        return cookies_dict, None
-except json.JSONDecodeError as e:
-    logger.error(f"JSON parse error in system.login: {e}")
-    driver.quit()
-    return cookies_dict, None
+        try:
+            login_data = json.loads(login_data_str)
+            # Fix: Navega al objeto 'data' para obtener deviceToken (anidado)
+            data_obj = login_data.get('data', {})
+            jwt = data_obj.get('deviceToken')  # ← Ahora busca en el nivel anidado
+            if not jwt:
+                logger.warning("deviceToken not found in system.login.data - check structure")
+                driver.quit()
+                return cookies_dict, None
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON parse error in system.login: {e}")
+            driver.quit()
+            return cookies_dict, None
 
-        logger.info(f"JWT extracted from system.login.deviceToken (length: {len(jwt)} chars) - ready for /token")
+        logger.info(f"JWT extracted from system.login.data.deviceToken (length: {len(jwt)} chars) - ready for /token")
         driver.quit()
         return cookies_dict, jwt
 
