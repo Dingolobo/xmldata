@@ -309,7 +309,7 @@ def build_xml_epg(epg_data_list, output_file):
         if channel_id not in CHANNEL_IDS:
             continue
 
-            for event in epg_data.get('events', []):
+        for event in epg_data.get('events', []):
             start_ms = int(event.get('startDateTime', 0))
             end_ms = int(event.get('endDateTime', 0))
             if start_ms == 0 or end_ms == 0:
