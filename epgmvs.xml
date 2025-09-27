@@ -1,9 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <tv source-info-url="https://www.mvshub.com.mx" source-info-name="MVS Hub EPG">
-  <channel id="MVS.222">
-    <display-name>Canal 222</display-name>
-  </channel>
-  <channel id="MVS.807">
-    <display-name>Canal 807</display-name>
+  <channel id="MVS.967">
+    <display-name>ADN Noticias</display-name>
   </channel>
 </tv>
