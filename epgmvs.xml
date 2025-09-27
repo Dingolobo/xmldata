@@ -3,4 +3,496 @@
   <channel id="MVS.967">
     <display-name>ADN Noticias</display-name>
   </channel>
+  <programme start="20250927180000 +0000" stop="20250927190000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Max Espejel</title>
+    <desc lang="es">Actualización informativa nacional e internacional. Lo que está siendo noticia.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250927190000 +0000" stop="20250927200000 +0000" channel="MVS.967">
+    <title lang="es">Extra noticias</title>
+    <desc lang="es">Toda la información sobre cultura pop.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250927200000 +0000" stop="20250927210000 +0000" channel="MVS.967">
+    <title lang="es">Es tendencia con Claudia Echeverry</title>
+    <desc lang="es">Lo que es tendencia, lo que se encuentra en el tope de popularidad y lo que está en boca de todas las personas.</desc>
+    <category lang="es">News,Variety</category>
+  </programme>
+  <programme start="20250927210000 +0000" stop="20250927220000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Tania Gómez</title>
+    <desc lang="es">Las mejores notas nacionales e internacionales. Todo lo que está siendo noticia.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250927220000 +0000" stop="20250927230000 +0000" channel="MVS.967">
+    <title lang="es">Es tendencia con Claudia Echeverry</title>
+    <desc lang="es">Lo que es tendencia, lo que se encuentra en el tope de popularidad y lo que está en boca de todas las personas.</desc>
+    <category lang="es">News,Variety</category>
+  </programme>
+  <programme start="20250927230000 +0000" stop="20250927233000 +0000" channel="MVS.967">
+    <title lang="es">Somos grandes</title>
+    <desc lang="es">Un programa que muestra lo mejor de los emprendedores y mexicanos exitosos.</desc>
+    <category lang="es">Interview,Talk</category>
+  </programme>
+  <programme start="20250927233000 +0000" stop="20250928000000 +0000" channel="MVS.967">
+    <title lang="es">El ADN de la historia</title>
+    <desc lang="es">Programa dedicado a explorar el origen de eventos históricos, anécdotas y curiosidades poco conocidas de la historia mexicana.</desc>
+    <category lang="es">History</category>
+  </programme>
+  <programme start="20250928000000 +0000" stop="20250928010000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Tania Gómez</title>
+    <desc lang="es">Las mejores notas nacionales e internacionales. Todo lo que está siendo noticia.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250928010000 +0000" stop="20250928020000 +0000" channel="MVS.967">
+    <title lang="es">Extra noticias</title>
+    <desc lang="es">Toda la información sobre cultura pop.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250928020000 +0000" stop="20250928030000 +0000" channel="MVS.967">
+    <title lang="es">Es noticia con Max Espejel</title>
+    <desc lang="es">Actualización informativa nacional e internacional del día. Todo lo que está siendo noticia.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250928030000 +0000" stop="20250928040000 +0000" channel="MVS.967">
+    <title lang="es">ADN Deportes</title>
+    <desc lang="es">Noticiario deportivo de radio de ADN en vivo.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250928040000 +0000" stop="20250928041500 +0000" channel="MVS.967">
+    <title lang="es">No hay lugar común</title>
+    <desc lang="es">Una conversación íntima con los personajes que hacen día a día el México de hoy.</desc>
+    <category lang="es">Interview</category>
+  </programme>
+  <programme start="20250928041500 +0000" stop="20250928043000 +0000" channel="MVS.967">
+    <title lang="es">Ahora: Futuro México y el mundo</title>
+    <desc lang="es">Programa de opinión y debate.</desc>
+    <category lang="es">Debate</category>
+  </programme>
+  <programme start="20250928043000 +0000" stop="20250928044500 +0000" channel="MVS.967">
+    <title lang="es">La entrevista con Sarmiento</title>
+    <desc lang="es">Un espacio para la conversación con entrevistados de relevancia social, política, artística y cultural nacional e internacional.</desc>
+    <category lang="es">Interview</category>
+  </programme>
+  <programme start="20250928044500 +0000" stop="20250928050000 +0000" channel="MVS.967">
+    <title lang="es">Punto de fuga</title>
+    <desc lang="es">Un espacio de conversación sobre temas universales del humanismo.</desc>
+    <category lang="es">Talk,Debate</category>
+  </programme>
+  <programme start="20250928050000 +0000" stop="20250928051500 +0000" channel="MVS.967">
+    <title lang="es">Personajes geniales</title>
+    <desc lang="es">Una conversación sobre personajes geniales a lo largo de la historia de la humanidad en todo el mundo.</desc>
+    <category lang="es">Educational,Talk,History</category>
+  </programme>
+  <programme start="20250928051500 +0000" stop="20250928053000 +0000" channel="MVS.967">
+    <title lang="es">Su voz, su tiempo</title>
+    <desc lang="es">Entrevistas sobre la importancia de la participación política de las mujeres y sus repercusiones en la sociedad. Espacio creado para destacar y respaldar el liderazgo femenino en México.</desc>
+    <category lang="es">Interview</category>
+  </programme>
+  <programme start="20250928053000 +0000" stop="20250928060000 +0000" channel="MVS.967">
+    <title lang="es">México bravo</title>
+    <desc lang="es">Festividades taurinas, cultura, folclore y la cría de toros. Se descubre a un México para muchos desconocido y que se suma a la magia de sus vastas costumbres, cultura y tradiciones.</desc>
+    <category lang="es">Bullfighting</category>
+  </programme>
+  <programme start="20250928060000 +0000" stop="20250928060200 +0000" channel="MVS.967">
+    <title lang="es">Himno nacional</title>
+    <desc lang="es">Entonación de las notas del himno nacional de México.</desc>
+    <category lang="es">Special,Music,Community</category>
+  </programme>
+  <programme start="20250928060200 +0000" stop="20250928063000 +0000" channel="MVS.967">
+    <title lang="es">Primer círculo</title>
+    <desc lang="es">Programa de entrevista y debate sobre temas que acontecen a México.</desc>
+    <category lang="es">Interview,Public affairs,Politics</category>
+  </programme>
+  <programme start="20250928063000 +0000" stop="20250928064500 +0000" channel="MVS.967">
+    <title lang="es">La billetera</title>
+    <desc lang="es">La economía y las finanzas con inteligencia, humor y conocimiento.</desc>
+    <category lang="es">Bus./financial</category>
+  </programme>
+  <programme start="20250928064500 +0000" stop="20250928070000 +0000" channel="MVS.967">
+    <title lang="es">Índice económico</title>
+    <desc lang="es">Programa de análisis cuyo eje central es explicar los acontecimientos financieros, de negocios y finanzas.</desc>
+    <category lang="es">Bus./financial</category>
+  </programme>
+  <programme start="20250928070000 +0000" stop="20250928071500 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928071500 +0000" stop="20250928074500 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928074500 +0000" stop="20250928081500 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928081500 +0000" stop="20250928084500 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928084500 +0000" stop="20250928091500 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928091500 +0000" stop="20250928094500 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928094500 +0000" stop="20250928100000 +0000" channel="MVS.967">
+    <title lang="es">Barras de ajuste</title>
+    <desc lang="es">Programación por anunciarse.</desc>
+    <category lang="es">Special,Variety,Entertainment</category>
+  </programme>
+  <programme start="20250928100000 +0000" stop="20250928102000 +0000" channel="MVS.967">
+    <title lang="es">Barras de ajuste</title>
+    <desc lang="es">Programación por anunciarse.</desc>
+    <category lang="es">Special,Variety,Entertainment</category>
+  </programme>
+  <programme start="20250928102000 +0000" stop="20250928103000 +0000" channel="MVS.967">
+    <title lang="es">RTC</title>
+    <desc lang="es">Espacio del gobierno de México.</desc>
+    <category lang="es">Public affairs</category>
+  </programme>
+  <programme start="20250928103000 +0000" stop="20250928110000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928110000 +0000" stop="20250928113000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928113000 +0000" stop="20250928120000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928120000 +0000" stop="20250928120200 +0000" channel="MVS.967">
+    <title lang="es">Himno nacional</title>
+    <desc lang="es">Entonación de las notas del himno nacional de México.</desc>
+    <category lang="es">Special,Music,Community</category>
+  </programme>
+  <programme start="20250928120200 +0000" stop="20250928123000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928123000 +0000" stop="20250928130000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928130000 +0000" stop="20250928133000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928133000 +0000" stop="20250928140000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250928140000 +0000" stop="20250928150000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Claudia Echeverry</title>
+    <desc lang="es">Actualización informativa nacional e internacional del día. Todo lo que está siendo noticia.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250928150000 +0000" stop="20250928160000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Tania Gómez</title>
+    <desc lang="es">Las mejores notas nacionales e internacionales. Todo lo que está siendo noticia.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250928160000 +0000" stop="20250928180000 +0000" channel="MVS.967">
+    <title lang="es">Las noticias contigo con Max Espejel y Claudia Echeverry</title>
+    <desc lang="es">La mejor información, entretenimiento y cultura.</desc>
+    <category lang="es">Newsmagazine,Variety,Public affairs</category>
+  </programme>
+  <programme start="20250928180000 +0000" stop="20250928190000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Tania Gómez</title>
+    <desc lang="es">Las mejores notas nacionales e internacionales. Todo lo que está siendo noticia.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250928190000 +0000" stop="20250928200000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Max Espejel</title>
+    <desc lang="es">Actualización informativa nacional e internacional. Lo que está siendo noticia.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250928200000 +0000" stop="20250928210000 +0000" channel="MVS.967">
+    <title lang="es">Es tendencia con Claudia Echeverry</title>
+    <desc lang="es">Lo que es tendencia, lo que se encuentra en el tope de popularidad y lo que está en boca de todas las personas.</desc>
+    <category lang="es">News,Variety</category>
+  </programme>
+  <programme start="20250928210000 +0000" stop="20250928220000 +0000" channel="MVS.967">
+    <title lang="es">El foco</title>
+    <desc lang="es">Un espacio dedicado al periodismo cultural. Se tratan temas relacionados a la cultura popular mexicana o internacional.</desc>
+    <category lang="es">Variety,Talk,News</category>
+  </programme>
+  <programme start="20250928220000 +0000" stop="20250928223000 +0000" channel="MVS.967">
+    <title lang="es">El ADN de la historia</title>
+    <desc lang="es">Programa dedicado a explorar el origen de eventos históricos, anécdotas y curiosidades poco conocidas de la historia mexicana.</desc>
+    <category lang="es">History</category>
+  </programme>
+  <programme start="20250928223000 +0000" stop="20250928230000 +0000" channel="MVS.967">
+    <title lang="es">La otra aventura</title>
+    <desc lang="es">Un programa que muestra el mundo de las letras, expone la vida, obra y experiencias de diferentes autores clásicos y contemporáneos. Además, de recomendaciones y libros destacados.</desc>
+    <category lang="es">Educational</category>
+  </programme>
+  <programme start="20250928230000 +0000" stop="20250929000000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Max Espejel</title>
+    <desc lang="es">Actualización informativa nacional e internacional. Lo que está siendo noticia.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250929000000 +0000" stop="20250929010000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Tania Gómez</title>
+    <desc lang="es">Las mejores notas nacionales e internacionales. Todo lo que está siendo noticia.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250929010000 +0000" stop="20250929020000 +0000" channel="MVS.967">
+    <title lang="es">ADN Deportes</title>
+    <desc lang="es">Noticiario deportivo de radio de ADN en vivo.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929020000 +0000" stop="20250929030000 +0000" channel="MVS.967">
+    <title lang="es">Es noticia con Juan Manuel Jiménez</title>
+    <desc lang="es">La mejor cobertura informativa nacional e internacional de lo acontecido en el día.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929030000 +0000" stop="20250929040000 +0000" channel="MVS.967">
+    <title lang="es">Sala de guerra</title>
+    <desc lang="es">Los candidatos: sus campañas y estrategias. El paso a paso en el acontecer político de las lecciones más importantes en la historia de México, con un análisis y seguimiento a cada una de las campañas electorales.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929040000 +0000" stop="20250929043000 +0000" channel="MVS.967">
+    <title lang="es">Su voz, su tiempo</title>
+    <desc lang="es">Entrevistas sobre la importancia de la participación política de las mujeres y sus repercusiones en la sociedad. Espacio creado para destacar y respaldar el liderazgo femenino en México.</desc>
+    <category lang="es">Interview</category>
+  </programme>
+  <programme start="20250929043000 +0000" stop="20250929050000 +0000" channel="MVS.967">
+    <title lang="es">Marcaje personal</title>
+    <desc lang="es">Los anfitriones abordan temas deportivos de interés y debaten con famosos invitados especiales que son estrellas deportivas.</desc>
+    <category lang="es">Sports talk,Soccer</category>
+  </programme>
+  <programme start="20250929050000 +0000" stop="20250929053000 +0000" channel="MVS.967">
+    <title lang="es">Es noticia con Juan Manuel Jiménez</title>
+    <desc lang="es">La mejor cobertura informativa nacional e internacional de lo acontecido en el día.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929053000 +0000" stop="20250929054500 +0000" channel="MVS.967">
+    <title lang="es">Ciudad 25</title>
+    <desc lang="es">Un espacio para discutir y desmenuzar los temas que suceden diariamente en la Ciudad de México.</desc>
+    <category lang="es">Politics</category>
+  </programme>
+  <programme start="20250929054500 +0000" stop="20250929060000 +0000" channel="MVS.967">
+    <title lang="es">Nombres, nombres y nombres</title>
+    <desc lang="es">El análisis de un tema de reflexión y un asunto de actualidad.</desc>
+    <category lang="es">Entertainment</category>
+  </programme>
+  <programme start="20250929060000 +0000" stop="20250929063000 +0000" channel="MVS.967">
+    <title lang="es">Desde las cámaras</title>
+    <desc lang="es">Se pone bajo la lupa el desempeño de los diputados y senadores a través del análisis y la reflexión a fondo de experimentados analistas. Se informa detalladamente sobre las iniciativas, debates y reformas que podrían afectar al ciudadano.</desc>
+    <category lang="es">Politics,Debate,Public affairs</category>
+  </programme>
+  <programme start="20250929063000 +0000" stop="20250929070000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250929070000 +0000" stop="20250929073000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250929073000 +0000" stop="20250929080000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250929080000 +0000" stop="20250929083000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250929083000 +0000" stop="20250929090000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250929090000 +0000" stop="20250929093000 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250929093000 +0000" stop="20250929095800 +0000" channel="MVS.967">
+    <title lang="es">Inova</title>
+    <desc lang="es">Un espacio en el que se muestra una variedad de productos que el televidente puede adquirir para su hogar.</desc>
+    <category lang="es">Consumer</category>
+  </programme>
+  <programme start="20250929095800 +0000" stop="20250929103000 +0000" channel="MVS.967">
+    <title lang="es">Barras de ajuste</title>
+    <desc lang="es">Programación por anunciarse.</desc>
+    <category lang="es">Special,Variety,Entertainment</category>
+  </programme>
+  <programme start="20250929103000 +0000" stop="20250929110000 +0000" channel="MVS.967">
+    <title lang="es">Programa pagado</title>
+    <desc lang="es">Programa que muestra diversos productos para la venta.</desc>
+    <category lang="es">Shopping,Consumer,Variety</category>
+  </programme>
+  <programme start="20250929110000 +0000" stop="20250929113000 +0000" channel="MVS.967">
+    <title lang="es">Programa pagado</title>
+    <desc lang="es">Programa que muestra diversos productos para la venta.</desc>
+    <category lang="es">Shopping,Consumer,Variety</category>
+  </programme>
+  <programme start="20250929113000 +0000" stop="20250929120000 +0000" channel="MVS.967">
+    <title lang="es">Noticias para despertar con Mara Durón y Valentina Rodríguez</title>
+    <desc lang="es">Las noticias más relevantes a nivel nacional e internacional para empezar el día bien informado.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929120000 +0000" stop="20250929120200 +0000" channel="MVS.967">
+    <title lang="es">Himno nacional</title>
+    <desc lang="es">Entonación de las notas del himno nacional de México.</desc>
+    <category lang="es">Special,Music,Community</category>
+  </programme>
+  <programme start="20250929120200 +0000" stop="20250929123000 +0000" channel="MVS.967">
+    <title lang="es">Noticias para despertar con Valentina Rodríguez</title>
+    <desc lang="es">La información que se necesita a primera hora de la mañana.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929123000 +0000" stop="20250929130000 +0000" channel="MVS.967">
+    <title lang="es">Noticias en tiempo real con Valentina Rodríguez</title>
+    <desc lang="es">Un espacio de crónica urbana en tiempo real en donde reporteros recorren la ciudad en busca de las mejores historias.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250929130000 +0000" stop="20250929140000 +0000" channel="MVS.967">
+    <title lang="es">Así amanece con Leonardo Curzio</title>
+    <desc lang="es">Programa periodístico en el que se informan las noticias de actualidad necesarias para comenzar la jornada.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929140000 +0000" stop="20250929150000 +0000" channel="MVS.967">
+    <title lang="es">Noticias a ras de tierra</title>
+    <desc lang="es">Un espacio para conocer las noticias más importantes sobre política, economía, justicia, cultura y entretenimiento.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929150000 +0000" stop="20250929160000 +0000" channel="MVS.967">
+    <title lang="es">Ya nadie está dormido</title>
+    <desc lang="es">Informativo matutino que combina medios tradicionales y digitales para ofrecer noticias, análisis y una conexión directa con la audiencia, brindando información de manera ágil y cercana.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929160000 +0000" stop="20250929163000 +0000" channel="MVS.967">
+    <title lang="es">Tren del meme con Valentina Rodríguez y Hernán Hochstrasser</title>
+    <desc lang="es">Un programa que interactúa con distintas plataformas consignando y analizando las cinco tendencias informativas del día, a partir del género digital de mayor distribución y conversación: el meme.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929163000 +0000" stop="20250929180000 +0000" channel="MVS.967">
+    <title lang="es">Las noticias contigo con Juan Pablo de Leo y Vaitiare Mateos</title>
+    <desc lang="es">Información, entretenimiento y cultura, solo con Juan Pablo de Leo, Vaitiare Mateos y todo su equipo.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250929180000 +0000" stop="20250929190000 +0000" channel="MVS.967">
+    <title lang="es">Noticias en tiempo real con Sarahí Uribe</title>
+    <desc lang="es">Toda la información del país de la mano de Sarahi Uribe.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250929190000 +0000" stop="20250929200000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Romina Ramos y Claudia Echeverry</title>
+    <desc lang="es">Actualización informativa nacional e internacional sobre lo que está siendo noticia en el día.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250929200000 +0000" stop="20250929203000 +0000" channel="MVS.967">
+    <title lang="es">A quien corresponda</title>
+    <desc lang="es">Un equipo comprometido ayuda a resolver los problemas sociales más relevantes de México.</desc>
+    <category lang="es">Talk</category>
+  </programme>
+  <programme start="20250929203000 +0000" stop="20250929210000 +0000" channel="MVS.967">
+    <title lang="es">Es negocio con Carlos Mota</title>
+    <desc lang="es">Un programa que brinda la información financiera más destacada.</desc>
+    <category lang="es">Bus./financial</category>
+  </programme>
+  <programme start="20250929210000 +0000" stop="20250929220000 +0000" channel="MVS.967">
+    <title lang="es">Es tendencia con José Luis Mora y Alejandra Molina</title>
+    <desc lang="es">Las noticias que son o serán tendencia en la agenda informativa. Una presentación de los hechos y personajes más importantes del ámbito nacional e internacional.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250929220000 +0000" stop="20250929230000 +0000" channel="MVS.967">
+    <title lang="es">ADN noticias con Alejandro Brofft</title>
+    <desc lang="es">Actualización informativa nacional e internacional del día.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250929230000 +0000" stop="20250930000000 +0000" channel="MVS.967">
+    <title lang="es">Cotorreando la noticia con Juan Lecanda y Leo Arriaga</title>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250930000000 +0000" stop="20250930010000 +0000" channel="MVS.967">
+    <title lang="es">Noticias en tiempo real con Juan Manuel Jiménez</title>
+    <desc lang="es">Con una descripción in situ de la noticia, se lleva la información de la megalópolis del país a todo México.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250930010000 +0000" stop="20250930020000 +0000" channel="MVS.967">
+    <title lang="es">Ciudad desnuda con Yunue Cuevas y Mara Durón</title>
+    <category lang="es">News,Variety</category>
+  </programme>
+  <programme start="20250930020000 +0000" stop="20250930030000 +0000" channel="MVS.967">
+    <title lang="es">Noticias en red con Lucy Bravo</title>
+    <desc lang="es">Información que abarca todas las plataformas digitales.</desc>
+    <category lang="es">News,Public affairs</category>
+  </programme>
+  <programme start="20250930030000 +0000" stop="20250930040000 +0000" channel="MVS.967">
+    <title lang="es">Es noticia con Hannia Novell</title>
+    <desc lang="es">Lo más destacado de México y el mundo visto a través de la experiencia y análisis de una gran periodista. Entrevistas, reportajes e investigación contribuyen a la seriedad y objetividad del noticiero.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250930040000 +0000" stop="20250930043000 +0000" channel="MVS.967">
+    <title lang="es">Noticias República MX</title>
+    <desc lang="es">Programa que gira en torno a noticias de actualidad de México.</desc>
+    <category lang="es">News</category>
+  </programme>
+  <programme start="20250930043000 +0000" stop="20250930050000 +0000" channel="MVS.967">
+    <title lang="es">Mesa República MX</title>
+    <desc lang="es">Espacio de entrevistas y análisis sobre temas actuales que afectan a la sociedad mexicana.</desc>
+    <category lang="es">News,Interview</category>
+  </programme>
+  <programme start="20250930050000 +0000" stop="20250930053000 +0000" channel="MVS.967">
+    <title lang="es">Todo personal</title>
+    <desc lang="es">Un espacio que abarca la política, la seguridad y el narcotrático en México.</desc>
+    <category lang="es">Politics</category>
+  </programme>
+  <programme start="20250930053000 +0000" stop="20250930060000 +0000" channel="MVS.967">
+    <title lang="es">Cotorreando la noticia: Recalentado</title>
+    <category lang="es">Newsmagazine,Comedy,Public affairs</category>
+  </programme>
+  <programme start="20250930060000 +0000" stop="20250930060200 +0000" channel="MVS.967">
+    <title lang="es">Himno nacional</title>
+    <desc lang="es">Entonación de las notas del himno nacional de México.</desc>
+    <category lang="es">Special,Music,Community</category>
+  </programme>
+  <programme start="20250930060200 +0000" stop="20250930063000 +0000" channel="MVS.967">
+    <title lang="es">Primer círculo</title>
+    <desc lang="es">Programa de entrevista y debate sobre temas que acontecen a México.</desc>
+    <category lang="es">Interview,Public affairs,Politics</category>
+  </programme>
+  <programme start="20250930063000 +0000" stop="20250930070000 +0000" channel="MVS.967">
+    <title lang="es">Programa pagado</title>
+    <desc lang="es">Programa que muestra diversos productos para la venta.</desc>
+    <category lang="es">Shopping,Consumer,Variety</category>
+  </programme>
+  <programme start="20250930070000 +0000" stop="20250930073000 +0000" channel="MVS.967">
+    <title lang="es">Programa pagado</title>
+    <desc lang="es">Programa que muestra diversos productos para la venta.</desc>
+    <category lang="es">Shopping,Consumer,Variety</category>
+  </programme>
+  <programme start="20250930073000 +0000" stop="20250930080000 +0000" channel="MVS.967">
+    <title lang="es">Programa pagado</title>
+    <desc lang="es">Programa que muestra diversos productos para la venta.</desc>
+    <category lang="es">Shopping,Consumer,Variety</category>
+  </programme>
+  <programme start="20250930080000 +0000" stop="20250930083000 +0000" channel="MVS.967">
+    <title lang="es">Programa pagado</title>
+    <desc lang="es">Programa que muestra diversos productos para la venta.</desc>
+    <category lang="es">Shopping,Consumer,Variety</category>
+  </programme>
 </tv>
