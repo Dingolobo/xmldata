@@ -68,8 +68,8 @@ HEADERS_TOKEN = {
 # Cookies fallback
 FALLBACK_COOKIES = {
     'JSESSIONID': os.environ.get('JSESSIONID', 'GA2LX2yuMOLxyvU2EHDSIH3RGHK4MKkmYuAttNBxCRhmMODAhHl1!-880225720'),
-    'AWSALB': os.environ.get('AWSALB', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y'),
-    'AWSALBCORS': os.environ.get('AWSALBCORS', 'htM9QkpIrepBdhIuYdsRM1/S6AeAFZI2QvW0wSeI87Bk7liO/bRDR7LsBoQUqlup24OpsFQupFy82F3i46/w2EwsB3egKaFi6y0PdWCoBtYlbDCE1etL7OTILX6Y')
+    'AWSALB': os.environ.get('AWSALB', 'xUC4eP5FnnKdNepNpBlg2Ft+yENXGONYjQwPwppVBFR4K6WVCga4QiwS3UsHRoq0VsXXofoHqB4or3SuDGseEO7Wluvl+aqEAr949BkiA9c0h6qSyn8qI6WhdMQi'),
+    'AWSALBCORS': os.environ.get('AWSALBCORS', 'xUC4eP5FnnKdNepNpBlg2Ft+yENXGONYjQwPwppVBFR4K6WVCga4QiwS3UsHRoq0VsXXofoHqB4or3SuDGseEO7Wluvl+aqEAr949BkiA9c0h6qSyn8qI6WhdMQi')
 }
 
 def get_dynamic_uuid_via_token(session=None):
