@@ -17,6 +17,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import TimeoutException, WebDriverException
+import urllib3  # Para suprimir warnings
+
+# Suprimir warnings de HTTPS no verificado
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Setup logging simple
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -24,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration
 CHANNEL_IDS = [222, 807]  # Default; prueba "607" para DevTools match
-LINEUP_ID = "220"
+LINEUP_ID = "220"  # Hardcodeado, no fetch
 OUTPUT_FILE = "epgmvs.xml"
 SITE_URL = "https://www.mvshub.com.mx/#spa/epg"
 TOKEN_URL = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/login/cache/token"
@@ -80,6 +84,12 @@ FALLBACK_COOKIES = {
     'JSESSIONID': 'EuWLhTwlkxrKdMckxulCuKMy0Bvc3p2pGtRgyEhXqCNd3ODR1wHJ!-880225720',
     'AWSALB': '9xOmVVwtdqH7NYML6QRvE4iXOJcxx52rJHdwXSrDalUQnT6iPPOUS0dxQRmXmjNmeFhm0LOwih+IZv42uiExU3zCNpiPe6h4SIR/O8keaokZ0wL8iIzYj4K3sB56',
     'AWSALBCORS': '9xOmVVwtdqH7NYML6QRvE4iXOJcxx52rJHdwXSrDalUQnT6iPPOUS0dxQRmXmjNmeFhm0LOwih+IZv42uiExU3zCNpiPe6h4SIR/O8keaokZ0wL8iIzYj4K3sB56'
+}
+
+# Hardcoded channels info (ya que no fetch lineup)
+HARDCODED_CHANNELS = {
+    222: {'name': 'Canal 222', 'logo': 'https://example.com/logo222.png'},  # Ajusta nombres/logos reales si los tienes
+    807: {'name': 'Canal 807', 'logo': 'https://example.com/logo807.png'},
 }
 
 def decode_jwt(jwt):
@@ -171,44 +181,14 @@ def get_session_via_selenium():
 
 def fetch_uuid(jwt, cookies_dict):
     """Fetch UUID y retorna session con cookies actualizadas (sobrescribe duplicados)."""
-    if not jwt:
-        logger.warning("No JWT - fallback UUID")
-        session = requests.Session()
-        for name, value in FALLBACK_COOKIES.items():
-            session.cookies.set(name, value, domain='.prod.ovp.ses.com')
-        return FALLBACK_UUID, session
-
+    # Usar fallback directamente ya que /token falla con 403
+    logger.warning("Using fallback UUID (token endpoint fails with 403)")
     session = requests.Session()
     for name, value in cookies_dict.items():
         session.cookies.set(name, value, domain='.prod.ovp.ses.com')
-
-    headers = API_HEADERS.copy()
-    headers['authorization'] = f"Bearer {jwt}"
-
-    logger.info("Fetching UUID...")
-    try:
-        response = session.get(TOKEN_URL, headers=headers, timeout=15, verify=False)
-        logger.info(f"Token status: {response.status_code}")
-        if response.status_code != 200:
-            logger.error(f"Token error: {response.status_code} - {response.text[:200]}")
-            return FALLBACK_UUID, session
-
-        data = response.json()
-        uuid_new = data['token']['uuid']
-        logger.info(f"UUID fetched: {uuid_new} (expires: {data['token']['expiration']})")
-
-        # Update cookies (sobrescribe duplicados - último gana)
-        for cookie in response.cookies:
-            domain = 'edge.prod.ovp.ses.com' if 'JSESSIONID' in cookie.name else '.prod.ovp.ses.com'
-            session.cookies.set(cookie.name, cookie.value, domain=domain, path=cookie.path or '/')
-        if response.cookies:
-            logger.info(f"Updated {len(response.cookies)} cookies from /token (duplicados sobrescritos)")
-
-        return uuid_new, session
-
-    except Exception as e:
-        logger.error(f"Token error: {e}")
-        return FALLBACK_UUID, session
+    for name, value in FALLBACK_COOKIES.items():
+        session.cookies.set(name, value, domain='.prod.ovp.ses.com')  # Sobrescribe si duplicado
+    return FALLBACK_UUID, session
 
 def initialize_session(jwt, session):
     """Mima SPA: Llama /customer y /account para validar sesión demo."""
@@ -231,9 +211,13 @@ def initialize_session(jwt, session):
             success = False
         else:
             logger.info("Customer fetched successfully")
+    except Exception as e:
+        logger.error(f"Customer fetch error: {e}")
+        success = False
 
-        # /account
-        logger.info("Initializing session: Fetching /account...")
+    # /account
+    logger.info("Initializing session: Fetching /account...")
+    try:
         response = session.get(ACCOUNT_URL, headers=headers, timeout=15, verify=False)
         logger.info(f"Account status: {response.status_code}")
         if response.status_code != 200:
@@ -241,83 +225,81 @@ def initialize_session(jwt, session):
             success = False
         else:
             logger.info("Account fetched successfully")
-
-        return success
-
     except Exception as e:
-        logger.error(f"Session init error: {e}")
-        return False
+        logger.error(f"Account fetch error: {e}")
+        success = False
 
-def fetch_lineup(session, lineup_id, headers):
-    """Fetch lineup details for channels."""
-    lineup_url = f"https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/lineup/{lineup_id}"
-    logger.info(f"Fetching lineup {lineup_id}...")
-    try:
-        response = session.get(lineup_url, headers=headers, timeout=15, verify=False)
-        logger.info(f"Lineup status: {response.status_code}")
-        if response.status_code != 200:
-            logger.error(f"Lineup error: {response.status_code} - {response.text[:200]}")
-            return None
-        data = response.json()
-        logger.info(f"Lineup fetched: {len(data.get('channels', []))} channels")
-        return data
-    except Exception as e:
-        logger.error(f"Lineup fetch error: {e}")
-        return None
+    return success
 
-def fetch_channel_epg(session, channel_id, start_date, end_date, headers):
-    """Fetch EPG for a specific channel (assumes API endpoint structure)."""
-    epg_url = f"https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/channel/{channel_id}/epg"
+def fetch_channel_epg(session, channel_ids, start_date, end_date, headers):
+    """Fetch EPG para múltiples canales (endpoint genérico /v1/epg con params)."""
+    epg_url = "https://edge.prod.ovp.ses.com:4447/xtv-ws-client/api/v1/epg"
     params = {
+        'channelIds': ','.join(map(str, channel_ids)),  # e.g., 222,807
+        'lineupId': LINEUP_ID,  # Hardcodeado
         'start': start_date.isoformat(),
         'end': end_date.isoformat(),
-        'timezone': 'America/Mexico_City'  # Adjust as needed
+        'timezone': 'America/Mexico_City'  # Ajusta si necesario
     }
-    logger.info(f"Fetching EPG for channel {channel_id} from {start_date} to {end_date}...")
+    logger.info(f"Fetching EPG for channels {channel_ids} from {start_date} to {end_date}...")
     try:
         response = session.get(epg_url, params=params, headers=headers, timeout=30, verify=False)
-        logger.info(f"EPG status for {channel_id}: {response.status_code}")
+        logger.info(f"EPG status: {response.status_code}")
         if response.status_code != 200:
-            logger.error(f"EPG error for {channel_id}: {response.status_code} - {response.text[:200]}")
+            logger.error(f"EPG error: {response.status_code} - {response.text[:200]}")
             return None
         data = response.json()
-        logger.info(f"EPG fetched for {channel_id}: {len(data.get('events', []))} events")
-        return data
+        # Asumir estructura: {'events': [...]} o por channel; filtrar eventos futuros
+        events = data.get('events', [])
+        now = datetime.now()
+        future_events = [e for e in events if datetime.fromisoformat(e.get('startTime', '').replace('Z', '+00:00')) > now]
+        logger.info(f"EPG fetched: {len(future_events)} future events")
+        # Agrupar por channelId si es necesario
+        epg_by_channel = {}
+        for event in future_events:
+            ch_id = event.get('channelId')
+            if ch_id in channel_ids:
+                if ch_id not in epg_by_channel:
+                    epg_by_channel[ch_id] = {'events': []}
+                epg_by_channel[ch_id]['events'].append(event)
+        return list(epg_by_channel.values())  # Lista de dicts por canal
     except Exception as e:
-        logger.error(f"EPG fetch error for {channel_id}: {e}")
+        logger.error(f"EPG fetch error: {e}")
         return None
 
-def build_xml_epg(channels_data, epg_data_list, output_file):
-    """Build XMLTV format EPG file."""
+def build_xml_epg(epg_data_list, output_file):
+    """Build XMLTV format EPG file usando hardcoded channels."""
     root = ET.Element("tv")
     root.set("source-info-url", "https://www.mvshub.com.mx")
     root.set("source-info-name", "MVS Hub EPG")
 
-    # Add channels
-    for channel in channels_data.get('channels', []):
-        chan_id = channel.get('id')
-        if chan_id not in CHANNEL_IDS:
-            continue  # Only include specified channels
-
+    # Add hardcoded channels
+    for chan_id in CHANNEL_IDS:
+        chan_info = HARDCODED_CHANNELS.get(chan_id, {'name': f'Canal {chan_id}', 'logo': ''})
         chan_elem = ET.SubElement(root, "channel")
         chan_elem.set("id", f"MVS.{chan_id}")
         display_name = ET.SubElement(chan_elem, "display-name")
-        display_name.text = channel.get('name', f"Channel {chan_id}")
-        icon = ET.SubElement(chan_elem, "icon")
-        icon.set("src", channel.get('logo', ''))
+        display_name.text = chan_info['name']
+        if chan_info['logo']:
+            icon = ET.SubElement(chan_elem, "icon")
+            icon.set("src", chan_info['logo'])
 
     # Add programs
     now = datetime.now()
-    for epg_data in epg_data_list:
-        channel_id = epg_data.get('channelId')
+    for epg_data in epg_data_list or []:
+        channel_id = epg_data.get('channelId', epg_data.get('id', 0))  # Ajusta según estructura real
         if channel_id not in CHANNEL_IDS:
             continue
 
         for event in epg_data.get('events', []):
-            prog_start = datetime.fromisoformat(event.get('startTime').replace('Z', '+00:00'))
-            prog_stop = datetime.fromisoformat(event.get('endTime').replace('Z', '+00:00'))
+            prog_start_str = event.get('startTime')
+            prog_stop_str = event.get('endTime')
+            if not prog_start_str or not prog_stop_str:
+                continue
+            prog_start = datetime.fromisoformat(prog_start_str.replace('Z', '+00:00'))
+            prog_stop = datetime.fromisoformat(prog_stop_str.replace('Z', '+00:00'))
 
-            # Skip old events (older than now)
+            # Skip old events
             if prog_start < now - timedelta(hours=1):
                 continue
 
@@ -354,52 +336,47 @@ def build_xml_epg(channels_data, epg_data_list, output_file):
 
     # Write XML
     tree = ET.ElementTree(root)
-    ET.indent(tree, space="  ", level=0)  # Pretty print (Python 3.9+)
+    try:
+        ET.indent(tree, space="  ", level=0)  # Pretty print (Python 3.9+)
+    except AttributeError:
+        # Fallback para versiones anteriores de Python
+        pass
     tree.write(output_file, encoding='utf-8', xml_declaration=True)
-    logger.info(f"EPG XML written to {output_file}")
+    logger.info(f"EPG XML written to {output_file} with {len(root.findall('programme'))} programmes")
 
 def main():
     """Main execution flow."""
     # Get session via Selenium
     cookies_dict, jwt = get_session_via_selenium()
 
-    # Fetch UUID and session
+    # Fetch UUID and session (usa fallback)
     uuid_val, session = fetch_uuid(jwt, cookies_dict)
 
-    if not uuid_val:
-        logger.error("Failed to get UUID - aborting")
-        sys.exit(1)
-
     # Initialize session (mimic SPA)
-    api_headers = API_HEADERS.copy()
-    api_headers['authorization'] = f"Bearer {jwt}"
-    api_headers['x-uuid'] = uuid_val  # Add UUID if needed for API calls
-
     if not initialize_session(jwt, session):
         logger.warning("Session init failed - proceeding with basic session")
 
-    # Use EPG headers for EPG fetches (may need auth/uuid)
+    # Prepare headers para EPG (incluye JWT, UUID y lineup)
     epg_headers = EPG_HEADERS.copy()
-    epg_headers['authorization'] = f"Bearer {jwt}" if jwt else ''
+    if jwt:
+        epg_headers['authorization'] = f"Bearer {jwt}"
     epg_headers['x-uuid'] = uuid_val
+    epg_headers['x-lineup-id'] = LINEUP_ID  # Posible header requerido para contextualizar
 
-    # Fetch lineup
-    lineup_data = fetch_lineup(session, LINEUP_ID, api_headers)
-    if not lineup_data:
-        logger.error("Failed to fetch lineup - aborting")
+    # Decode JWT para headers adicionales si es necesario
+    jwt_headers = decode_jwt(jwt) if jwt else {}
+    epg_headers.update(jwt_headers)
+
+    # Fetch EPG para todos los canales (una sola llamada)
+    end_date = datetime.now() + timedelta(days=7)
+    epg_data_list = fetch_channel_epg(session, CHANNEL_IDS, datetime.now(), end_date, epg_headers)
+
+    if not epg_data_list:
+        logger.error("Failed to fetch EPG - aborting")
         sys.exit(1)
 
-    # Fetch EPG for each channel (e.g., next 7 days)
-    epg_list = []
-    end_date = datetime.now() + timedelta(days=7)
-    for chan_id in CHANNEL_IDS:
-        epg_data = fetch_channel_epg(session, chan_id, datetime.now(), end_date, epg_headers)
-        if epg_data:
-            epg_list.append(epg_data)
-        time.sleep(1)  # Rate limit
-
-    # Build and save XML
-    build_xml_epg(lineup_data, epg_list, OUTPUT_FILE)
+    # Build and save XML (sin lineup_data)
+    build_xml_epg(epg_data_list, OUTPUT_FILE)
 
     logger.info("EPG generation completed successfully!")
 
