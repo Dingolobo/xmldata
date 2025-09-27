@@ -109,16 +109,18 @@ def get_session_via_selenium():
             return cookies_dict, None
 
         try:
-            login_data = json.loads(login_data_str)
-            jwt = login_data.get('deviceToken')  # El JWT está aquí
-            if not jwt:
-                logger.warning("deviceToken not found in system.login - check structure")
-                driver.quit()
-                return cookies_dict, None
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON parse error in system.login: {e}")
-            driver.quit()
-            return cookies_dict, None
+    login_data = json.loads(login_data_str)
+    # Fix: Navega al objeto 'data' para obtener deviceToken
+    data_obj = login_data.get('data', {})
+    jwt = data_obj.get('deviceToken')  # ← Ahora busca en el nivel anidado
+    if not jwt:
+        logger.warning("deviceToken not found in system.login.data - check structure")
+        driver.quit()
+        return cookies_dict, None
+    except json.JSONDecodeError as e:
+    logger.error(f"JSON parse error in system.login: {e}")
+    driver.quit()
+    return cookies_dict, None
 
         logger.info(f"JWT extracted from system.login.deviceToken (length: {len(jwt)} chars) - ready for /token")
         driver.quit()
